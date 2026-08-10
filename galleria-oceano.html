@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galleria Foto - Suite Oceano</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: #f4f6f8; color: #333; padding: 2rem 1rem; }
+    .container { max-width: 900px; margin: 0 auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    h1 { color: #0f172a; margin-bottom: 0.5rem; }
+    p { color: #64748b; margin-bottom: 1.5rem; }
+    .btn-torna { display: inline-block; background-color: #1e293b; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-bottom: 1.5rem; }
+    
+    /* Layout griglia con altezza minima visibile */
+    .gallery-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+      gap: 1rem; 
+      min-height: 120px;
+    }
+    .gallery-grid img { width: 100%; height: 200px; object-fit: cover; border-radius: 6px; }
+    
+    .messaggio-stato {
+      grid-column: 1 / -1;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      color: #475569;
+      padding: 1.5rem;
+      border-radius: 6px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <a href="index.html" class="btn-torna">← Torna alla Home</a>
+    <h1>Galleria Foto - Suite Oceano</h1>
+    <p>Sfoglia le immagini della nostra struttura nel centro storico di Marsala.</p>
+
+    <div class="gallery-grid" id="galleria-foto">
+      <div class="messaggio-stato" id="stato-caricamento">Caricamento immagini in corso...</div>
+    </div>
+  </div>
+
+  <script>
+    const cartella = "image/suite-oceano/";
+    const estensioni = ["jpeg", "jpg", "JPEG", "JPG"];
+    const contenitore = document.getElementById('galleria-foto');
+    const messaggioStato = document.getElementById('stato-caricamento');
+    
+    let fotoTrovate = 0;
+
+    function provaCaricamento(numero, indiceEstensione = 0) {
+      if (indiceEstensione >= estensioni.length) {
+        if (fotoTrovate === 0 && messaggioStato) {
+          messaggioStato.innerHTML = `⚠️ Nessuna immagine trovata al percorso <strong>${cartella}</strong>.<br>Assicurati che le immagini si chiamino 0.jpeg, 1.jpeg (o .jpg) e che la cartella sia scritta interamente in minuscolo su GitHub.`;
+        } else if (messaggioStato && messaggioStato.parentNode) {
+          messaggioStato.remove();
+        }
+        return;
+      }
+
+      const ext = estensioni[indiceEstensione];
+      const img = new Image();
+      const percorso = `${cartella}${numero}.${ext}`;
+
+      img.onload = function() {
+        if (messaggioStato && messaggioStato.parentNode) {
+          messaggioStato.remove();
+        }
+        img.alt = `Suite Oceano - Foto ${numero}`;
+        contenitore.appendChild(img);
+        fotoTrovate++;
+        
+        // Cerca l'immagine successiva ripartendo dalla prima estensione utile
+        provaCaricamento(numero + 1, 0);
+      };
+
+      img.onerror = function() {
+        // Se l'estensione fallisce (es. .jpeg), tenta con la successiva (es. .jpg)
+        provaCaricamento(numero, indiceEstensione + 1);
+      };
+
+      img.src = percorso;
+    }
+
+    // Avvia il caricamento controllando sia le immagini con indice 0 che 1
+    provaCaricamento(0);
+  </script>
+
+</body>
+</html>
