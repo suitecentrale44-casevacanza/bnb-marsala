@@ -11,8 +11,25 @@
     h1 { color: #0f172a; margin-bottom: 0.5rem; }
     p { color: #64748b; margin-bottom: 1.5rem; }
     .btn-torna { display: inline-block; background-color: #1e293b; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-bottom: 1.5rem; }
-    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+    
+    /* Layout griglia con altezza minima visibile */
+    .gallery-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+      gap: 1rem; 
+      min-height: 120px;
+    }
     .gallery-grid img { width: 100%; height: 200px; object-fit: cover; border-radius: 6px; }
+    
+    .messaggio-stato {
+      grid-column: 1 / -1;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      color: #475569;
+      padding: 1.5rem;
+      border-radius: 6px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -22,38 +39,55 @@
     <h1>Galleria Foto - Suite Corallo</h1>
     <p>Sfoglia le immagini della nostra struttura nel centro storico di Marsala.</p>
 
-    <!-- Contenitore vuoto: le foto verranno caricate qui automaticamente -->
-    <div class="gallery-grid" id="galleria-foto"></div>
+    <div class="gallery-grid" id="galleria-foto">
+      <div class="messaggio-stato" id="stato-caricamento">Caricamento immagini in corso...</div>
+    </div>
   </div>
 
   <script>
     const cartella = "image/suite-corallo/";
-    const estensione = "jpeg"; // Impostato su .jpeg
+    const estensioni = ["jpeg", "jpg", "JPEG", "JPG"];
     const contenitore = document.getElementById('galleria-foto');
+    const messaggioStato = document.getElementById('stato-caricamento');
+    
+    let fotoTrovate = 0;
 
-    function caricaFotoDinamiche(numero) {
+    function provaCaricamento(numero, indiceEstensione = 0) {
+      if (indiceEstensione >= estensioni.length) {
+        if (fotoTrovate === 0 && messaggioStato) {
+          messaggioStato.innerHTML = `⚠️ Nessuna immagine trovata al percorso <strong>${cartella}</strong>.<br>Assicurati che le immagini si chiamino 0.jpeg, 1.jpeg (o .jpg) e che la cartella sia scritta interamente in minuscolo su GitHub.`;
+        } else if (messaggioStato && messaggioStato.parentNode) {
+          messaggioStato.remove();
+        }
+        return;
+      }
+
+      const ext = estensioni[indiceEstensione];
       const img = new Image();
-      const percorso = `${cartella}${numero}.${estensione}`;
+      const percorso = `${cartella}${numero}.${ext}`;
 
-      // Evento eseguito se l'immagine esiste
       img.onload = function() {
+        if (messaggioStato && messaggioStato.parentNode) {
+          messaggioStato.remove();
+        }
         img.alt = `Suite Corallo - Foto ${numero}`;
         contenitore.appendChild(img);
+        fotoTrovate++;
         
-        // Cerca l'immagine successiva (es. 2.jpeg, poi 3.jpeg, ecc.)
-        caricaFotoDinamiche(numero + 1);
+        // Cerca l'immagine successiva ripartendo dalla prima estensione utile
+        provaCaricamento(numero + 1, 0);
       };
 
-      // Evento eseguito quando l'immagine NON viene trovata (fine delle foto)
       img.onerror = function() {
-        // Interrompe la ricerca senza mostrare errori nella pagina
+        // Se l'estensione fallisce (es. .jpeg), tenta con la successiva (es. .jpg)
+        provaCaricamento(numero, indiceEstensione + 1);
       };
 
       img.src = percorso;
     }
 
-    // Avvia il caricamento partendo da 1.jpeg
-    caricaFotoDinamiche(0);
+    // Avvia il caricamento controllando sia le immagini con indice 0 che 1
+    provaCaricamento(0);
   </script>
 
 </body>
