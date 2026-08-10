@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Galleria Foto - Suite Centrale</title>
+  <title>Galleria Foto - Suite Oceano</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background-color: #f4f6f8; color: #333; padding: 2rem 1rem; }
@@ -87,7 +87,7 @@
 
   <div class="container">
     <a href="index.html" class="btn-torna">← Torna alla Home</a>
-    <h1>Galleria Foto - Suite Centrale</h1>
+    <h1>Galleria Foto - Suite Oceano</h1>
     <p>Sfoglia le immagini della nostra struttura nel centro storico di Marsala. Clicca su una foto per ingrandirla e usa le frecce per scorrere.</p>
 
     <div id="stato" class="box-info">🔄 Ricerca delle foto in corso...</div>
@@ -103,7 +103,7 @@
   </div>
 
   <script>
-    const cartella = "image/suite-centrale/";
+    const cartella = "image/suite-oceano/";
     const contenitore = document.getElementById('galleria-foto');
     const boxStato = document.getElementById('stato');
     
@@ -140,7 +140,7 @@
           
           const elementoImg = document.createElement('img');
           elementoImg.src = percorso;
-          elementoImg.alt = `Suite Centrale - Foto ${numero}`;
+          elementoImg.alt = `Suite Oceano - Foto ${numero}`;
           
           // Quando si clicca, apre la foto indicando la sua posizione
           elementoImg.onclick = function() {
