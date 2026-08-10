@@ -32,7 +32,7 @@
 
     function caricaFotoDinamiche(numero) {
       const img = new Image();
-      const percorso = `${numero}.jpg`;
+      const percorso = `${cartella}${numero}.jpg`;
 
       // Evento eseguito se l'immagine esiste
       img.onload = function() {
@@ -52,7 +52,7 @@
     }
 
     // Avvia il caricamento partendo da 1.jpg
-    caricaFotoDinamiche(1);
+    caricaFotoDinamiche(0);
   </script>
 
 </body>
