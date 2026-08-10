@@ -20,6 +20,42 @@
     footer { text-align: center; padding: 2rem; color: #64748b; font-size: 0.9rem; }
   </style>
 </head>
+
+  <script>
+  class AirbnbBtn extends HTMLElement {
+    connectedCallback() {
+      const url = this.getAttribute('url') || '#';
+      this.innerHTML = `
+        <a href="${url}" target="_blank" rel="noopener noreferrer" class="btn-airbnb-official">
+          <svg class="airbnb-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M16 1c2.008 0 3.463.963 4.751 3.269l.533 1.025 1.954 3.83 6.114 12.57c.712 1.464.913 2.861.571 4.08-.34 1.22-1.22 2.198-2.502 2.772l-.398.163c-1.32.488-2.827.42-4.17-.213l-.448-.225-3.08-1.682-1.07-.604c-.396-.226-.856-.345-1.323-.345s-.927.119-1.323.345l-1.07.604-3.08 1.682c-1.32.721-2.883.82-4.283.284l-.335-.142c-1.282-.574-2.162-1.552-2.502-2.772-.342-1.219-.141-2.616.571-4.08l6.114-12.57 1.954-3.83.533-1.025C12.537 1.963 13.992 1 16 1zm0 2c-1.239 0-2.222.651-3.152 2.376l-.372.736-1.921 3.766-6.082 12.503c-.515 1.06-.615 1.97-.375 2.827.24.856.883 1.503 1.802 1.913l.265.105c.952.348 2.02.268 2.946-.237l.321-.186 3.08-1.682 1.107-.625c.783-.442 1.683-.675 2.597-.675s1.814.233 2.597.675l1.107.625 3.08 1.682c.983.537 2.115.603 3.123.197l.144-.061c.919-.41 1.562-1.057 1.802-1.913.24-.857.14-1.767-.375-2.827l-6.082-12.503-1.921-3.766-.372-.736C18.222 3.651 17.239 3 16 3zm0 8c2.761 0 5 2.239 5 5 0 2.223-1.45 4.108-3.468 4.757l-.37.105c-.381.096-.777.138-1.162.138-.385 0-.781-.042-1.162-.138l-.37-.105C12.45 20.108 11 18.223 11 16c0-2.761 2.239-5 5-5zm0 2c-1.657 0-3 1.343-3 3 0 1.272.793 2.358 1.912 2.782l.21.068c.284.072.578.103.878.103.3 0 .594-.031.878-.103l.21-.068C18.207 18.358 19 17.272 19 16c0-1.657-1.343-3-3-3z"/>
+          </svg>
+          <span>Prenota su Airbnb</span>
+        </a>
+      `;
+    }
+  }
+  customElements.define('airbnb-button', AirbnbBtn);
+</script>
+
+<style>
+  .btn-airbnb-official {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: #FF385C;
+    color: #FFFFFF;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+  }
+  .btn-airbnb-official:hover { background-color: #E00B41; }
+  .airbnb-icon { width: 20px; height: 20px; fill: #FFFFFF; }
+</style>
 <body>
 
   <header>
@@ -60,35 +96,35 @@
   
   <div class="grid-3-case">
     
-    <!-- CARD CASA 1 -->
+    <!-- CARD SUITE CENTRALE -->
     <div class="card-casa">
       <img src="foto-casa1.jpg" alt="Suite Centrale 44">
       <h3>Suite Centrale 44</h3>
       <p>Centro Storico • Da 1 a 4 Posti Letto • Wi-Fi, Balcone & AC</p>
       <div class="pulsanti-prenotazione">
-        <a href="https://wa.me/391234567890?text=Ciao!%20Vorrei%20informazioni%20sulle%20disponibilità" class="btn-wa" target="_blank">💬 Prenota o Chiedi Info su WhatsApp</a>
-        <a href="https://www.airbnb.it/rooms/50326794?source_impression_id=p3_1786367931_P3q6HzrLdYoiKtzd" class="btn-airbnb">Airbnb</a>
+        <a href="https://wa.me/391234567890?text=Ciao!%20Vorrei%20informazioni%20sulle%20disponibilità" class="btn-wa" target="_blank">WhatsApp</a>
+        <airbnb-button url="https://www.airbnb.it/rooms/50326794?source_impression_id=p3_1786367931_P3q6HzrLdYoiKtzd"></airbnb-button>
       </div>
     </div>
 
-    <!-- CARD CASA 2 -->
+    <!-- CARD CORALLO -->
     <div class="card-casa">
       <img src="foto-casa2.jpg" alt="Suite Corallo">
       <h3>Suite Corallo</h3>
       <p>Centro Storico • Da 1 a 3 Posti Letto • Wi-Fi & AC</p>
       <div class="pulsanti-prenotazione">
-        <a href="https://wa.me/391234567890?text=Ciao!%20Vorrei%20informazioni%20sulle%20disponibilità" class="btn-wa" target="_blank">💬 Prenota o Chiedi Info su WhatsApp</a>
+        <a href="https://wa.me/391234567890?text=Ciao!%20Vorrei%20informazioni%20sulle%20disponibilità" class="btn-wa" target="_blank">WhatsApp</a>
         <a href="https://www.airbnb.it/rooms/657792096938010342?source_impression_id=p3_1786367898_P3yRL36UaejRz8YE" class="btn-airbnb">Airbnb</a>
       </div>
     </div>
 
-    <!-- CARD CASA 3 -->
+    <!-- CARD OCENAO -->
     <div class="card-casa">
       <img src="foto-casa3.jpg" alt="Suite Oceano">
       <h3>Suite Oceano</h3>
       <p>Centro Storico • Da 1 a 4 Posti Letto • Wi-Fi & AC</p>
       <div class="pulsanti-prenotazione">
-        <a href="https://wa.me/391234567890?text=Ciao!%20Vorrei%20informazioni%20sulle%20disponibilità" class="btn-wa" target="_blank">💬 Prenota o Chiedi Info su WhatsApp</a>
+        <a href="https://wa.me/391234567890?text=Ciao!%20Vorrei%20informazioni%20sulle%20disponibilità" class="btn-wa" target="_blank">WhatsApp</a>
         <a href="https://www.airbnb.it/rooms/653331639445866242?source_impression_id=p3_1786368043_P3GjRQd3UHEcpQHe" class="btn-airbnb">Airbnb</a>
       </div>
     </div>
