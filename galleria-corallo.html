@@ -28,14 +28,14 @@
 
   <script>
     // 1. Specifica il percorso della cartella
-    const cartella = "immagini/corallo/";
+    const cartella = "image/suite-corallo/";
     
     // 2. Specifica quante foto ci sono nella cartella
-    const totaleFoto = 6; 
+    const totaleFoto = 18; 
 
     const contenitore = document.getElementById('galleria-foto');
 
-    // Il ciclo crea automaticamente i tag per le foto da 1.jpg a N.jpg
+    // Il ciclo crea automaticamente i tag per le foto da 0.jpg a N.jpg
     for (let i = 1; i <= totaleFoto; i++) {
       const img = document.createElement('img');
       img.src = `${cartella}${i}.jpg`;
