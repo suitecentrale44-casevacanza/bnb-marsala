@@ -22,13 +22,27 @@
     <h1>Galleria Foto - Suite Corallo</h1>
     <p>Sfoglia le immagini della nostra struttura nel centro storico di Marsala.</p>
 
-    <div class="gallery-grid">
-      <img src="image/corallo-1.jpg" alt="Soggiorno Suite Corallo">
-      <img src="image/corallo-2.jpg" alt="Camera da letto Suite Corallo">
-      <img src="image/corallo-3.jpg" alt="Bagno Suite Corallo">
-      <img src="image/corallo-4.jpg" alt="Cucina Suite Corallo">
-    </div>
+    <!-- Contenitore vuoto: le foto verranno caricate qui automaticamente -->
+    <div class="gallery-grid" id="galleria-foto"></div>
   </div>
+
+  <script>
+    // 1. Specifica il percorso della cartella
+    const cartella = "immagini/corallo/";
+    
+    // 2. Specifica quante foto ci sono nella cartella
+    const totaleFoto = 6; 
+
+    const contenitore = document.getElementById('galleria-foto');
+
+    // Il ciclo crea automaticamente i tag per le foto da 1.jpg a N.jpg
+    for (let i = 1; i <= totaleFoto; i++) {
+      const img = document.createElement('img');
+      img.src = `${cartella}${i}.jpg`;
+      img.alt = `Suite Corallo - Foto ${i}`;
+      contenitore.appendChild(img);
+    }
+  </script>
 
 </body>
 </html>
