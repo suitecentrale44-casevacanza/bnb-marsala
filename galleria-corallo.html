@@ -27,21 +27,32 @@
   </div>
 
   <script>
-    // 1. Specifica il percorso della cartella
     const cartella = "image/suite-corallo/";
-    
-    // 2. Specifica quante foto ci sono nella cartella
-    const totaleFoto = 18; 
-
     const contenitore = document.getElementById('galleria-foto');
 
-    // Il ciclo crea automaticamente i tag per le foto da 0.jpg a N.jpg
-    for (let i = 1; i <= totaleFoto; i++) {
-      const img = document.createElement('img');
-      img.src = `${cartella}${i}.jpg`;
-      img.alt = `Suite Corallo - Foto ${i}`;
-      contenitore.appendChild(img);
+    function caricaFotoDinamiche(numero) {
+      const img = new Image();
+      const percorso = `${cartella}${numero}.jpg`;
+
+      // Evento eseguito se l'immagine esiste
+      img.onload = function() {
+        img.alt = `Suite Corallo - Foto ${numero}`;
+        contenitore.appendChild(img);
+        
+        // Cerca l'immagine successiva (es. 2.jpg, poi 3.jpg, ecc.)
+        caricaFotoDinamiche(numero + 1);
+      };
+
+      // Evento eseguito quando l'immagine NON viene trovata (fine delle foto)
+      img.onerror = function() {
+        // Interrompe la ricerca senza mostrare errori nella pagina
+      };
+
+      img.src = percorso;
     }
+
+    // Avvia il caricamento partendo da 1.jpg
+    caricaFotoDinamiche(1);
   </script>
 
 </body>
