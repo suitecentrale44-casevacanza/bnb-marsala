@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galleria Foto - Suite Corallo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: #f4f6f8; color: #333; padding: 2rem 1rem; }
+    .container { max-width: 900px; margin: 0 auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    h1 { color: #0f172a; margin-bottom: 0.5rem; }
+    p { color: #64748b; margin-bottom: 1.5rem; }
+    .btn-torna { display: inline-block; background-color: #1e293b; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-bottom: 1.5rem; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+    .gallery-grid img { width: 100%; height: 200px; object-fit: cover; border-radius: 6px; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <a href="index.html" class="btn-torna">← Torna alla Home</a>
+    <h1>Galleria Foto - Suite Corallo</h1>
+    <p>Sfoglia le immagini della nostra struttura nel centro storico di Marsala.</p>
+
+    <div class="gallery-grid">
+      <img src="corallo-1.jpg" alt="Soggiorno Suite Corallo">
+      <img src="corallo-2.jpg" alt="Camera da letto Suite Corallo">
+      <img src="corallo-3.jpg" alt="Bagno Suite Corallo">
+      <img src="corallo-4.jpg" alt="Cucina Suite Corallo">
+    </div>
+  </div>
+
+</body>
+</html>
