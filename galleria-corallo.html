@@ -28,11 +28,12 @@
 
   <script>
     const cartella = "image/suite-corallo/";
+    const estensione = "jpeg"; // Impostato su .jpeg
     const contenitore = document.getElementById('galleria-foto');
 
     function caricaFotoDinamiche(numero) {
       const img = new Image();
-      const percorso = `${cartella}${numero}.jpeg`;
+      const percorso = `${cartella}${numero}.${estensione}`;
 
       // Evento eseguito se l'immagine esiste
       img.onload = function() {
