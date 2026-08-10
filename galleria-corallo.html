@@ -32,14 +32,14 @@
 
     function caricaFotoDinamiche(numero) {
       const img = new Image();
-      const percorso = `${cartella}${numero}.jpg`;
+      const percorso = `${cartella}${numero}.jpeg`;
 
       // Evento eseguito se l'immagine esiste
       img.onload = function() {
         img.alt = `Suite Corallo - Foto ${numero}`;
         contenitore.appendChild(img);
         
-        // Cerca l'immagine successiva (es. 2.jpg, poi 3.jpg, ecc.)
+        // Cerca l'immagine successiva (es. 2.jpeg, poi 3.jpeg, ecc.)
         caricaFotoDinamiche(numero + 1);
       };
 
@@ -51,7 +51,7 @@
       img.src = percorso;
     }
 
-    // Avvia il caricamento partendo da 1.jpg
+    // Avvia il caricamento partendo da 1.jpeg
     caricaFotoDinamiche(0);
   </script>
 
