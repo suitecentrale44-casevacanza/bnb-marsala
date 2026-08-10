@@ -12,23 +12,53 @@
     p { color: #64748b; margin-bottom: 1.5rem; }
     .btn-torna { display: inline-block; background-color: #1e293b; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-bottom: 1.5rem; }
     
-    /* Layout griglia con altezza minima visibile */
-    .gallery-grid { 
-      display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-      gap: 1rem; 
-      min-height: 120px;
+    /* Griglia delle immagini */
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .gallery-grid img { 
+      width: 100%; 
+      height: 200px; 
+      object-fit: cover; 
+      border-radius: 6px; 
+      cursor: pointer; 
+      transition: transform 0.2s ease, box-shadow 0.2s ease; 
     }
-    .gallery-grid img { width: 100%; height: 200px; object-fit: cover; border-radius: 6px; }
+    .gallery-grid img:hover { 
+      transform: scale(1.02); 
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
+    }
     
-    .messaggio-stato {
-      grid-column: 1 / -1;
-      background: #f8fafc;
-      border: 1px dashed #cbd5e1;
-      color: #475569;
-      padding: 1.5rem;
-      border-radius: 6px;
-      text-align: center;
+    .box-info { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 1rem; border-radius: 6px; color: #334155; margin-bottom: 1rem; font-size: 0.95rem; }
+
+    /* Stili per la finestra d'ingrandimento (Modal) */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.85);
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-img {
+      max-width: 90%;
+      max-height: 90vh;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      object-fit: contain;
+    }
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      color: #ffffff;
+      font-size: 35px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
     }
   </style>
 </head>
@@ -37,57 +67,89 @@
   <div class="container">
     <a href="index.html" class="btn-torna">← Torna alla Home</a>
     <h1>Galleria Foto - Suite Corallo</h1>
-    <p>Sfoglia le immagini della nostra struttura nel centro storico di Marsala.</p>
+    <p>Sfoglia le immagini della nostra struttura nel centro storico di Marsala (clicca su una foto per ingrandirla).</p>
 
-    <div class="gallery-grid" id="galleria-foto">
-      <div class="messaggio-stato" id="stato-caricamento">Caricamento immagini in corso...</div>
-    </div>
+    <div id="stato" class="box-info">🔄 Ricerca delle foto in corso...</div>
+    <div class="gallery-grid" id="galleria-foto"></div>
+  </div>
+
+  <!-- Finestra per la foto ingrandita -->
+  <div id="foto-modal" class="modal" onclick="chiudiModal()">
+    <span class="modal-close">&times;</span>
+    <img id="img-ingrandita" class="modal-img" src="" alt="Foto Ingrandita">
   </div>
 
   <script>
     const cartella = "image/suite-corallo/";
-    const estensioni = ["jpeg", "jpg", "JPEG", "JPG"];
     const contenitore = document.getElementById('galleria-foto');
-    const messaggioStato = document.getElementById('stato-caricamento');
+    const boxStato = document.getElementById('stato');
     
+    const estensioni = ["jpeg", "jpg", "JPEG", "JPG", "png"];
     let fotoTrovate = 0;
 
-    function provaCaricamento(numero, indiceEstensione = 0) {
-      if (indiceEstensione >= estensioni.length) {
-        if (fotoTrovate === 0 && messaggioStato) {
-          messaggioStato.innerHTML = `⚠️ Nessuna immagine trovata al percorso <strong>${cartella}</strong>.<br>Assicurati che le immagini si chiamino 0.jpeg, 1.jpeg (o .jpg) e che la cartella sia scritta interamente in minuscolo su GitHub.`;
-        } else if (messaggioStato && messaggioStato.parentNode) {
-          messaggioStato.remove();
+    function caricaFoto(numero) {
+      function provaEstensione(index) {
+        if (index >= estensioni.length) {
+          if (fotoTrovate === 0) {
+            boxStato.style.background = "#fee2e2";
+            boxStato.style.borderColor = "#ef4444";
+            boxStato.style.color = "#991b1b";
+            boxStato.innerHTML = `⚠️ <strong>Nessuna immagine trovata in <code>${cartella}</code></strong><br><br>Verifica che le foto si chiamino 0.jpeg, 1.jpeg (oppure 0.jpg, 1.jpg).`;
+          } else {
+            boxStato.style.display = "none";
+          }
+          return;
         }
-        return;
+
+        const ext = estensioni[index];
+        const img = new Image();
+        const percorso = `${cartella}${numero}.${ext}`;
+
+        img.onload = function() {
+          fotoTrovate++;
+          boxStato.innerHTML = `📸 Caricamento in corso... trovate ${fotoTrovate} foto.`;
+          
+          const elementoImg = document.createElement('img');
+          elementoImg.src = percorso;
+          elementoImg.alt = `Suite Corallo - Foto ${numero}`;
+          
+          // Assegna la funzione di ingrandimento al clic
+          elementoImg.onclick = function() {
+            apriModal(percorso);
+          };
+
+          contenitore.appendChild(elementoImg);
+
+          // Cerca la foto successiva
+          caricaFoto(numero + 1);
+        };
+
+        img.onerror = function() {
+          provaEstensione(index + 1);
+        };
+
+        img.src = percorso;
       }
 
-      const ext = estensioni[indiceEstensione];
-      const img = new Image();
-      const percorso = `${cartella}${numero}.${ext}`;
-
-      img.onload = function() {
-        if (messaggioStato && messaggioStato.parentNode) {
-          messaggioStato.remove();
-        }
-        img.alt = `Suite Corallo - Foto ${numero}`;
-        contenitore.appendChild(img);
-        fotoTrovate++;
-        
-        // Cerca l'immagine successiva ripartendo dalla prima estensione utile
-        provaCaricamento(numero + 1, 0);
-      };
-
-      img.onerror = function() {
-        // Se l'estensione fallisce (es. .jpeg), tenta con la successiva (es. .jpg)
-        provaCaricamento(numero, indiceEstensione + 1);
-      };
-
-      img.src = percorso;
+      provaEstensione(0);
     }
 
-    // Avvia il caricamento controllando sia le immagini con indice 0 che 1
-    provaCaricamento(0);
+    // Funzione per aprire la finestra di ingrandimento
+    function apriModal(src) {
+      const modal = document.getElementById('foto-modal');
+      const imgIngrandita = document.getElementById('img-ingrandita');
+      imgIngrandita.src = src;
+      modal.style.display = 'flex';
+    }
+
+    // Funzione per chiudere la finestra
+    function chiudiModal() {
+      const modal = document.getElementById('foto-modal');
+      modal.style.display = 'none';
+    }
+
+    // Avvia il caricamento
+    caricaFoto(0);
   </script>
 
 </body>
