@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Questa riga è ciò che le persone leggeranno su Google quando cercano il tuo B&B -->
-<meta name="description" content="Suite Centrale 44 a Marsala: case vacanza nel centro storico con Wi-Fi, aria condizionata e ogni comfort. Prenota ora la tua vacanza in Sicilia!"
+  <!-- Meta description con il tag correttamente chiuso col carattere '>' -->
+  <meta name="description" content="Suite Centrale 44 a Marsala: case vacanza nel centro storico con Wi-Fi, aria condizionata e ogni comfort. Prenota ora la tua vacanza in Sicilia!">
   <title>Suite Centrale 44 - Case Vacanza a Marsala</title>
   
   <!-- Favicon -->
   <link rel="icon" type="image/jpeg" href="image/Logo_Suite.jpg">
   
-  <!-- Foglio di Stile CSS ed Script JS Esterni -->
+  <!-- Foglio di Stile CSS e Script JS Esterni -->
   <link rel="stylesheet" href="css/style.css">
   <script src="script.js" defer></script>
 
@@ -20,7 +20,7 @@
   <meta property="og:description" content="La tua casa lontano da casa. Relax, comfort e accoglienza nel cuore di Marsala.">
   <meta property="og:image" content="image/Logo_Suite.jpg">
 
-  <!-- Stili Splash Screen Forzati Inline -->
+  <!-- Stili Splash Screen Inline -->
   <style>
     #splash-screen {
       position: fixed;
@@ -51,7 +51,6 @@
       100% { transform: scale(1.05); opacity: 1; }
     }
 
-    /* Classe per sfumare e rimuovere completamente lo schermo */
     #splash-screen.fade-out {
       opacity: 0 !important;
       visibility: hidden !important;
@@ -60,68 +59,66 @@
   </style>
 
   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-C291PEHWM7"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-C291PEHWM7');
-</script>
-  
-</head>
-
-  <!-- Banner Cookie GDPR -->
-<div id="cookie-banner" style="position: fixed; bottom: 0; left: 0; right: 0; background: #1e293b; color: #ffffff; padding: 16px; text-align: center; z-index: 9999; font-family: sans-serif; font-size: 14px; box-shadow: 0 -2px 10px rgba(0,0,0,0.2);">
-  <p style="margin: 0 0 12px 0; line-height: 1.4;">
-    Questo sito utilizza cookie tecnici e Google Analytics per migliorare l'esperienza di navigazione. Puoi scegliere se accettare o rifiutare i cookie di analisi.
-  </p>
-  <button onclick="accettaCookie()" style="background: #25D366; color: white; border: none; padding: 8px 18px; margin-right: 8px; cursor: pointer; border-radius: 6px; font-weight: bold;">
-    Accetta
-  </button>
-  <button onclick="rifiutaCookie()" style="background: #64748b; color: white; border: none; padding: 8px 18px; cursor: pointer; border-radius: 6px;">
-    Rifiuta
-  </button>
-</div>
-
-<script>
-  // SOSTITUISCI "G-XXXXXXXXXX" CON IL TUO CODICE REALE DI GOOGLE ANALYTICS
-  const ANALYTICS_ID = 'G-XXXXXXXXXX';
-
-  function caricaAnalytics() {
-    var script = document.createElement('script');
-    script.src = 'https://www.googletagmanager.com/gtag/js?id=' + ANALYTICS_ID;
-    script.async = true;
-    document.head.appendChild(script);
-
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C291PEHWM7"></script>
+  <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', ANALYTICS_ID);
-  }
 
-  function accettaCookie() {
-    localStorage.setItem('consenso_cookie', 'accettato');
-    document.getElementById('cookie-banner').style.display = 'none';
-    caricaAnalytics();
-  }
+    gtag('config', 'G-C291PEHWM7');
+  </script>
+</head>
 
-  function rifiutaCookie() {
-    localStorage.setItem('consenso_cookie', 'rifiutato');
-    document.getElementById('cookie-banner').style.display = 'none';
-  }
-
-  // Verifica la scelta effettuata in precedenza dall'utente
-  const consenso = localStorage.getItem('consenso_cookie');
-  if (consenso === 'accettato') {
-    document.getElementById('cookie-banner').style.display = 'none';
-    caricaAnalytics();
-  } else if (consenso === 'rifiutato') {
-    document.getElementById('cookie-banner').style.display = 'none';
-  }
-</script>
-  
 <body>
+
+  <!-- Banner Cookie GDPR spostato correttamente all'interno del body -->
+  <div id="cookie-banner" style="position: fixed; bottom: 0; left: 0; right: 0; background: #1e293b; color: #ffffff; padding: 16px; text-align: center; z-index: 9999; font-family: sans-serif; font-size: 14px; box-shadow: 0 -2px 10px rgba(0,0,0,0.2);">
+    <p style="margin: 0 0 12px 0; line-height: 1.4;">
+      Questo sito utilizza cookie tecnici e Google Analytics per migliorare l'esperienza di navigazione. Puoi scegliere se accettare o rifiutare i cookie di analisi.
+    </p>
+    <button onclick="accettaCookie()" style="background: #25D366; color: white; border: none; padding: 8px 18px; margin-right: 8px; cursor: pointer; border-radius: 6px; font-weight: bold;">
+      Accetta
+    </button>
+    <button onclick="rifiutaCookie()" style="background: #64748b; color: white; border: none; padding: 8px 18px; cursor: pointer; border-radius: 6px;">
+      Rifiuta
+    </button>
+  </div>
+
+  <script>
+    // ID reale aggiornato
+    const ANALYTICS_ID = 'G-C291PEHWM7';
+
+    function caricaAnalytics() {
+      var script = document.createElement('script');
+      script.src = 'https://www.googletagmanager.com/gtag/js?id=' + ANALYTICS_ID;
+      script.async = true;
+      document.head.appendChild(script);
+
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', ANALYTICS_ID);
+    }
+
+    function accettaCookie() {
+      localStorage.setItem('consenso_cookie', 'accettato');
+      document.getElementById('cookie-banner').style.display = 'none';
+      caricaAnalytics();
+    }
+
+    function rifiutaCookie() {
+      localStorage.setItem('consenso_cookie', 'rifiutato');
+      document.getElementById('cookie-banner').style.display = 'none';
+    }
+
+    const consenso = localStorage.getItem('consenso_cookie');
+    if (consenso === 'accettato') {
+      document.getElementById('cookie-banner').style.display = 'none';
+      caricaAnalytics();
+    } else if (consenso === 'rifiutato') {
+      document.getElementById('cookie-banner').style.display = 'none';
+    }
+  </script>
 
   <!-- Splash Screen / Schermata di Benvenuto -->
   <div id="splash-screen">
@@ -129,22 +126,19 @@
   </div>
 
   <script>
-    // Funzione per far scomparire lo Splash Screen
     function nascondiSplash() {
       const splash = document.getElementById('splash-screen');
       if (splash && !splash.classList.contains('fade-out')) {
         splash.classList.add('fade-out');
-        
-        // Rimuove completamente l'elemento dal flusso dopo la fine della sfumatura (0.8s)
         setTimeout(() => {
           splash.style.display = 'none';
         }, 800);
       }
     }
 
-    // Attende 2 secondi (2000 ms) prima di far partire la sfumatura
     setTimeout(nascondiSplash, 2000);
   </script>
+
   <!-- Menu di Navigazione Fisso con Logo -->
   <nav class="navbar">
     <div class="navbar-container">
@@ -162,7 +156,6 @@
   </nav>
 
   <header>
-    <!-- Logo principale nell'Header -->
     <img src="image/Logo_Suite.jpg" alt="Suite Centrale 44 Logo" class="header-logo">
     <h1>Benvenuti da Suite Centrale 44</h1>
     <p>La tua casa lontano da casa. Relax, comfort e accoglienza nel cuore della città.</p>
@@ -268,7 +261,7 @@
           CIR: 19081011C218331 | CIN: IT081011C2EFH98HIF
         </p>
 
-       <!-- Griglia Contatti e Social con dimensioni FORZATE direttamente nell'HTML -->
+        <!-- Griglia Contatti e Social -->
         <div class="social-grid" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; align-items: center;">
           
           <!-- Telefono -->
@@ -295,14 +288,14 @@
             <span>WhatsApp</span>
           </a>
 
-          <!-- Instagram -->
+          <!-- Instagram con SVG e colore #E4405F corretti -->
           <a href="https://www.instagram.com/suitecentrale44_marsala?igsh=MTFoaG0xMGx2ZG5mOQ==" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 20px; text-decoration: none; color: #0f172a; font-size: 0.85rem; font-weight: 600;">
             <svg width="18" height="18" viewBox="0 0 24 24" style="width:18px; height:18px; min-width:18px;">
-              <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              <path fill="#E4405F" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
             </svg>
             <span>Instagram</span>
-            
           </a>
+
           <!-- Facebook -->
           <a href="https://www.facebook.com/share/199Z8aAets/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 20px; text-decoration: none; color: #0f172a; font-size: 0.85rem; font-weight: 600;">
             <svg width="18" height="18" viewBox="0 0 24 24" style="width:18px; height:18px; min-width:18px;">
@@ -320,6 +313,7 @@
           </a>
 
         </div>        
+
       <!-- Mappa Google Interattiva -->
       <div class="map-container">
         <iframe 
