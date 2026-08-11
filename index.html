@@ -29,9 +29,22 @@
       max-width: 1000px;
       margin: 0 auto;
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      padding: 0.8rem 1rem;
+      padding: 0.5rem 1rem;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+
+    .nav-logo {
+      height: 40px;
+      width: auto;
+      border-radius: 4px;
+      display: block;
     }
 
     .nav-links {
@@ -39,7 +52,7 @@
       list-style: none;
       gap: 1.5rem;
       flex-wrap: wrap;
-      justify-content: center;
+      align-items: center;
     }
 
     .nav-links a {
@@ -54,7 +67,18 @@
       color: #38bdf8;
     }
 
-    header { background: #1e293b; color: #fff; text-align: center; padding: 3rem 1rem; }
+    /* Header e Logo Principale */
+    header { background: #1e293b; color: #fff; text-align: center; padding: 2.5rem 1rem; }
+    
+    .header-logo {
+      max-width: 130px;
+      height: auto;
+      border-radius: 50%;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 2px solid rgba(255,255,255,0.1);
+    }
+
     header h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
     
     .container { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
@@ -182,12 +206,19 @@
       fill: #ffffff;
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 600px) {
+      .navbar-container {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
       .nav-links {
         gap: 0.8rem;
       }
       .nav-links a {
         font-size: 0.85rem;
+      }
+      .header-logo {
+        max-width: 100px;
       }
       .whatsapp-float {
         width: 52px;
@@ -221,9 +252,12 @@
 </head>
 <body>
 
-  <!-- Menu di Navigazione Fisso -->
+  <!-- Menu di Navigazione Fisso con Logo -->
   <nav class="navbar">
     <div class="navbar-container">
+      <a href="#" class="nav-brand">
+        <img src="image/Logo_Suite.jpg" alt="Logo Suite Centrale 44" class="nav-logo">
+      </a>
       <ul class="nav-links">
         <li><a href="#strutture">Strutture</a></li>
         <li><a href="#offerte">Offerte</a></li>
@@ -235,6 +269,8 @@
   </nav>
 
   <header>
+    <!-- Logo principale nell'Header -->
+    <img src="image/Logo_Suite.jpg" alt="Suite Centrale 44 Logo" class="header-logo">
     <h1>Benvenuti da Suite Centrale 44</h1>
     <p>La tua casa lontano da casa. Relax, comfort e accoglienza nel cuore della città.</p>
     <br>
