@@ -403,3 +403,43 @@ footer p {
   max-height: 18px !important;
   flex-shrink: 0 !important;
 }
+
+
+/* ==========================================
+   SPLASH SCREEN (COPERTINA DINAMICA CON LOGO)
+   ========================================== */
+#splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #ffffff; /* Sfondo bianco elegante */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999; /* Sta sopra a qualsiasi elemento del sito */
+  opacity: 1;
+  transition: opacity 1s ease, visibility 1s ease; /* Effetto sfumatura */
+}
+
+/* Dimensione e animazione del Logo nello Splash Screen */
+.splash-logo {
+  max-width: 250px;
+  width: 60%;
+  height: auto;
+  animation: pulseLogo 1.5s infinite alternate ease-in-out;
+}
+
+/* Leggero effetto "pulsante" mentre si carica la pagina */
+@keyframes pulseLogo {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  100% { transform: scale(1.05); opacity: 1; }
+}
+
+/* Classe usata da JS per far scomparire lo splash screen */
+#splash-screen.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
