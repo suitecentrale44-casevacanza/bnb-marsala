@@ -179,9 +179,10 @@ header p {
    5. STRUTTURE E IMMAGINI (SCROLL ORIZZONTALE)
    ========================================== */
 .grid-3-case {
-  display: flex;
+  display: grid;
   flex-wrap: nowrap; /* Fondamentale: impedisce alle carte di andare a capo */
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+   gap: 1.5rem;
   margin-top: 1rem;
   
   /* Attiva la barra di scorrimento orizzontale */
@@ -220,6 +221,7 @@ header p {
   flex-direction: column;
   box-shadow: 0 6px 15px var(--ombra-leggera);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
 }
 
 /* Adattamento per i telefoni con schermi molto stretti */
