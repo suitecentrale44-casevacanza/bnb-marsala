@@ -221,7 +221,6 @@ header p {
   flex-direction: column;
   box-shadow: 0 6px 15px var(--ombra-leggera);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  width: 100%;
 }
 
 /* Adattamento per i telefoni con schermi molto stretti */
