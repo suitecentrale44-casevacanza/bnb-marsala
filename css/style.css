@@ -362,3 +362,44 @@ footer p {
     height: 30px;
   }
 }
+
+/* ==========================================
+   STILI PER ICONE SOCIAL PICCOLE E COLORATE
+   ========================================== */
+.social-grid {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  margin-top: 15px !important;
+  align-items: center !important;
+}
+
+.social-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 6px 14px !important;
+  background-color: #f8fafc !important; /* Sfondo chiaro elegante */
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 20px !important;        /* Bordo arrotondato */
+  text-decoration: none !important;
+  color: #1e293b !important;             /* Testo scuro e ben leggibile */
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+.social-badge:hover {
+  background-color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Forza la dimensione piccolissima delle icone */
+.badge-icon {
+  width: 18px !important;
+  height: 18px !important;
+  max-width: 18px !important;
+  max-height: 18px !important;
+  flex-shrink: 0 !important;
+}
