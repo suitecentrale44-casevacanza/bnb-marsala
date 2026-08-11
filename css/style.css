@@ -515,3 +515,31 @@ footer p {
   visibility: hidden;
   pointer-events: none;
 }
+
+/* ==========================================
+   11. STILE BOTTONE E POPUP CALENDARIO
+   ========================================== */
+/* Stile del bottone allineato con WhatsApp e Airbnb */
+.btn-calendario {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--blu-mare, #0077b6);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px; /* Stesso raggio di Airbnb e WhatsApp */
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  font-family: inherit;
+  margin: 0; /* Rimuove il margine vecchio per allinearsi perfettamente */
+}
+
+.btn-calendario:hover {
+  background-color: #005f8f;
+  transform: translateY(-2px); /* Si solleva leggermente come gli altri */
+}
