@@ -232,17 +232,17 @@
             </a>
           </div>
           <!-- INIZIO CALENDARIO PROTETTO E RESPONSIVE -->
-<!-- Bottone che l'utente cliccherà -->
-<button onclick="apriCalendario()" class="btn-calendario">📅 Mostra Disponibilità</button>
+<!-- Bottone Suite Oceano -->
+<button onclick="apriCalendario('popup-oceano')" class="btn-calendario">📅 Mostra Disponibilità</button>
 
-<!-- Il Popup (Aggiunto style="display: none;" per forzare il blocco!) -->
-<div id="popup-calendario" class="modal-calendario" style="display: none;">
+<!-- Popup Suite Oceano (nascosto di base) -->
+<div id="popup-oceano" class="modal-calendario" style="display: none;">
   <div class="modal-contenuto">
     <!-- La X per chiudere -->
-    <span class="chiudi-popup" onclick="chiudiCalendario()">&times;</span>
-    <h3 style="margin-bottom: 15px; color: #0077b6; text-align: center;">Disponibilità Suite</h3>
+    <span class="chiudi-popup" onclick="chiudiCalendario('popup-oceano')">&times;</span>
+    <h3 style="margin-bottom: 15px; color: #0077b6; text-align: center;">Disponibilità Suite Oceano</h3>
     
-    <!-- Il tuo iframe sicuro e responsive -->
+    <!-- L'iframe di Google Calendar per la Suite Oceano -->
     <iframe src="https://calendar.google.com/calendar/embed?src=748b2c73f083c8ff32af24899404f64541430871f37ae98f30cda555123b2ea3%40group.calendar.google.com&ctz=Europe%2FRome" 
             style="border: 0" 
             width="100%" 
@@ -381,5 +381,26 @@
     </svg>
   </a>
 
+  <!-- INIZIO MOTORE JAVASCRIPT PER TUTTI I CALENDARI -->
+<script>
+  // Questa funzione apre un calendario specifico in base al nome che gli diamo
+  function apriCalendario(idDelPopup) {
+    document.getElementById(idDelPopup).style.display = "flex";
+  }
+
+  // Questa funzione lo chiude
+  function chiudiCalendario(idDelPopup) {
+    document.getElementById(idDelPopup).style.display = "none";
+  }
+
+  // Chiude il popup se l'utente clicca fuori dalla casella bianca (sicuro e comodo)
+  window.onclick = function(event) {
+    if (event.target.classList.contains('modal-calendario')) {
+      event.target.style.display = "none";
+    }
+  }
+</script>
+<!-- FINE MOTORE JAVASCRIPT -->
+  
 </body>
 </html>
