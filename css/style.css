@@ -182,18 +182,18 @@ header p {
   display: grid;
   gap: 1.5rem;
   margin-top: 1rem;
-  /* Partiamo con 1 colonna per i cellulari */
+  /* 1 colonna perfetta per i cellulari */
   grid-template-columns: 1fr;
 }
 
-/* Dai tablet in su, forziamo 2 colonne */
+/* Dai tablet in su: 2 colonne */
 @media (min-width: 768px) {
   .grid-3-case {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* Sui PC/Mac, FORZIAMO 3 colonne perfettamente uguali e affiancate! */
+/* Sui Computer/PC: FORZIAMO 3 colonne identiche, a prova di zoom! */
 @media (min-width: 1024px) {
   .grid-3-case {
     grid-template-columns: repeat(3, 1fr);
@@ -206,8 +206,8 @@ header p {
   border: 1px solid rgba(0, 119, 182, 0.08);
   padding: 1rem;
   display: flex;
-  flex-direction: column; /* Ci permette di spingere i bottoni in fondo */
-  height: 100%; /* Forza tutte le carte ad avere la stessa altezza, a prescindere dal testo! */
+  flex-direction: column;
+  height: 100%; /* Forza tutte le carte ad essere alte uguali! */
   box-shadow: 0 6px 15px var(--ombra-leggera);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -217,17 +217,7 @@ header p {
   box-shadow: 0 12px 25px rgba(0, 119, 182, 0.25);
 }
 
-.card-casa h3 {
-  margin-bottom: 0.4rem;
-  color: var(--blu-mare);
-}
-
-.card-casa p {
-  font-size: 0.9rem;
-  color: var(--blu-notte-testo);
-  opacity: 0.8;
-  margin-bottom: 1rem;
-}
+/* Lascia intatte le regole di .img-wrapper, .btn-foto ecc. che c'erano già! */
 
 .img-wrapper {
   position: relative;
