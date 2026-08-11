@@ -653,3 +653,68 @@ footer p {
   background-color: #1eb954;
   transform: translateY(-2px);
 }
+
+
+/* ==========================================
+   15. STILI OVERLAY SCHEDE OFFERTE
+   ========================================== */
+.card {
+  position: relative; /* Indispensabile per posizionare l'overlay interno */
+  overflow: hidden;
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--giallo-limone, #ffb703);
+  box-shadow: 0 4px 10px var(--ombra-leggera, rgba(0, 119, 182, 0.15));
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Sfondo scuro semitrasparente nascosto di base */
+.card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85); /* Sfondo nero opaco al 85% */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  padding: 1rem;
+  z-index: 2;
+}
+
+/* Attivazione dello sfondo nero al passaggio del mouse */
+.card:hover .card-overlay {
+  opacity: 1;
+}
+
+/* Bottone WhatsApp personalizzato all'interno delle schede */
+.btn-wa-card {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #25d366;
+  color: #ffffff !important;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.7rem 1.2rem;
+  border-radius: 6px;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-wa-card:hover {
+  background-color: #1eb954;
+  transform: scale(1.05);
+}
+
+.wa-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
