@@ -175,16 +175,42 @@ header p {
 }
 
 /* ==========================================
-   5. STRUTTURE E IMMAGINI CON HOVER
+   5. STRUTTURE E IMMAGINI (SCROLL ORIZZONTALE)
    ========================================== */
 .grid-3-case {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  display: flex;
+  flex-wrap: nowrap; /* Fondamentale: impedisce alle carte di andare a capo */
   gap: 1.5rem;
   margin-top: 1rem;
+  
+  /* Attiva la barra di scorrimento orizzontale */
+  overflow-x: auto; 
+  padding-bottom: 1.5rem; /* Lascia spazio per non far sovrapporre la barra alle carte */
+  
+  /* Effetto "calamita" fluido, perfetto per i telefoni */
+  scroll-snap-type: x mandatory; 
+  -webkit-overflow-scrolling: touch; /* Rende lo scroll fluidissimo su iPhone e iPad */
+}
+
+/* 🎨 BONUS: Personalizziamo la barra di scorrimento per renderla "Siciliana" */
+.grid-3-case::-webkit-scrollbar {
+  height: 8px; /* Altezza della barra */
+}
+.grid-3-case::-webkit-scrollbar-track {
+  background: var(--bianco-salina); /* Colore del binario */
+  border-radius: 10px;
+}
+.grid-3-case::-webkit-scrollbar-thumb {
+  background: var(--giallo-limone); /* Colore della barra vera e propria */
+  border-radius: 10px;
 }
 
 .card-casa {
+  /* La carta occupa una larghezza fissa. Se lo schermo è piccolo, si attiva lo scroll */
+  flex: 0 0 320px; 
+  scroll-snap-align: start; /* Allinea perfettamente la carta a sinistra quando l'utente smette di scorrere */
+  
+  /* Stili estetici già presenti e ottimizzati */
   background: white;
   border-radius: 12px;
   border: 1px solid rgba(0, 119, 182, 0.05);
@@ -193,6 +219,14 @@ header p {
   flex-direction: column;
   box-shadow: 0 6px 15px var(--ombra-leggera);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Adattamento per i telefoni con schermi molto stretti */
+@media (max-width: 400px) {
+  .card-casa {
+    /* Occupa l'85% dello schermo, lasciando intravedere la carta successiva per far capire che si può scorrere */
+    flex: 0 0 85%; 
+  }
 }
 
 .card-casa:hover {
