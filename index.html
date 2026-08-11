@@ -12,19 +12,73 @@
   <link rel="stylesheet" href="css/style.css">
   <script src="script.js" defer></script>
 
-  <!-- Tag Open Graph per Anteprime WhatsApp e Social -->
+  <!-- Tag Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Suite Centrale 44 - Case Vacanza a Marsala">
   <meta property="og:description" content="La tua casa lontano da casa. Relax, comfort e accoglienza nel cuore di Marsala.">
   <meta property="og:image" content="image/Logo_Suite.jpg">
-  <meta property="og:site_name" content="Suite Centrale 44">
+
+  <!-- Stili Splash Screen Forzati Inline -->
+  <style>
+    #splash-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999999;
+      opacity: 1;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    .splash-logo {
+      width: 220px !important;       /* Dimensione controllata del logo */
+      max-width: 70vw !important;
+      height: auto !important;
+      border-radius: 50%;
+      animation: pulseLogo 1.2s infinite alternate ease-in-out;
+    }
+
+    @keyframes pulseLogo {
+      0% { transform: scale(0.95); opacity: 0.85; }
+      100% { transform: scale(1.05); opacity: 1; }
+    }
+
+    #splash-screen.fade-out {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+  </style>
 </head>
 <body>
 
-<!-- Splash Screen / Schermata di benvenuto -->
-<div id="splash-screen">
-  <img src="image/Logo_Suite.jpg" alt="Suite Centrale 44 Logo" class="splash-logo">
-</div>  
+  <!-- Splash Screen con Script per lo Scomparimento Automatico -->
+  <div id="splash-screen">
+    <img src="image/Logo_Suite.jpg" alt="Suite Centrale 44 Logo" class="splash-logo">
+  </div>
+
+  <script>
+    // Fai scomparire lo splash screen non appena la pagina carica (o al massimo dopo 1.5 secondi)
+    function nascondiSplash() {
+      const splash = document.getElementById('splash-screen');
+      if (splash && !splash.classList.contains('fade-out')) {
+        splash.classList.add('fade-out');
+      }
+    }
+
+    // Quando la pagina ha finito di caricare
+    window.addEventListener('load', function() {
+      setTimeout(nascondiSplash, 800); // Rimane visibile 0.8 secondi prima di sfumare
+    });
+
+    // Riserva di sicurezza: se il caricamento si blocca, lo nasconde comunque dopo 1.5s
+    setTimeout(nascondiSplash, 1500);
+  </script>
 
   <!-- Menu di Navigazione Fisso con Logo -->
   <nav class="navbar">
