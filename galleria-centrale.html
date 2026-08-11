@@ -11,33 +11,33 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background-color: #f4f6f8; color: #333; padding: 2rem 1rem; }
-    .container { max-width: 900px; margin: 0 auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    h1 { color: #0f172a; margin-bottom: 0.5rem; }
-    p { color: #64748b; margin-bottom: 1.5rem; }
-    .btn-torna { display: inline-block; background-color: #1e293b; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-bottom: 1.5rem; }
+    .container { max-width: 900px; margin: 0 auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 119, 182, 0.15); }
+    h1 { color: #0077b6; margin-bottom: 0.5rem; }
+    p { color: #1d3557; margin-bottom: 1.5rem; }
+    .btn-torna { display: inline-block; background-color: #1d3557; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-bottom: 1.5rem; transition: background 0.2s; }
+    .btn-torna:hover { background-color: #0077b6; }
     
     /* Griglia delle immagini */
-    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem; }
     .gallery-grid img { 
       width: 100%; 
       height: 200px; 
       object-fit: cover; 
       border-radius: 6px; 
       cursor: pointer; 
-      transition: transform 0.2s ease, box-shadow 0.2s ease; 
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      background-color: #e2e8f0; /* Mostra un grigino elegante mentre la foto carica */
     }
     .gallery-grid img:hover { 
-      transform: scale(1.02); 
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
+      transform: scale(1.03); 
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2); 
     }
     
-    .box-info { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 1rem; border-radius: 6px; color: #334155; margin-bottom: 1rem; font-size: 0.95rem; }
-
     /* Finestra di ingrandimento (Modal) */
     .modal {
       display: none;
       position: fixed;
-      z-index: 1000;
+      z-index: 10000;
       top: 0;
       left: 0;
       width: 100%;
@@ -47,7 +47,7 @@
       justify-content: center;
     }
     .modal-img {
-      max-width: 85%;
+      max-width: 90%;
       max-height: 85vh;
       border-radius: 8px;
       object-fit: contain;
@@ -60,11 +60,14 @@
       top: 20px;
       right: 25px;
       color: #ffffff;
-      font-size: 35px;
+      font-size: 40px;
       font-weight: bold;
       cursor: pointer;
       z-index: 1001;
+      transition: color 0.2s;
     }
+    .modal-close:hover { color: #ffb703; }
+    
     .modal-nav {
       position: absolute;
       top: 50%;
@@ -73,18 +76,22 @@
       color: white;
       border: none;
       font-size: 30px;
-      padding: 12px 18px;
+      padding: 12px 20px;
       cursor: pointer;
       border-radius: 50%;
       transition: background 0.2s ease;
       z-index: 1001;
       user-select: none;
     }
-    .modal-nav:hover {
-      background: rgba(255, 255, 255, 0.5);
-    }
+    .modal-nav:hover { background: rgba(255, 255, 255, 0.5); }
     .modal-prev { left: 20px; }
     .modal-next { right: 20px; }
+    
+    @media (max-width: 600px) {
+      .modal-nav { padding: 8px 15px; font-size: 24px; }
+      .modal-prev { left: 5px; }
+      .modal-next { right: 5px; }
+    }
   </style>
 </head>
 <body>
@@ -94,7 +101,6 @@
     <h1>Galleria Foto - Suite Centrale</h1>
     <p>Sfoglia le immagini della nostra struttura nel centro storico di Marsala. Clicca su una foto per ingrandirla e usa le frecce per scorrere.</p>
 
-    <div id="stato" class="box-info">🔄 Ricerca delle foto in corso...</div>
     <div class="gallery-grid" id="galleria-foto"></div>
   </div>
 
@@ -106,98 +112,75 @@
     <button class="modal-nav modal-next" onclick="cambiaFoto(1)">❯</button>
   </div>
 
+  <!-- IL NUOVO MOTORE SUPER-VELOCE -->
   <script>
+    // ==========================================
+    // 1. IMPOSTAZIONI: Modifica solo questi due valori!
+    // ==========================================
     const cartella = "image/suite-centrale/";
+    const estensione = "jpg"; // Assicurati che le foto finiscano tutte in .jpg (minuscolo)
+    
+    // Scrivi qui quante foto hai in totale per questa casa!
+    const totaleFoto = 15; 
+    
+    // ==========================================
+    // 2. MOTORE DI CARICAMENTO
+    // ==========================================
     const contenitore = document.getElementById('galleria-foto');
-    const boxStato = document.getElementById('stato');
-    
-    const estensioni = ["jpeg", "jpg", "JPEG", "JPG", "png"];
-    
-    // Elenco per salvare tutte le foto valide trovate
     const listaFoto = [];
     let fotoAttualeIndex = 0;
 
-    function caricaFoto(numero) {
-      function provaEstensione(index) {
-        if (index >= estensioni.length) {
-          if (listaFoto.length === 0) {
-            boxStato.style.background = "#fee2e2";
-            boxStato.style.borderColor = "#ef4444";
-            boxStato.style.color = "#991b1b";
-            boxStato.innerHTML = `⚠️ <strong>Nessuna immagine trovata in <code>${cartella}</code></strong>`;
-          } else {
-            boxStato.style.display = "none";
-          }
-          return;
-        }
+    function caricaTutteLeFoto() {
+      // Inserisce le foto istantaneamente nella griglia, senza "indovinare"
+      for (let i = 1; i <= totaleFoto; i++) {
+        const percorso = `${cartella}${i}.${estensione}`;
+        listaFoto.push(percorso);
 
-        const ext = estensioni[index];
-        const percorso = `${cartella}${numero}.${ext}`;
-        const img = new Image();
-
-        img.onload = function() {
-          // Salva l'immagine nell'elenco
-          const nuovoIndice = listaFoto.length;
-          listaFoto.push(percorso);
-
-          boxStato.innerHTML = `📸 Caricamento in corso... trovate ${listaFoto.length} foto.`;
-          
-          const elementoImg = document.createElement('img');
-          elementoImg.src = percorso;
-          elementoImg.alt = `Suite Centrale - Foto ${numero}`;
-          
-          // Quando si clicca, apre la foto indicando la sua posizione
-          elementoImg.onclick = function() {
-            apriModal(nuovoIndice);
-          };
-
-          contenitore.appendChild(elementoImg);
-
-          // Cerca la foto successiva
-          caricaFoto(numero + 1);
+        const elementoImg = document.createElement('img');
+        elementoImg.src = percorso;
+        elementoImg.alt = `Suite Centrale - Foto ${i}`;
+        
+        // LA VERA MAGIA È QUI: "lazy" ordina al telefono di non sprecare 
+        // internet per le foto in fondo alla pagina finché non ci si arriva!
+        elementoImg.loading = "lazy"; 
+        
+        // Imposta l'azione per il clic
+        const indice = i - 1; // Gli array partono da 0
+        elementoImg.onclick = function() {
+          apriModal(indice);
         };
 
-        img.onerror = function() {
-          provaEstensione(index + 1);
-        };
-
-        img.src = percorso;
+        contenitore.appendChild(elementoImg);
       }
-
-      provaEstensione(0);
     }
 
-    // Apre la finestra prendendo l'indice della foto
+    // ==========================================
+    // 3. GESTIONE DELLA FINESTRA DI INGRANDIMENTO
+    // ==========================================
     function apriModal(index) {
       fotoAttualeIndex = index;
-      const modal = document.getElementById('foto-modal');
-      const imgIngrandita = document.getElementById('img-ingrandita');
-      imgIngrandita.src = listaFoto[fotoAttualeIndex];
-      modal.style.display = 'flex';
+      document.getElementById('img-ingrandita').src = listaFoto[fotoAttualeIndex];
+      document.getElementById('foto-modal').style.display = 'flex';
     }
 
-    // Cambia la foto ( -1 per andare a sinistra, +1 per andare a destra )
     function cambiaFoto(direzione) {
       fotoAttualeIndex += direzione;
 
-      // Torna all'ultima foto se si va prima della prima
+      // Crea l'effetto "circolare": se vai oltre l'ultima, torni alla prima
       if (fotoAttualeIndex < 0) {
         fotoAttualeIndex = listaFoto.length - 1;
-      }
-      // Torna alla prima foto se si supera l'ultima
-      if (fotoAttualeIndex >= listaFoto.length) {
+      } else if (fotoAttualeIndex >= listaFoto.length) {
         fotoAttualeIndex = 0;
       }
 
       document.getElementById('img-ingrandita').src = listaFoto[fotoAttualeIndex];
     }
 
-    // Chiude la finestra
     function chiudiModal() {
       document.getElementById('foto-modal').style.display = 'none';
     }
 
-    // Permette di usare le frecce della tastiera e il tasto ESC
+    // Navigazione con la tastiera
     document.addEventListener('keydown', function(event) {
       const modal = document.getElementById('foto-modal');
       if (modal.style.display === 'flex') {
@@ -207,8 +190,8 @@
       }
     });
 
-    // Avvia il caricamento delle foto
-    caricaFoto(0);
+    // Avvia la costruzione della galleria all'apertura
+    caricaTutteLeFoto();
   </script>
 
 </body>
