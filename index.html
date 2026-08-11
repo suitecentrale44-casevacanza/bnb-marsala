@@ -443,3 +443,35 @@
       <path d="M16 2a13 13 0 0 0-11.2 19.6L3 29l7.6-1.7A13 13 0 1 0 16 2zm0 23.6a10.5 10.5 0 0 1-5.4-1.5l-.4-.2-4 1 1-3.9-.2-.4A10.6 10.6 0 1 1 16 25.6zm5.8-7.9c-.3-.2-1.8-.9-2.1-1s-.5-.2-.7.2-.8 1-.9 1.2-.3.3-.6.1a8 8 0 0 1-2.4-1.5 8.9 8.9 0 0 1-1.7-2.1c-.2-.3 0-.5.1-.6l.4-.5c.2-.2.2-.4.3-.6s0-.4-.1-.5l-.9-2.2c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.2 1.2-1.2 2.8 1.3 3.3 1.4 3.5 2.5 3.9 6.1 5.4c.9.4 1.5.6 2 .8a4.9 4.9 0 0 0 2.2.1c.7-.1 2.1-.9 2.4-1.7s.3-1.5.2-1.7-.5-.2-.8-.4z"/>
     </svg>
   </a>
+
+<script>
+  // Funzione sicura per generare il link di WhatsApp
+  function inviaRichiestaWA(nomeSuite, idCheckin, idCheckout) {
+    // 1. Prende i valori dalle caselline
+    const checkin = document.getElementById(idCheckin).value;
+    const checkout = document.getElementById(idCheckout).value;
+
+    // 2. Controlla che l'utente non si sia dimenticato di compilare
+    if (!checkin || !checkout) {
+      alert("Per favore, seleziona sia la data di Check-in che quella di Check-out prima di inviare!");
+      return;
+    }
+
+    // 3. Controlla che il checkout non sia prima del checkin
+    if (new Date(checkout) <= new Date(checkin)) {
+      alert("La data di Check-out deve essere successiva a quella di Check-in!");
+      return;
+    }
+
+    // 4. Converte le date da (Anno-Mese-Giorno) a (Giorno/Mese/Anno) per l'Italia
+    const dataInFormattata = new Date(checkin).toLocaleDateString('it-IT');
+    const dataOutFormattata = new Date(checkout).toLocaleDateString('it-IT');
+
+    // 5. Costruisce il messaggio perfetto
+    const messaggio = `Ciao! Ho visitato il vostro sito e vorrei informazioni sulla disponibilità per la ${nomeSuite} dal ${dataInFormattata} al ${dataOutFormattata}.`;
+    
+    // 6. Crea il link WhatsApp sicuro e lo apre (Codificando gli spazi nel testo)
+    const urlWhatsApp = `https://wa.me/393477640421?text=${encodeURIComponent(messaggio)}`;
+    window.open(urlWhatsApp, '_blank');
+  }
+</script>
