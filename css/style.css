@@ -534,7 +534,7 @@ footer p {
 }
 
 /* ==========================================
-   STILE WIDGET FLUTTUANTE WHATSAPP
+   13. STILE WIDGET FLUTTUANTE WHATSAPP
    ========================================== */
 .whatsapp-float {
   position: fixed !important;
@@ -581,4 +581,75 @@ footer p {
     min-width: 28px !important;
     min-height: 28px !important;
   }
+}
+/* ==========================================
+   14. STILE RICHIESTA DATE WHATSAPP
+   ========================================== */
+.box-richiesta-wa {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+  text-align: center;
+}
+
+.titolo-richiesta {
+  font-size: 0.9rem;
+  color: var(--blu-notte-testo);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.selettori-date {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  flex-wrap: wrap; /* Per i cellulari molto stretti */
+}
+
+.campo-data {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.campo-data label {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.campo-data input {
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-family: inherit;
+  color: var(--blu-notte-testo);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.campo-data input:focus {
+  border-color: #25d366;
+}
+
+.btn-invia-wa {
+  background-color: #25d366;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  width: 100%;
+}
+
+.btn-invia-wa:hover {
+  background-color: #1eb954;
+  transform: translateY(-2px);
 }
