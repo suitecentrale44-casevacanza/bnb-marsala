@@ -232,16 +232,24 @@
             </a>
           </div>
           <!-- INIZIO CALENDARIO PROTETTO E RESPONSIVE -->
-<div class="calendario-box">
-  <h4 class="titolo-calendario">📅 Verifica Disponibilità</h4>
-  
-  <div class="iframe-container">
+<!-- Bottone che l'utente cliccherà -->
+<button onclick="apriCalendario()" class="btn-calendario">📅 Mostra Disponibilità</button>
+
+<!-- Il Popup (inizialmente nascosto) -->
+<div id="popup-calendario" class="modal-calendario">
+  <div class="modal-contenuto">
+    <!-- La X per chiudere -->
+    <span class="chiudi-popup" onclick="chiudiCalendario()">&times;</span>
+    <h3 style="margin-bottom: 15px; color: #0077b6; text-align: center;">Disponibilità Suite</h3>
+    
+    <!-- Ecco il tuo iframe, ma con larghezza 100% per adattarsi ai telefoni! -->
     <iframe src="https://calendar.google.com/calendar/embed?src=748b2c73f083c8ff32af24899404f64541430871f37ae98f30cda555123b2ea3%40group.calendar.google.com&ctz=Europe%2FRome" 
-      style="border: 0" 
-      width="800" 
-      height="600" 
-      frameborder="0" 
-      scrolling="no">
+            style="border: 0" 
+            width="100%" 
+            height="350" 
+            frameborder="0" 
+            scrolling="no"
+            loading="lazy">
     </iframe>
   </div>
 </div>
