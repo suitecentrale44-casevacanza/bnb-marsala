@@ -32,15 +32,16 @@
       align-items: center;
       z-index: 999999;
       opacity: 1;
+      visibility: visible;
       transition: opacity 0.8s ease, visibility 0.8s ease;
     }
 
     .splash-logo {
-      width: 220px !important;       /* Dimensione controllata del logo */
+      width: 220px !important;
       max-width: 70vw !important;
       height: auto !important;
       border-radius: 50%;
-      animation: pulseLogo 1.2s infinite alternate ease-in-out;
+      animation: pulseLogo 1s infinite alternate ease-in-out;
     }
 
     @keyframes pulseLogo {
@@ -48,6 +49,7 @@
       100% { transform: scale(1.05); opacity: 1; }
     }
 
+    /* Classe per sfumare e rimuovere completamente lo schermo */
     #splash-screen.fade-out {
       opacity: 0 !important;
       visibility: hidden !important;
@@ -57,29 +59,28 @@
 </head>
 <body>
 
-  <!-- Splash Screen con Script per lo Scomparimento Automatico -->
+  <!-- Splash Screen / Schermata di Benvenuto -->
   <div id="splash-screen">
     <img src="image/Logo_Suite.jpg" alt="Suite Centrale 44 Logo" class="splash-logo">
   </div>
 
   <script>
-    // Fai scomparire lo splash screen non appena la pagina carica (o al massimo dopo 1.5 secondi)
+    // Funzione per far scomparire lo Splash Screen
     function nascondiSplash() {
       const splash = document.getElementById('splash-screen');
       if (splash && !splash.classList.contains('fade-out')) {
         splash.classList.add('fade-out');
+        
+        // Rimuove completamente l'elemento dal flusso dopo la fine della sfumatura (0.8s)
+        setTimeout(() => {
+          splash.style.display = 'none';
+        }, 800);
       }
     }
 
-    // Quando la pagina ha finito di caricare
-    window.addEventListener('load', function() {
-      setTimeout(nascondiSplash, 800); // Rimane visibile 0.8 secondi prima di sfumare
-    });
-
-    // Riserva di sicurezza: se il caricamento si blocca, lo nasconde comunque dopo 1.5s
-    setTimeout(nascondiSplash, 1500);
+    // Attende 2 secondi (2000 ms) prima di far partire la sfumatura
+    setTimeout(nascondiSplash, 2000);
   </script>
-
   <!-- Menu di Navigazione Fisso con Logo -->
   <nav class="navbar">
     <div class="navbar-container">
