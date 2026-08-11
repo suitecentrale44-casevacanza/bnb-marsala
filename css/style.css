@@ -217,8 +217,6 @@ header p {
   box-shadow: 0 12px 25px rgba(0, 119, 182, 0.25);
 }
 
-/* Lascia intatte le regole di .img-wrapper, .btn-foto ecc. che c'erano già! */
-
 .img-wrapper {
   position: relative;
   width: 100%;
@@ -466,29 +464,71 @@ footer p {
 }
 
 /* ==========================================
-   11. STILE BOTTONE E POPUP CALENDARIO
+   11. STILE POPUP (LA FINESTRA A SCOMPARSA)
    ========================================== */
-/* Stile del bottone allineato con WhatsApp e Airbnb */
-.btn-calendario {
-  display: inline-flex;
-  align-items: center;
+.modal-calendario {
+  display: none; /* Di base è nascosto! */
+  position: fixed;
+  z-index: 100000; /* Lo mettiamo sopra a tutto il resto del sito */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Effetto vetro scuro */
   justify-content: center;
-  gap: 8px;
-  background-color: var(--blu-mare, #0077b6);
-  color: #ffffff;
-  font-size: 0.9rem;
-  font-weight: 600;
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 8px; /* Stesso raggio di Airbnb e WhatsApp */
-  cursor: pointer;
-  text-decoration: none;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  font-family: inherit;
-  margin: 0; /* Rimuove il margine vecchio per allinearsi perfettamente */
+  align-items: center;
 }
 
-.btn-calendario:hover {
-  background-color: #005f8f;
-  transform: translateY(-2px); /* Si solleva leggermente come gli altri */
+.modal-contenuto {
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%; 
+  max-width: 600px; 
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  animation: comparsa 0.3s ease-out;
+}
+
+@keyframes comparsa {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.chiudi-popup {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: #94a3b8;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.chiudi-popup:hover {
+  color: #0f172a;
+}
+
+/* ==========================================
+   12. TRUCCO MAGICO: NASCONDI BOTTONE GOOGLE
+   ========================================== */
+.iframe-container {
+  position: relative;
+  width: 100%;
+  height: 300px; /* Fissiamo l'altezza visibile */
+  overflow: hidden; /* Tutto ciò che esce da 300px viene tagliato (ghigliottinato!) */
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+  border: 1px solid #e2e8f0;
+  margin-top: 15px; /* Spazio dal titolo del popup */
+}
+
+.iframe-container iframe {
+  display: block;
+  width: 100%;
+  height: 360px !important; /* Facciamo il calendario più alto del suo contenitore */
+  margin-bottom: -60px; /* Tiriamo il calendario in su, nascondendo la barra in basso! */
+  border: none;
 }
