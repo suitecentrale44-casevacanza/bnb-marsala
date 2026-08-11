@@ -7,8 +7,53 @@
   
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    
+    /* Scroll fluido per la navigazione interna */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 70px; /* Compensazione per l'altezza del menu fisso */
+    }
+
     body { color: #333; line-height: 1.6; background-color: #f4f6f8; }
     
+    /* Menu di Navigazione Fisso */
+    .navbar {
+      position: sticky;
+      top: 0;
+      background-color: #0f172a;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 999;
+    }
+
+    .navbar-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0.8rem 1rem;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .nav-links a {
+      color: #f8fafc;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: #38bdf8;
+    }
+
     header { background: #1e293b; color: #fff; text-align: center; padding: 3rem 1rem; }
     header h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
     
@@ -138,6 +183,12 @@
     }
 
     @media (max-width: 480px) {
+      .nav-links {
+        gap: 0.8rem;
+      }
+      .nav-links a {
+        font-size: 0.85rem;
+      }
       .whatsapp-float {
         width: 52px;
         height: 52px;
@@ -170,6 +221,19 @@
 </head>
 <body>
 
+  <!-- Menu di Navigazione Fisso -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <ul class="nav-links">
+        <li><a href="#strutture">Strutture</a></li>
+        <li><a href="#offerte">Offerte</a></li>
+        <li><a href="#servizi">Servizi</a></li>
+        <li><a href="#posizione">Posizione</a></li>
+        <li><a href="#contatti">Contatti</a></li>
+      </ul>
+    </div>
+  </nav>
+
   <header>
     <h1>Benvenuti da Suite Centrale 44</h1>
     <p>La tua casa lontano da casa. Relax, comfort e accoglienza nel cuore della città.</p>
@@ -179,7 +243,8 @@
 
   <main class="container">
     
-    <section class="section">
+    <!-- Sezione Strutture -->
+    <section id="strutture" class="section">
       <h2>🏠 Le Nostre Strutture</h2>
       <div class="grid-3-case">
         
@@ -199,21 +264,21 @@
           </div>
         </article>
 
-      <!-- CARD CORALLO -->
-      <article class="card-casa">
-        <div class="img-wrapper">
-          <img src="image/Suite Corallo Copertina.jpg" alt="Suite Corallo">
-          <div class="img-overlay">
-            <a href="galleria-corallo.html" class="btn-foto">📸 Guarda tutte le foto</a>
+        <!-- CARD CORALLO -->
+        <article class="card-casa">
+          <div class="img-wrapper">
+            <img src="image/Suite Corallo Copertina.jpg" alt="Suite Corallo">
+            <div class="img-overlay">
+              <a href="galleria-corallo.html" class="btn-foto">📸 Guarda tutte le foto</a>
+            </div>
           </div>
-        </div>
-        <h3>Suite Corallo</h3>
-        <p>Centro Storico • Da 1 a 3 Posti Letto • Wi-Fi & AC</p>
-        <div class="pulsanti-prenotazione">
-          <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20su%20Suite%20Corallo" class="btn-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-          <airbnb-button url="https://www.airbnb.it/rooms/657792096938010342"></airbnb-button>
-        </div>
-      </article>
+          <h3>Suite Corallo</h3>
+          <p>Centro Storico • Da 1 a 3 Posti Letto • Wi-Fi & AC</p>
+          <div class="pulsanti-prenotazione">
+            <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20su%20Suite%20Corallo" class="btn-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+            <airbnb-button url="https://www.airbnb.it/rooms/657792096938010342"></airbnb-button>
+          </div>
+        </article>
 
         <!-- CARD OCEANO -->
         <article class="card-casa">
@@ -234,7 +299,8 @@
       </div>
     </section>
 
-    <section class="section">
+    <!-- Sezione Offerte -->
+    <section id="offerte" class="section">
       <h2>🎁 Offerte e Promozioni</h2>
       <div class="grid">
         <div class="card">
@@ -248,7 +314,8 @@
       </div>
     </section>
     
-    <section class="section">
+    <!-- Sezione Servizi -->
+    <section id="servizi" class="section">
       <h2>⭐ Servizi Inclusi</h2>
       <div class="grid">
         <ul>
@@ -262,13 +329,16 @@
       </div>
     </section>
 
-    <section class="section">
+    <!-- Sezione Posizione e Contatti -->
+    <section id="posizione" class="section">
       <h2>📍 Posizione e Contatti</h2>
-      <p><strong>Indirizzo:</strong> Via Giuseppe Garraffa 44, Marsala</p>
-      <p><strong>Telefono / WhatsApp:</strong> +39 347 764 0421 Host Paola</p>
-      <p><strong>Email:</strong> suitecentrale44@gmail.com</p>
-      <p><strong>CIR:</strong> 19081011C218331</p>
-      <p><strong>CIN:</strong> IT081011C2EFH98HIF</p>
+      <div id="contatti">
+        <p><strong>Indirizzo:</strong> Via Giuseppe Garraffa 44, Marsala</p>
+        <p><strong>Telefono / WhatsApp:</strong> +39 347 764 0421 Host Paola</p>
+        <p><strong>Email:</strong> suitecentrale44@gmail.com</p>
+        <p><strong>CIR:</strong> 19081011C218331</p>
+        <p><strong>CIN:</strong> IT081011C2EFH98HIF</p>
+      </div>
 
       <!-- Mappa Google Interattiva -->
       <div class="map-container">
