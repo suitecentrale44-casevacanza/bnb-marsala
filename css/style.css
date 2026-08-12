@@ -721,7 +721,7 @@ footer p {
    ========================================== */
 .grid-recensioni {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1.2rem;
   margin-top: 1rem;
 }
@@ -744,19 +744,19 @@ footer p {
 }
 
 .stelle {
-  color: #ffb703; /* Colore giallo per le stelle */
+  color: #ffb703;
   font-size: 1.1rem;
   margin-bottom: 0.5rem;
 }
 
 .card-recensione p {
   font-size: 0.9rem;
-  color: #1d3557;
+  color: var(--blu-notte-testo, #1d3557);
   line-height: 1.5;
   font-style: italic;
 }
 
-/* Badge colorati per le piattaforme */
+/* Badge delle fonti */
 .badge-fonte {
   font-size: 0.75rem;
   font-weight: bold;
@@ -768,3 +768,33 @@ footer p {
 .badge-fonte.google { background-color: #4285f4; }
 .badge-fonte.airbnb { background-color: #ff385c; }
 .badge-fonte.booking { background-color: #003580; }
+
+/* Barra dei link ufficiali in basso */
+.link-recensioni-ufficiali {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.btn-link-fonte {
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: white !important;
+  font-weight: bold;
+  font-size: 0.8rem;
+  transition: opacity 0.2s;
+}
+
+.btn-link-fonte:hover { opacity: 0.85; }
+.g-link { background-color: #4285f4; }
+.a-link { background-color: #ff385c; }
+.b-link { background-color: #003580; }
