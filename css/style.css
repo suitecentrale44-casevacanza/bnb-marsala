@@ -128,13 +128,13 @@ h3 {
   display: inline-block;
 }
 
-/* Pulsante Rettangolare: Solo Bandiera, Senza Sfondo Bianco */
+/* Pulsante Rettangolare */
 .lang-btn-rect {
   width: 44px;
   height: 30px;
   border-radius: 6px;
   border: 1px solid #cbd5e1;
-  background: transparent !important; /* Elimina lo sfondo bianco */
+  background: transparent !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -150,7 +150,6 @@ h3 {
   transform: scale(1.05);
 }
 
-/* Ingrandisce la bandiera e nasconde eventuali testi residui */
 .lang-btn-rect .flag-icon {
   font-size: 1.8rem;
   line-height: 1;
@@ -161,7 +160,6 @@ h3 {
   user-select: none;
 }
 
-/* Menu a tendina che compare al click */
 .lang-dropdown {
   display: none;
   position: absolute;
@@ -196,7 +194,7 @@ h3 {
 .lang-dropdown button:hover {
   background-color: #f1f5f9;
 }
-/* Rimuove sovrapposizioni visive di Google Translate */
+
 .goog-te-banner-frame,
 .skiptranslate,
 #goog-gt-tt {
@@ -261,24 +259,13 @@ header p {
   box-shadow: 0 8px 20px rgba(0, 119, 182, 0.2);
 }
 
-/* ==========================================
-   FIX OVERLAY E PULSANTI SEZIONE OFFERTE
-   ========================================== */
-
-/* 1. Rende la card il riferimento per l'overlay posizionato al suo interno */
-.card {
-  position: relative;
-  overflow: hidden;
-}
-
-/* 2. Struttura dell'overlay nascosto di default */
 .card .img-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(29, 53, 87, 0.9); /* Sfondo blu notte semitrasparente */
+  background-color: rgba(29, 53, 87, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -288,12 +275,10 @@ header p {
   padding: 1rem;
 }
 
-/* 3. Attiva l'overlay quando l'utente passa il mouse sopra la scheda offerta */
 .card:hover .img-overlay {
   opacity: 1;
 }
 
-/* 4. Stile del pulsante all'interno dell'overlay delle offerte */
 .btn-wa-card {
   display: inline-flex;
   align-items: center;
@@ -321,6 +306,7 @@ header p {
   fill: #ffffff;
   flex-shrink: 0;
 }
+
 /* ==========================================
    5. STRUTTURE (CARD CASE VACANZA)
    ========================================== */
@@ -604,31 +590,33 @@ footer p {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: var(--bianco-salina);
+  background-color: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 99999;
+  z-index: 999999;
   opacity: 1;
-  transition: opacity 1s ease, visibility 1s ease;
+  visibility: visible;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
 }
 
 .splash-logo {
-  max-width: 250px;
-  width: 60%;
-  height: auto;
-  animation: pulseLogo 1.5s infinite alternate ease-in-out;
+  width: 220px !important;
+  max-width: 70vw !important;
+  height: auto !important;
+  border-radius: 50%;
+  animation: pulseLogo 1s infinite alternate ease-in-out;
 }
 
 @keyframes pulseLogo {
-  0% { transform: scale(0.95); opacity: 0.8; }
+  0% { transform: scale(0.95); opacity: 0.85; }
   100% { transform: scale(1.05); opacity: 1; }
 }
 
 #splash-screen.fade-out {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 .modal-calendario {
