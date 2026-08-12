@@ -490,6 +490,13 @@ footer p {
 /* ==========================================
    8. ELEMENTI INTERATTIVI (SPLASH, MODAL)
    ========================================== */
+
+<script>
+  if (localStorage.getItem('salta_splash') === 'true') {
+    document.documentElement.classList.add('no-splash');
+  }
+</script>
+   
 #splash-screen {
   position: fixed;
   top: 0;
