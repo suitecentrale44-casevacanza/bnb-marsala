@@ -1,34 +1,39 @@
 /* ==========================================
-   0. TAVOLOZZA COLORI "SICILIA"
+   0. TAVOLOZZA COLORI E VARIABILI "SICILIA"
    ========================================== */
 :root {
   --blu-mare: #0077b6;
   --azzurro-cielo: #00b4d8;
   --giallo-limone: #ffb703;
+  --giallo-hover: #f7a000;
   --bianco-salina: #fdfbf7;
   --blu-notte-testo: #1d3557;
+  --grigio-bordo: #e2e8f0;
+  --grigio-testo-muto: #64748b;
   --ombra-leggera: rgba(0, 119, 182, 0.15);
+  --ombra-intensa: rgba(0, 119, 182, 0.25);
 }
 
 /* ==========================================
    1. RESET E STILI DI BASE
    ========================================== */
-* {
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: system-ui, -apple-system, sans-serif;
 }
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 70px; /* Compensazione per il menu fisso */
+  scroll-padding-top: 70px;
 }
 
 body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: var(--blu-notte-testo);
   line-height: 1.6;
   background-color: var(--bianco-salina);
+  top: 0px !important;
 }
 
 ul {
@@ -40,13 +45,13 @@ ul li {
 }
 
 .container {
-  max-width: 1300px; /* Prima era 1000px, ora è largo e spazioso! */
+  max-width: 1300px;
   margin: 2rem auto;
-  padding: 0 1rem; /* Questo margine salva i bordi sui cellulari */
+  padding: 0 1rem;
 }
 
 .section {
-  background: white;
+  background: #ffffff;
   padding: 1.5rem;
   border-radius: 8px;
   margin-bottom: 1.5rem;
@@ -56,7 +61,7 @@ ul li {
 h2 {
   color: var(--blu-mare);
   margin-bottom: 1rem;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: 2px solid var(--grigio-bordo);
   padding-bottom: 0.5rem;
 }
 
@@ -65,7 +70,7 @@ h3 {
 }
 
 /* ==========================================
-   2. NAVBAR (MENU FISSO)
+   2. NAVBAR E SELETTORE LINGUA
    ========================================== */
 .navbar {
   position: sticky;
@@ -76,9 +81,8 @@ h3 {
   z-index: 999;
 }
 
-/* Allarghiamo anche il menu in alto per farlo combaciare */
 .navbar-container {
-  max-width: 1300px; 
+  max-width: 1300px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -101,7 +105,6 @@ h3 {
 
 .nav-links {
   display: flex;
-  list-style: none;
   gap: 1.5rem;
   flex-wrap: wrap;
   align-items: center;
@@ -119,22 +122,12 @@ h3 {
   color: var(--blu-mare);
 }
 
-/* Allineamento contenitore navbar */
-.navbar-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-}
-
-/* Stile Selettore Lingua*/
-/* Contenitore selettore */
+/* Selettore Lingua */
 .lang-selector {
   position: relative;
   display: inline-block;
 }
 
-/* Pulsante Rettangolare ad alto riempimento (senza sfondo bianco e senza scritte) */
 .lang-btn-rect {
   width: 42px;
   height: 28px;
@@ -156,7 +149,6 @@ h3 {
   transform: scale(1.05);
 }
 
-/* Dimensione della bandiera per riempire interamente il rettangolo */
 .lang-btn-rect .flag-icon {
   font-size: 1.8rem;
   line-height: 1;
@@ -164,7 +156,6 @@ h3 {
   display: block;
 }
 
-/* Menu a tendina delle lingue */
 .lang-dropdown {
   display: none;
   position: absolute;
@@ -200,33 +191,19 @@ h3 {
   background-color: #f1f5f9;
 }
 
-/* Nasconde elementi nativi di Google Translate */
-.goog-te-banner-frame, 
+/* Rimuove sovrapposizioni visive di Google Translate */
+.goog-te-banner-frame,
 .skiptranslate,
-#goog-gt-tt { 
-  display: none !important; 
-}
-
-body { 
-  top: 0px !important; 
-}
-/* Rimuove la barra e i banner automatici di Google Translate */
-.goog-te-banner-frame, 
-.skiptranslate,
-#goog-gt-tt { 
-  display: none !important; 
-}
-
-body { 
-  top: 0px !important; 
+#goog-gt-tt {
+  display: none !important;
 }
 
 /* ==========================================
-   3. HEADER CON LOGO
+   3. HEADER
    ========================================== */
 header {
   background: linear-gradient(135deg, var(--blu-mare) 0%, var(--azzurro-cielo) 100%);
-  color: #fff;
+  color: #ffffff;
   text-align: center;
   padding: 3rem 1rem;
   border-bottom: 5px solid var(--giallo-limone);
@@ -255,7 +232,7 @@ header p {
 }
 
 /* ==========================================
-   4. GRIGLIE E SCHEDE (OFFERTE & SERVIZI)
+   4. SCHEDE E GRIGLIE GENERALI
    ========================================== */
 .grid {
   display: grid;
@@ -264,6 +241,8 @@ header p {
 }
 
 .card {
+  position: relative;
+  overflow: hidden;
   background: #ffffff;
   padding: 1.5rem;
   border-radius: 8px;
@@ -277,46 +256,52 @@ header p {
   box-shadow: 0 8px 20px rgba(0, 119, 182, 0.2);
 }
 
+/* Overlay per le offerte */
+.card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  padding: 1rem;
+  z-index: 2;
+}
+
+.card:hover .card-overlay {
+  opacity: 1;
+}
+
 /* ==========================================
-   5. STRUTTURE E IMMAGINI (GRIGLIA DEFINITIVA)
+   5. STRUTTURE (CARD CASE VACANZA)
    ========================================== */
 .grid-3-case {
   display: grid;
   gap: 1.5rem;
   margin-top: 1rem;
-  /* 1 colonna perfetta per i cellulari */
   grid-template-columns: 1fr;
 }
 
-/* Dai tablet in su: 2 colonne */
-@media (min-width: 768px) {
-  .grid-3-case {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Sui Computer/PC: FORZIAMO 3 colonne identiche, a prova di zoom! */
-@media (min-width: 1024px) {
-  .grid-3-case {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
 .card-casa {
-  background: white;
+  background: #ffffff;
   border-radius: 12px;
   border: 1px solid rgba(0, 119, 182, 0.08);
   padding: 1rem;
   display: flex;
   flex-direction: column;
-  height: 100%; /* Forza tutte le carte ad essere alte uguali! */
+  height: 100%;
   box-shadow: 0 6px 15px var(--ombra-leggera);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card-casa:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 25px rgba(0, 119, 182, 0.25);
+  box-shadow: 0 12px 25px var(--ombra-intensa);
 }
 
 .img-wrapper {
@@ -366,25 +351,25 @@ header p {
 }
 
 .btn-foto:hover {
-  background-color: #f7a000;
+  background-color: var(--giallo-hover);
 }
 
 /* ==========================================
-   6. PULSANTI (WHATSAPP, AIRBNB, BOOKING E CALENDARIO) - ALLINEAMENTO
+   6. PULSANTI E PULSANTIERA
    ========================================== */
 .pulsanti-prenotazione {
   display: flex;
-  flex-wrap: wrap; /* Permette di andare a capo se lo schermo è piccolo */
+  flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: auto; /* Spinge tutti i bottoni alla stessa altezza alla base della scheda */
-  justify-content: center; /* Centra i bottoni per uniformità visiva */
+  margin-top: auto;
+  justify-content: center;
 }
 
-/* Regole condivise per tutti i bottoni per eliminare ridondanze */
 .btn-wa, 
 .btn-airbnb-official, 
 .btn-booking-official, 
-.btn-calendario {
+.btn-calendario,
+.btn-wa-card {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -398,62 +383,153 @@ header p {
   border: none;
   cursor: pointer;
   transition: transform 0.2s ease, background-color 0.2s ease;
-  flex: 1 1 auto; /* Adatta i bottoni in modo fluido allo spazio disponibile */
+  flex: 1 1 auto;
 }
 
-/* WhatsApp */
-.btn-wa {
-  background-color: #25d366;
-}
-.btn-wa:hover {
-  background-color: #1eb954;
-  transform: translateY(-2px);
-}
+.btn-wa, .btn-wa-card { background-color: #25d366; }
+.btn-wa:hover, .btn-wa-card:hover { background-color: #1eb954; transform: translateY(-2px); }
 
-/* Airbnb */
-.btn-airbnb-official {
-  background-color: #ff385c;
-}
-.btn-airbnb-official:hover {
-  background-color: #e00b41;
-  transform: translateY(-2px);
-}
+.btn-airbnb-official { background-color: #ff385c; }
+.btn-airbnb-official:hover { background-color: #e00b41; transform: translateY(-2px); }
 
-/* Booking.com */
-.btn-booking-official {
-  background-color: #003580;
-}
-.btn-booking-official:hover {
-  background-color: #00224f;
-  transform: translateY(-2px);
-}
+.btn-booking-official { background-color: #003580; }
+.btn-booking-official:hover { background-color: #00224f; transform: translateY(-2px); }
 
-/* Calendario */
-.btn-calendario {
-  background-color: var(--blu-mare, #0077b6);
-}
-.btn-calendario:hover {
-  background-color: #005f8f;
-  transform: translateY(-2px);
-}
+.btn-calendario { background-color: var(--blu-mare); }
+.btn-calendario:hover { background-color: #005f8f; transform: translateY(-2px); }
 
-/* Icone SVG condivise */
-.airbnb-icon, 
-.booking-icon {
+.airbnb-icon, .booking-icon, .wa-icon {
   width: 16px;
   height: 16px;
   fill: #ffffff;
   flex-shrink: 0;
-}/* ==========================================
-   7. MAPPA E FOOTER
+}
+
+/* ==========================================
+   7. SEZIONE RECENSIONI E BADGE
    ========================================== */
+.grid-recensioni {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.2rem;
+  margin-top: 1rem;
+}
+
+.card-recensione {
+  background: #ffffff;
+  border: 1px solid var(--grigio-bordo);
+  border-radius: 10px;
+  padding: 1.2rem;
+  box-shadow: 0 4px 10px rgba(0, 119, 182, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.recensione-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.stelle {
+  color: var(--giallo-limone);
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-recensione p {
+  font-size: 0.9rem;
+  color: var(--blu-notte-testo);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.badge-fonte {
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 3px 8px;
+  border-radius: 12px;
+  color: #ffffff;
+}
+
+.badge-fonte.google, .g-link { background-color: #4285f4; }
+.badge-fonte.airbnb, .a-link { background-color: #ff385c; }
+.badge-fonte.booking, .b-link { background-color: #003580; }
+
+.link-recensioni-ufficiali {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--grigio-bordo);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--grigio-testo-muto);
+}
+
+.btn-link-fonte {
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #ffffff !important;
+  font-weight: bold;
+  font-size: 0.8rem;
+  transition: opacity 0.2s ease;
+}
+
+.btn-link-fonte:hover {
+  opacity: 0.85;
+}
+
+/* ==========================================
+   8. SOCIAL BADGES, MAPPA E FOOTER
+   ========================================== */
+.social-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+  align-items: center;
+}
+
+.social-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background-color: #f8fafc;
+  border: 1px solid var(--grigio-bordo);
+  border-radius: 20px;
+  text-decoration: none;
+  color: var(--blu-notte-testo);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.social-badge:hover {
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+
+.badge-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
 .map-container {
   width: 100%;
   height: 350px;
   border-radius: 8px;
   overflow: hidden;
   margin-top: 1.2rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--grigio-bordo);
 }
 
 .map-container iframe {
@@ -476,76 +552,7 @@ footer p {
 }
 
 /* ==========================================
-   8. RESPONSIVITÀ MOBILE
-   ========================================== */
-@media (max-width: 600px) {
-  .navbar-container {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  .nav-links {
-    gap: 0.8rem;
-  }
-  .nav-links a {
-    font-size: 0.85rem;
-  }
-  .header-logo {
-    max-width: 100px;
-  }
-  .whatsapp-float {
-    width: 52px;
-    height: 52px;
-    bottom: 15px;
-    right: 15px;
-  }
-  .whatsapp-float-icon {
-    width: 30px;
-    height: 30px;
-  }
-}
-
-/* ==========================================
-   9. STILI PER ICONE SOCIAL PICCOLE E COLORATE
-   ========================================== */
-.social-grid {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 10px !important;
-  margin-top: 15px !important;
-  align-items: center !important;
-}
-
-.social-badge {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  padding: 6px 14px !important;
-  background-color: #f8fafc !important; 
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 20px !important;        
-  text-decoration: none !important;
-  color: var(--blu-notte-testo) !important; 
-  font-size: 0.85rem !important;
-  font-weight: 600 !important;
-  transition: all 0.2s ease !important;
-}
-
-.social-badge:hover {
-  background-color: #ffffff !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-  transform: translateY(-1px) !important;
-}
-
-.badge-icon {
-  width: 18px !important;
-  height: 18px !important;
-  max-width: 18px !important;
-  max-height: 18px !important;
-  flex-shrink: 0 !important;
-}
-
-/* ==========================================
-   10. SPLASH SCREEN (COPERTINA DINAMICA)
+   9. ELEMENTI INTERATTIVI (SPLASH, MODAL, IFRAME)
    ========================================== */
 #splash-screen {
   position: fixed;
@@ -580,28 +587,25 @@ footer p {
   pointer-events: none;
 }
 
-/* ==========================================
-   11. STILE POPUP (LA FINESTRA A SCOMPARSA)
-   ========================================== */
 .modal-calendario {
-  display: none; /* Di base è nascosto! */
+  display: none;
   position: fixed;
-  z-index: 100000; /* Lo mettiamo sopra a tutto il resto del sito */
+  z-index: 100000;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* Effetto vetro scuro */
+  background-color: rgba(0, 0, 0, 0.6);
   justify-content: center;
   align-items: center;
 }
 
 .modal-contenuto {
-  background-color: white;
+  background-color: #ffffff;
   padding: 20px;
   border-radius: 12px;
-  width: 90%; 
-  max-width: 600px; 
+  width: 90%;
+  max-width: 600px;
   position: relative;
   box-shadow: 0 10px 25px rgba(0,0,0,0.3);
   animation: comparsa 0.3s ease-out;
@@ -620,89 +624,65 @@ footer p {
   font-size: 28px;
   font-weight: bold;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
 }
 
 .chiudi-popup:hover {
   color: #0f172a;
 }
 
-/* ==========================================
-   12. TRUCCO MAGICO: NASCONDI BOTTONE GOOGLE
-   ========================================== */
 .iframe-container {
   position: relative;
   width: 100%;
-  height: 380px; /* Aumentata per mostrare interamente le caselle del mese */
+  height: 380px;
   overflow: hidden;
   border-radius: 8px;
   background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--grigio-bordo);
 }
 
 .iframe-container iframe {
   display: block;
   width: 100%;
-  height: 430px !important; /* Garantisce lo spazio per i giorni della settimana e gli eventi */
-  margin-bottom: -50px; /* Rifila solo la fascia inferiore di Google */
+  height: 430px !important;
+  margin-bottom: -50px;
   border: none;
 }
 
 /* ==========================================
-   13. STILE WIDGET FLUTTUANTE WHATSAPP
+   10. WIDGET WHATSAPP & RICHIESTA DATE
    ========================================== */
 .whatsapp-float {
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
-  width: 60px !important;
-  height: 60px !important;
-  background-color: #25d366 !important;
-  border-radius: 50% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3) !important;
-  z-index: 999999 !important; /* Si assicura che sia sempre sopra tutto */
-  text-decoration: none !important;
-  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background-color: #25d366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+  z-index: 999999;
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .whatsapp-float:hover {
-  transform: scale(1.1) !important;
-  box-shadow: 2px 4px 14px rgba(0, 0, 0, 0.4) !important;
+  transform: scale(1.1);
+  box-shadow: 2px 4px 14px rgba(0, 0, 0, 0.4);
 }
 
-/* Questa è la regola che IMPEDISCE all'icona di diventare gigante */
 .whatsapp-float-icon {
-  width: 35px !important;
-  height: 35px !important;
-  min-width: 35px !important;
-  min-height: 35px !important;
-  fill: #ffffff !important;
+  width: 35px;
+  height: 35px;
+  fill: #ffffff;
 }
 
-/* Regole per schermi piccoli (cellulari) */
-@media (max-width: 600px) {
-  .whatsapp-float {
-    width: 50px !important;
-    height: 50px !important;
-    bottom: 15px !important;
-    right: 15px !important;
-  }
-  .whatsapp-float-icon {
-    width: 28px !important;
-    height: 28px !important;
-    min-width: 28px !important;
-    min-height: 28px !important;
-  }
-}
-/* ==========================================
-   14. STILE RICHIESTA DATE WHATSAPP
-   ========================================== */
 .box-richiesta-wa {
   background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--grigio-bordo);
   border-radius: 8px;
   padding: 15px;
   margin-top: 15px;
@@ -721,7 +701,7 @@ footer p {
   justify-content: center;
   gap: 15px;
   margin-bottom: 15px;
-  flex-wrap: wrap; /* Per i cellulari molto stretti */
+  flex-wrap: wrap;
 }
 
 .campo-data {
@@ -732,7 +712,7 @@ footer p {
 
 .campo-data label {
   font-size: 0.8rem;
-  color: #64748b;
+  color: var(--grigio-testo-muto);
   margin-bottom: 4px;
   font-weight: bold;
 }
@@ -744,7 +724,7 @@ footer p {
   font-family: inherit;
   color: var(--blu-notte-testo);
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s ease;
 }
 
 .campo-data input:focus {
@@ -753,14 +733,14 @@ footer p {
 
 .btn-invia-wa {
   background-color: #25d366;
-  color: white;
+  color: #ffffff;
   border: none;
   padding: 10px 20px;
   border-radius: 6px;
   font-weight: bold;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.2s;
+  transition: background-color 0.2s ease, transform 0.2s ease;
   width: 100%;
 }
 
@@ -769,149 +749,43 @@ footer p {
   transform: translateY(-2px);
 }
 
-
 /* ==========================================
-   15. STILI OVERLAY SCHEDE OFFERTE
+   11. MEDIA QUERIES (RESPONSIVITÀ)
    ========================================== */
-.card {
-  position: relative; /* Indispensabile per posizionare l'overlay interno */
-  overflow: hidden;
-  background: #ffffff;
-  padding: 1.5rem;
-  border-radius: 8px;
-  border-left: 4px solid var(--giallo-limone, #ffb703);
-  box-shadow: 0 4px 10px var(--ombra-leggera, rgba(0, 119, 182, 0.15));
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+@media (min-width: 768px) {
+  .grid-3-case {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-/* Sfondo scuro semitrasparente nascosto di base */
-.card-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85); /* Sfondo nero opaco al 85% */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  padding: 1rem;
-  z-index: 2;
+@media (min-width: 1024px) {
+  .grid-3-case {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
-/* Attivazione dello sfondo nero al passaggio del mouse */
-.card:hover .card-overlay {
-  opacity: 1;
+@media (max-width: 600px) {
+  .navbar-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .nav-links {
+    gap: 0.8rem;
+  }
+  .nav-links a {
+    font-size: 0.85rem;
+  }
+  .header-logo {
+    max-width: 100px;
+  }
+  .whatsapp-float {
+    width: 50px;
+    height: 50px;
+    bottom: 15px;
+    right: 15px;
+  }
+  .whatsapp-float-icon {
+    width: 28px;
+    height: 28px;
+  }
 }
-
-/* Bottone WhatsApp personalizzato all'interno delle schede */
-.btn-wa-card {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background-color: #25d366;
-  color: #ffffff !important;
-  font-size: 0.9rem;
-  font-weight: 700;
-  padding: 0.7rem 1.2rem;
-  border-radius: 6px;
-  text-decoration: none;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.btn-wa-card:hover {
-  background-color: #1eb954;
-  transform: scale(1.05);
-}
-
-.wa-icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-}
-/* ==========================================
-   16. STILI SEZIONE RECENSIONI
-   ========================================== */
-.grid-recensioni {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.2rem;
-  margin-top: 1rem;
-}
-
-.card-recensione {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 1.2rem;
-  box-shadow: 0 4px 10px rgba(0, 119, 182, 0.08);
-  display: flex;
-  flex-direction: column;
-}
-
-.recensione-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.stelle {
-  color: #ffb703;
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-}
-
-.card-recensione p {
-  font-size: 0.9rem;
-  color: var(--blu-notte-testo, #1d3557);
-  line-height: 1.5;
-  font-style: italic;
-}
-
-/* Badge delle fonti */
-.badge-fonte {
-  font-size: 0.75rem;
-  font-weight: bold;
-  padding: 3px 8px;
-  border-radius: 12px;
-  color: #ffffff;
-}
-
-.badge-fonte.google { background-color: #4285f4; }
-.badge-fonte.airbnb { background-color: #ff385c; }
-.badge-fonte.booking { background-color: #003580; }
-
-/* Barra dei link ufficiali in basso */
-.link-recensioni-ufficiali {
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e2e8f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #64748b;
-}
-
-.btn-link-fonte {
-  padding: 6px 12px;
-  border-radius: 6px;
-  text-decoration: none;
-  color: white !important;
-  font-weight: bold;
-  font-size: 0.8rem;
-  transition: opacity 0.2s;
-}
-
-.btn-link-fonte:hover { opacity: 0.85; }
-.g-link { background-color: #4285f4; }
-.a-link { background-color: #ff385c; }
-.b-link { background-color: #003580; }
