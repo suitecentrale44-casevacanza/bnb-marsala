@@ -22,13 +22,37 @@ function impostaCookieGoogleTranslate(lang) {
 }
 
 /* ==========================================
+   SPLASH SCREEN LOGIC
+   ========================================== */
+window.nascondiSplash = function() {
+  const splash = document.getElementById('splash-screen');
+  if (!splash) return;
+
+  // Se l'utente ha cambiato lingua, pulisce la classe temporanea e mantiene lo splash nascosto
+  if (localStorage.getItem('salta_splash') === 'true') {
+    localStorage.removeItem('salta_splash');
+    document.documentElement.classList.remove('no-splash');
+    splash.style.display = 'none';
+    return;
+  }
+
+  // Animazione normale al primo ingresso nel sito
+  if (!splash.classList.contains('fade-out')) {
+    splash.classList.add('fade-out');
+    setTimeout(() => {
+      splash.style.display = 'none';
+    }, 800);
+  }
+};
+
+/* ==========================================
    CAMBIO LINGUA
    ========================================== */
 window.cambiaLingua = function(codiceLingua, flagClass) {
   localStorage.setItem('lingua_selezionata', codiceLingua);
   localStorage.setItem('flag_class_selezionata', flagClass);
-  
-  // Salva un'impostazione temporanea per saltare lo splash screen al ricaricamento
+
+  // Imposta l'istruzione per saltare lo splash screen al reload
   localStorage.setItem('salta_splash', 'true');
 
   const activeFlag = document.getElementById('activeFlag');
@@ -41,27 +65,6 @@ window.cambiaLingua = function(codiceLingua, flagClass) {
 
   impostaCookieGoogleTranslate(codiceLingua);
   window.location.reload();
-};
-/* ==========================================
-   SPLASH SCREEN (CON CONTROLLO CAMBIO LINGUA)
-   ========================================== */
-window.nascondiSplash = function() {
-  const splash = document.getElementById('splash-screen');
-  if (!splash) return;
-
-  // Se l'utente ha appena cambiato lingua, nasconde subito lo splash senza mostrare il logo
-  if (localStorage.getItem('salta_splash') === 'true') {
-    localStorage.removeItem('salta_splash');
-    splash.style.display = 'none';
-    return;
-  }
-
-  if (!splash.classList.contains('fade-out')) {
-    splash.classList.add('fade-out');
-    setTimeout(() => {
-      splash.style.display = 'none';
-    }, 800);
-  }
 };
 
 /* ==========================================
