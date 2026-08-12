@@ -122,19 +122,19 @@ h3 {
   color: var(--blu-mare);
 }
 
-/* Selettore Lingua */
+/* Contenitore del selettore */
 .lang-selector {
   position: relative;
   display: inline-block;
 }
 
-/* Pulsante Rettangolare per la Bandiera */
+/* Pulsante Rettangolare: Solo Bandiera, Senza Sfondo Bianco */
 .lang-btn-rect {
   width: 44px;
   height: 30px;
   border-radius: 6px;
   border: 1px solid #cbd5e1;
-  background-color: transparent;
+  background: transparent !important; /* Elimina lo sfondo bianco */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -150,7 +150,7 @@ h3 {
   transform: scale(1.05);
 }
 
-/* Fa occupare l'intero rettangolo all'emoji della bandiera */
+/* Ingrandisce la bandiera e nasconde eventuali testi residui */
 .lang-btn-rect .flag-icon {
   font-size: 1.8rem;
   line-height: 1;
@@ -158,8 +158,10 @@ h3 {
   align-items: center;
   justify-content: center;
   transform: scale(1.3);
+  user-select: none;
 }
 
+/* Menu a tendina che compare al click */
 .lang-dropdown {
   display: none;
   position: absolute;
@@ -194,7 +196,6 @@ h3 {
 .lang-dropdown button:hover {
   background-color: #f1f5f9;
 }
-
 /* Rimuove sovrapposizioni visive di Google Translate */
 .goog-te-banner-frame,
 .skiptranslate,
