@@ -21,9 +21,15 @@ function impostaCookieGoogleTranslate(lang) {
   }
 }
 
+/* ==========================================
+   CAMBIO LINGUA
+   ========================================== */
 window.cambiaLingua = function(codiceLingua, flagClass) {
   localStorage.setItem('lingua_selezionata', codiceLingua);
   localStorage.setItem('flag_class_selezionata', flagClass);
+  
+  // Salva un'impostazione temporanea per saltare lo splash screen al ricaricamento
+  localStorage.setItem('salta_splash', 'true');
 
   const activeFlag = document.getElementById('activeFlag');
   if (activeFlag) {
@@ -36,13 +42,21 @@ window.cambiaLingua = function(codiceLingua, flagClass) {
   impostaCookieGoogleTranslate(codiceLingua);
   window.location.reload();
 };
-
 /* ==========================================
-   SPLASH SCREEN
+   SPLASH SCREEN (CON CONTROLLO CAMBIO LINGUA)
    ========================================== */
 window.nascondiSplash = function() {
   const splash = document.getElementById('splash-screen');
-  if (splash && !splash.classList.contains('fade-out')) {
+  if (!splash) return;
+
+  // Se l'utente ha appena cambiato lingua, nasconde subito lo splash senza mostrare il logo
+  if (localStorage.getItem('salta_splash') === 'true') {
+    localStorage.removeItem('salta_splash');
+    splash.style.display = 'none';
+    return;
+  }
+
+  if (!splash.classList.contains('fade-out')) {
     splash.classList.add('fade-out');
     setTimeout(() => {
       splash.style.display = 'none';
