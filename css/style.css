@@ -1,365 +1,729 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Suite Centrale 44 a Marsala: case vacanza nel centro storico con Wi-Fi, aria condizionata e ogni comfort. Prenota ora la tua vacanza in Sicilia!">
-  <title>Suite Centrale 44 - Case Vacanza a Marsala</title>
-  
-  <link rel="icon" type="image/jpeg" href="image/Logo_Suite.jpg">
-  <link rel="stylesheet" href="css/style.css">
-  <script src="js/script.js" defer></script>
+/* ==========================================
+   0. TAVOLOZZA COLORI E VARIABILI "SICILIA"
+   ========================================== */
+:root {
+  --blu-mare: #0077b6;
+  --azzurro-cielo: #00b4d8;
+  --giallo-limone: #ffb703;
+  --giallo-hover: #f7a000;
+  --bianco-salina: #fdfbf7;
+  --blu-notte-testo: #1d3557;
+  --grigio-bordo: #e2e8f0;
+  --grigio-testo-muto: #64748b;
+  --ombra-leggera: rgba(0, 119, 182, 0.15);
+  --ombra-intensa: rgba(0, 119, 182, 0.25);
+}
 
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Suite Centrale 44 - Case Vacanza a Marsala">
-  <meta property="og:description" content="La tua casa lontano da casa. Relax, comfort e accoglienza nel cuore di Marsala.">
-  <meta property="og:image" content="image/Logo_Suite.jpg">
-</head>
-<body>
+/* ==========================================
+   1. RESET E STILI DI BASE
+   ========================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-  <!-- Banner Cookie GDPR -->
-  <div id="cookie-banner" style="position: fixed; bottom: 0; left: 0; right: 0; background: #1e293b; color: #ffffff; padding: 16px; text-align: center; z-index: 999999; font-family: sans-serif; font-size: 14px; box-shadow: 0 -2px 10px rgba(0,0,0,0.2);">
-    <p style="margin: 0 0 12px 0; line-height: 1.4;">
-      Questo sito utilizza cookie tecnici e Google Analytics per migliorare l'esperienza di navigazione. Puoi scegliere se accettare o rifiutare i cookie di analisi.
-    </p>
-    <button onclick="accettaCookie()" style="background: #25D366; color: white; border: none; padding: 8px 18px; margin-right: 8px; cursor: pointer; border-radius: 6px; font-weight: bold;">
-      Accetta
-    </button>
-    <button onclick="rifiutaCookie()" style="background: #64748b; color: white; border: none; padding: 8px 18px; cursor: pointer; border-radius: 6px;">
-      Rifiuta
-    </button>
-  </div>
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 70px;
+}
 
-  <!-- Splash Screen -->
-  <div id="splash-screen">
-    <img src="image/Logo_Suite.jpg" alt="Suite Centrale 44 Logo" class="splash-logo">
-  </div>
-  <!-- Script sincrono immediato per disattivare lo splash al cambio lingua -->
-  <script>
-    if (localStorage.getItem('salta_splash') === 'true') {
-      var s = document.getElementById('splash-screen');
-      if (s) s.style.setProperty('display', 'none', 'important');
-    }
-  </script>
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--blu-notte-testo);
+  line-height: 1.6;
+  background-color: var(--bianco-salina);
+  top: 0px !important;
+}
 
-  <div id="google_translate_element" style="display:none;"></div>
+ul {
+  list-style: none;
+}
 
-  <!-- Menu di Navigazione -->
-  <nav class="navbar">
-    <div class="navbar-container">
-      <a href="#" class="nav-brand">
-        <img src="image/Logo_Suite.jpg" alt="Logo Suite Centrale 44" class="nav-logo">
-      </a>
-      <ul class="nav-links">
-        <li><a href="#strutture">🏠 Strutture</a></li>
-        <li><a href="#offerte">🎁 Offerte</a></li>
-        <li><a href="#servizi">⭐ Servizi</a></li>
-        <li><a href="#riconoscimenti">🏆 Riconoscimenti ufficiali</a></li>
-        <li><a href="#posizione">📍 Posizione</a></li>
-        <li><a href="#contatti">📱 Contatti</a></li>
-      </ul>
+ul li {
+  padding: 0.4rem 0;
+}
 
-      <!-- Selettore Lingua (Solo Bandiere) -->
-      <div class="lang-selector">
-        <button type="button" class="lang-btn-rect" id="langBtn" aria-label="Seleziona Lingua">
-          <span id="activeFlag" class="flag-icon flag-it"></span>
-        </button>
-        
-        <div class="lang-dropdown" id="langDropdown">
-          <button type="button" onclick="cambiaLingua('it', 'flag-it')" aria-label="Italiano">
-            <span class="flag-icon flag-it"></span>
-          </button>
-          <button type="button" onclick="cambiaLingua('en', 'flag-gb')" aria-label="English">
-            <span class="flag-icon flag-gb"></span>
-          </button>
-          <button type="button" onclick="cambiaLingua('de', 'flag-de')" aria-label="Deutsch">
-            <span class="flag-icon flag-de"></span>
-          </button>
-          <button type="button" onclick="cambiaLingua('fr', 'flag-fr')" aria-label="Français">
-            <span class="flag-icon flag-fr"></span>
-          </button>
-          <button type="button" onclick="cambiaLingua('es', 'flag-es')" aria-label="Español">
-            <span class="flag-icon flag-es"></span>
-          </button>
-          <button type="button" onclick="cambiaLingua('nl', 'flag-nl')" aria-label="Nederlands">
-            <span class="flag-icon flag-nl"></span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </nav>
+.container {
+  max-width: 1300px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
 
-  <header>
-    <img src="image/Logo_Suite.jpg" alt="Suite Centrale 44 Logo" class="header-logo">
-    <h1>Benvenuti da Suite Centrale 44</h1>
-    <p>Case vacanza a Marsala</p>
-    <p>La tua casa lontano da casa. Relax, comfort e accoglienza nel cuore della città</p>
-    <br>
-    <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20sulle%20disponibilit%C3%A0%20delle%20case%20vacanze" class="btn-wa" target="_blank" rel="noopener noreferrer">📱 Contattaci su WhatsApp</a>
-  </header>
+.section {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 15px var(--ombra-leggera);
+}
 
-  <main class="container">
-    <!-- Sezione Strutture -->
-    <section id="strutture" class="section">
-      <h2>🏠 Le Nostre Strutture</h2>
-      <div class="grid-3-case">
-        
-        <!-- CARD SUITE CENTRALE -->
-        <article class="card-casa">
-          <div class="img-wrapper">
-            <img src="image/Suite Centrale Copertina.jpg" alt="Suite Centrale 44">
-            <div class="img-overlay">
-              <a href="galleria-centrale.html" target="_blank" rel="noopener noreferrer" class="btn-foto">📸 Guarda tutte le foto</a>
-            </div>
-          </div>
-          <h3>Suite Centrale 44</h3>
-          <p>Centro Storico • Da 1 a 4 Posti Letto • Wi-Fi, Balcone & AC</p>
-          <div class="pulsanti-prenotazione">
-            <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20su%20Suite%20Centrale%2044" class="btn-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-            <a href="https://www.airbnb.it/rooms/50326794" class="btn-airbnb-official" target="_blank" rel="noopener noreferrer">Airbnb</a>
-            <a href="https://www.booking.com/hotel/it/suite-centrale-44.it.html" class="btn-booking-official" target="_blank" rel="noopener noreferrer">Booking</a>
-            <button onclick="apriCalendario('popup-centrale')" class="btn-calendario">📅 Disponibilità</button>
-          </div>
-        </article>
+h2 {
+  color: var(--blu-mare);
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--grigio-bordo);
+  padding-bottom: 0.5rem;
+}
 
-        <!-- Popup Suite Centrale -->
-        <div id="popup-centrale" class="modal-calendario">
-          <div class="modal-contenuto">
-            <span class="chiudi-popup" onclick="chiudiCalendario('popup-centrale')">&times;</span>
-            <h3 style="margin-bottom: 15px; color: var(--blu-mare); text-align: center;">Disponibilità Suite Centrale</h3>
-            <div class="iframe-container">
-              <iframe src="https://calendar.google.com/calendar/embed?src=suitecentrale44%40gmail.com&ctz=Europe%2FRome" style="border: 0" frameborder="0" scrolling="no" loading="lazy"></iframe>
-            </div>
-            <div class="box-richiesta-wa">
-              <p class="titolo-richiesta">Hai trovato le date libere? Richiedile subito!</p>
-              <div class="selettori-date">
-                <div class="campo-data">
-                  <label for="checkin-centrale">Check-in</label>
-                  <input type="date" id="checkin-centrale">
-                </div>
-                <div class="campo-data">
-                  <label for="checkout-centrale">Check-out</label>
-                  <input type="date" id="checkout-centrale">
-                </div>
-              </div>
-              <button onclick="inviaRichiestaWA('Suite Centrale', 'checkin-centrale', 'checkout-centrale')" class="btn-invia-wa">
-                💬 Invia richiesta su WhatsApp
-              </button>
-            </div>
-          </div>
-        </div>
+h3 {
+  color: var(--blu-mare);
+}
 
-        <!-- CARD CORALLO -->
-        <article class="card-casa">
-          <div class="img-wrapper">
-            <img src="image/Suite Corallo Copertina.jpg" alt="Suite Corallo">
-            <div class="img-overlay">
-              <a href="galleria-corallo.html" target="_blank" rel="noopener noreferrer" class="btn-foto">📸 Guarda tutte le foto</a>
-            </div>
-          </div>
-          <h3>Suite Corallo</h3>
-          <p>Centro Storico • Da 1 a 3 Posti Letto • Wi-Fi & AC</p>
-          <div class="pulsanti-prenotazione">
-            <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20su%20Suite%20Corallo" class="btn-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-            <a href="https://www.airbnb.it/rooms/657792096938010342" class="btn-airbnb-official" target="_blank" rel="noopener noreferrer">Airbnb</a>
-            <a href="https://www.booking.com/hotel/it/suite-centrale-44-corallo.it.html" class="btn-booking-official" target="_blank" rel="noopener noreferrer">Booking</a>
-            <button onclick="apriCalendario('popup-corallo')" class="btn-calendario">📅 Disponibilità</button>
-          </div>
-        </article>
+/* ==========================================
+   2. NAVBAR E SELETTORE LINGUA
+   ========================================== */
+.navbar {
+  position: sticky;
+  top: 0;
+  background-color: #ffffff;
+  box-shadow: 0 4px 15px var(--ombra-leggera);
+  border-bottom: 3px solid var(--giallo-limone);
+  z-index: 999;
+}
 
-        <!-- Popup Suite Corallo -->
-        <div id="popup-corallo" class="modal-calendario">
-          <div class="modal-contenuto">
-            <span class="chiudi-popup" onclick="chiudiCalendario('popup-corallo')">&times;</span>
-            <h3 style="margin-bottom: 15px; color: var(--blu-mare); text-align: center;">Disponibilità Suite Corallo</h3>
-            <div class="iframe-container">
-              <iframe src="https://calendar.google.com/calendar/embed?src=f118fc936bf65f97fec173ca1aec2486f030d9f175ac5177502eb3250ea1c466%40group.calendar.google.com&ctz=Europe%2FRome" style="border: 0" frameborder="0" scrolling="no" loading="lazy"></iframe>
-            </div>
-            <div class="box-richiesta-wa">
-              <p class="titolo-richiesta">Hai trovato le date libere? Richiedile subito!</p>
-              <div class="selettori-date">
-                <div class="campo-data">
-                  <label for="checkin-corallo">Check-in</label>
-                  <input type="date" id="checkin-corallo">
-                </div>
-                <div class="campo-data">
-                  <label for="checkout-corallo">Check-out</label>
-                  <input type="date" id="checkout-corallo">
-                </div>
-              </div>
-              <button onclick="inviaRichiestaWA('Suite Corallo', 'checkin-corallo', 'checkout-corallo')" class="btn-invia-wa">
-                💬 Invia richiesta su WhatsApp
-              </button>
-            </div>
-          </div>
-        </div>
+.navbar-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+}
 
-        <!-- CARD OCEANO -->
-        <article class="card-casa">
-          <div class="img-wrapper">
-            <img src="image/Suite Oceano Copertina.jpg" alt="Suite Oceano">
-            <div class="img-overlay">
-              <a href="galleria-oceano.html" target="_blank" rel="noopener noreferrer" class="btn-foto">📸 Guarda tutte le foto</a>
-            </div>
-          </div>
-          <h3>Suite Oceano</h3>
-          <p>Centro Storico • Da 1 a 4 Posti Letto • Wi-Fi, Balcone & AC</p>
-          <div class="pulsanti-prenotazione">
-            <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20su%20Suite%20Oceano" class="btn-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-            <a href="https://www.airbnb.it/rooms/653331639445866242" class="btn-airbnb-official" target="_blank" rel="noopener noreferrer">Airbnb</a>
-            <a href="https://www.booking.com/hotel/it/suite-centrale-44-con-balcone.it.html" class="btn-booking-official" target="_blank" rel="noopener noreferrer">Booking</a>
-            <button onclick="apriCalendario('popup-oceano')" class="btn-calendario">📅 Disponibilità</button>
-          </div>
-        </article>
+.nav-brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
 
-        <!-- Popup Suite Oceano -->
-        <div id="popup-oceano" class="modal-calendario">
-          <div class="modal-contenuto">
-            <span class="chiudi-popup" onclick="chiudiCalendario('popup-oceano')">&times;</span>
-            <h3 style="margin-bottom: 15px; color: var(--blu-mare); text-align: center;">Disponibilità Suite Oceano</h3>
-            <div class="iframe-container">
-              <iframe src="https://calendar.google.com/calendar/embed?src=748b2c73f083c8ff32af24899404f64541430871f37ae98f30cda555123b2ea3%40group.calendar.google.com&ctz=Europe%2FRome" style="border: 0" frameborder="0" scrolling="no" loading="lazy"></iframe>
-            </div>
-            <div class="box-richiesta-wa">
-              <p class="titolo-richiesta">Hai trovato le date libere? Richiedile subito!</p>
-              <div class="selettori-date">
-                <div class="campo-data">
-                  <label for="checkin-oceano">Check-in</label>
-                  <input type="date" id="checkin-oceano">
-                </div>
-                <div class="campo-data">
-                  <label for="checkout-oceano">Check-out</label>
-                  <input type="date" id="checkout-oceano">
-                </div>
-              </div>
-              <button onclick="inviaRichiestaWA('Suite Oceano', 'checkin-oceano', 'checkout-oceano')" class="btn-invia-wa">
-                💬 Invia richiesta su WhatsApp
-              </button>
-            </div>
-          </div>
-        </div>
+.nav-logo {
+  height: 40px;
+  width: auto;
+  border-radius: 4px;
+  display: block;
+}
 
-      </div>
-    </section>
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
 
-    <!-- Sezione Offerte -->
-    <section id="offerte" class="section">
-      <h2>🎁 Offerte e Promozioni</h2>
-      <div class="grid">
-        <div class="card">
-          <div class="card-body">
-            <h3>Sconto Prenotazione diretta</h3>
-            <p>Risparmia il 10% rispetto alle piattaforme esterne prenotando direttamente con noi tramite WhatsApp.</p>
-          </div>
-          <div class="img-overlay">
-            <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20maggiori%20informazioni%20sulla%20promozione:%20Sconto%20Prenotazione%20diretta" class="btn-wa-card" target="_blank" rel="noopener noreferrer">Richiedi informazioni</a>
-          </div>
-        </div>
+.nav-links a {
+  color: var(--blu-notte-testo);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+}
 
-        <div class="card">
-          <div class="card-body">
-            <h3>Weekend Fuga per due</h3>
-            <p>2 notti per due persone e late check-out gratuito.</p>
-          </div>
-          <div class="img-overlay">
-            <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20maggiori%20informazioni%20sulla%20promozione:%20Weekend%20fuga%20per%20due" class="btn-wa-card" target="_blank" rel="noopener noreferrer">Richiedi informazioni</a>
-          </div>
-        </div>
-      </div>
-    </section>
+.nav-links a:hover {
+  color: var(--blu-mare);
+}
 
-    <!-- Sezione Servizi -->
-    <section id="servizi" class="section">
-      <h2>⭐ Servizi Inclusi</h2>
-      <div class="grid">
-        <ul>
-          <li>✅ Wi-Fi ad alta velocità gratuito</li>
-          <li>✅ Aria condizionata e riscaldamento</li>
-        </ul>
-        <ul>
-          <li>✅ Smart TV</li>
-          <li>✅ Cucina Attrezzata</li>
-        </ul>
-        <ul>
-          <li>✅ Check-in e Check-out flessibili</li>
-        </ul>
-      </div>
-    </section>
+/* Contenitore del selettore lingua */
+.lang-selector {
+  position: relative;
+  display: inline-block;
+}
 
-    <!-- RICONOSCIMENTI UFFICIALI -->
-    <section id="riconoscimenti" class="section">
-      <h2>🏆 Riconoscimenti ufficiali</h2>
-      <p style="margin-bottom: 1rem; color: #64748b;">I traguardi e i badge di eccellenza riconosciuti negli anni dai nostri partner ufficiali:</p>
+.lang-btn-rect {
+  width: 40px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: transparent !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
 
-      <div class="grid-3-case">
-        <div class="card" style="text-align: center; border-left-color: #ff385c;">
-          <h3 style="color: #ff385c;">Airbnb</h3>
-          <div style="margin: 1rem 0;">
-            <img src="image/badge-airbnb.png" alt="Airbnb Awards" style="max-width: 140px; height: auto;">
-          </div>
-          <p><strong>Superhost & Amato dagli ospiti</strong></p>
-          <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">Premio per la qualità dell'ospitalità e le valutazioni eccellenti ottenute dagli ospiti negli anni.</p>
-        </div>
+.lang-btn-rect:hover {
+  border-color: #0284c7;
+  transform: scale(1.05);
+}
 
-        <div class="card" style="text-align: center; border-left-color: #003580;">
-          <h3 style="color: #003580;">Booking.com</h3>
-          <div style="margin: 1rem 0;">
-            <img src="image/badge-booking.png" alt="Booking Traveller Review Awards" style="max-width: 140px; height: auto;">
-          </div>
-          <p><strong>Traveller Review Awards</strong></p>
-          <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">Riconoscimento annuale per aver mantenuto punteggi e recensioni di alto livello.</p>
-        </div>
-      </div>
-    </section>
-  
-    <!-- Sezione Posizione e Contatti -->
-    <section id="posizione" class="section">
-      <h2>📍 Posizione e 📱 Contatti</h2>
-      
-      <div id="contatti">
-        <p><strong>Indirizzo:</strong> Via Giuseppe Garraffa 44, Marsala (TP)</p>
-        <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">
-          CIR: 19081011C218331 | CIN: IT081011C2EFH98HIF
-        </p>
+.flag-icon {
+  width: 28px;
+  height: 20px;
+  display: block;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  pointer-events: none;
+}
 
-        <div class="social-grid">
-          <a href="tel:+393477640421" class="social-badge"><span>Chiamaci</span></a>
-          <a href="mailto:suitecentrale44@gmail.com" class="social-badge"><span>Email</span></a>
-          <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20sulle%20disponibilit%C3%A0%20delle%20case%20vacanze" target="_blank" rel="noopener noreferrer" class="social-badge"><span>WhatsApp</span></a>
-          <a href="https://www.instagram.com/suitecentrale44_marsala?igsh=MTFoaG0xMGx2ZG5mOQ==" target="_blank" rel="noopener noreferrer" class="social-badge"><span>Instagram</span></a>
-          <a href="https://www.facebook.com/share/199Z8aAets/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="social-badge"><span>Facebook</span></a>
-          <a href="https://share.google/YokKWe5qbWBurajf4" target="_blank" rel="noopener noreferrer" class="social-badge"><span>Google</span></a>
-        </div>        
+/* Bandiere ad alta definizione */
+.flag-it { background-image: url('https://flagcdn.com/w40/it.png'); }
+.flag-gb { background-image: url('https://flagcdn.com/w40/gb.png'); }
+.flag-de { background-image: url('https://flagcdn.com/w40/de.png'); }
+.flag-fr { background-image: url('https://flagcdn.com/w40/fr.png'); }
+.flag-es { background-image: url('https://flagcdn.com/w40/es.png'); }
+.flag-nl { background-image: url('https://flagcdn.com/w40/nl.png'); }
 
-        <div class="map-container">
-          <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3156.452331589252!2d12.4338713!3d37.7981504!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x131983050c822e11%3A0x6bd7fa0343fae041!2sVia%20Giuseppe%20Garraffa%2C%2044%2C%2091025%20Marsala%20TP!5e0!3m2!1sit!2sit!4v1700000000000!5m2!1sit!2sit" 
-            allowfullscreen="" 
-            loading="lazy" 
-            referrerpolicy="no-referrer-when-downgrade"
-            title="Mappa Suite Centrale 44 Marsala">
-          </iframe>
-        </div>
-      </div>
-    </section>
-  </main>
+.lang-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 36px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  z-index: 99999;
+  padding: 6px;
+  flex-direction: column;
+  gap: 6px;
+}
 
-  <footer>
-    <p>&copy; 2026 Suite Centrale 44 - Tutti i diritti riservati.</p>
-    <p>CIR: 19081011C218331 | CIN: IT081011C2EFH98HIF</p>
-  </footer>
+.lang-dropdown.show {
+  display: flex !important;
+}
 
-  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+.lang-dropdown button {
+  padding: 4px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
 
-  <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20sulle%20disponibilit%C3%A0%20delle%20case%20vacanze" 
-     class="whatsapp-float" 
-     target="_blank" 
-     rel="noopener noreferrer"
-     aria-label="Contattaci su WhatsApp">
-    <svg viewBox="0 0 32 32" class="whatsapp-float-icon">
-      <path d="M16 2a13 13 0 0 0-11.2 19.6L3 29l7.6-1.7A13 13 0 1 0 16 2zm0 23.6a10.5 10.5 0 0 1-5.4-1.5l-.4-.2-4 1 1-3.9-.2-.4A10.6 10.6 0 1 1 16 25.6zm5.8-7.9c-.3-.2-1.8-.9-2.1-1s-.5-.2-.7.2-.8 1-.9 1.2-.3.3-.6.1a8 8 0 0 1-2.4-1.5 8.9 8.9 0 0 1-1.7-2.1c-.2-.3 0-.5.1-.6l.4-.5c.2-.2.2-.4.3-.6s0-.4-.1-.5l-.9-2.2c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.2 1.2-1.2 2.8 1.3 3.3 1.4 3.5 2.5 3.9 6.1 5.4c.9.4 1.5.6 2 .8a4.9 4.9 0 0 0 2.2.1c.7-.1 2.1-.9 2.4-1.7s.3-1.5.2-1.7-.5-.2-.8-.4z"/>
-    </svg>
-  </a>
+.lang-dropdown button:hover {
+  background-color: #f1f5f9;
+}
 
-</body>
-</html>
+.goog-te-banner-frame,
+.skiptranslate,
+#goog-gt-tt {
+  display: none !important;
+}
+
+/* ==========================================
+   3. HEADER
+   ========================================== */
+header {
+  background: linear-gradient(135deg, var(--blu-mare) 0%, var(--azzurro-cielo) 100%);
+  color: #ffffff;
+  text-align: center;
+  padding: 3rem 1rem;
+  border-bottom: 5px solid var(--giallo-limone);
+}
+
+.header-logo {
+  max-width: 130px;
+  height: auto;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+header h1 {
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+header p {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+
+/* ==========================================
+   4. SCHEDE E GRIGLIE GENERALI
+   ========================================== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--giallo-limone);
+  box-shadow: 0 4px 10px var(--ombra-leggera);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 119, 182, 0.2);
+}
+
+.card .img-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(29, 53, 87, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+  padding: 1rem;
+}
+
+.card:hover .img-overlay {
+  opacity: 1;
+}
+
+.btn-wa-card {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #25d366;
+  color: #ffffff !important;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-wa-card:hover {
+  background-color: #1eb954;
+  transform: scale(1.05);
+}
+
+/* ==========================================
+   5. STRUTTURE (CARD CASE VACANZA)
+   ========================================== */
+.grid-3-case {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.card-casa {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 119, 182, 0.08);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-shadow: 0 6px 15px var(--ombra-leggera);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-casa:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px var(--ombra-intensa);
+}
+
+.img-wrapper {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 0.8rem;
+}
+
+.img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.img-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(29, 53, 87, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.img-wrapper:hover .img-overlay {
+  opacity: 1;
+}
+
+.btn-foto {
+  color: var(--blu-notte-testo) !important;
+  background-color: var(--giallo-limone);
+  padding: 8px 16px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.btn-foto:hover {
+  background-color: var(--giallo-hover);
+}
+
+/* ==========================================
+   6. PULSANTI E PULSANTIERA
+   ========================================== */
+.pulsanti-prenotazione {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+  justify-content: center;
+}
+
+.btn-wa, 
+.btn-airbnb-official, 
+.btn-booking-official, 
+.btn-calendario {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #ffffff !important;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  flex: 1 1 auto;
+}
+
+.btn-wa { background-color: #25d366; }
+.btn-wa:hover { background-color: #1eb954; transform: translateY(-2px); }
+
+.btn-airbnb-official { background-color: #ff385c; }
+.btn-airbnb-official:hover { background-color: #e00b41; transform: translateY(-2px); }
+
+.btn-booking-official { background-color: #003580; }
+.btn-booking-official:hover { background-color: #00224f; transform: translateY(-2px); }
+
+.btn-calendario { background-color: var(--blu-mare); }
+.btn-calendario:hover { background-color: #005f8f; transform: translateY(-2px); }
+
+/* ==========================================
+   7. SOCIAL, MAPPA E FOOTER
+   ========================================== */
+.social-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+  align-items: center;
+}
+
+.social-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  background-color: #f8fafc;
+  border: 1px solid var(--grigio-bordo);
+  border-radius: 20px;
+  text-decoration: none;
+  color: var(--blu-notte-testo);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.social-badge:hover {
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+
+.map-container {
+  width: 100%;
+  height: 350px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 1.2rem;
+  border: 1px solid var(--grigio-bordo);
+}
+
+.map-container iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+footer {
+  text-align: center;
+  background-color: var(--blu-notte-testo);
+  padding: 2rem;
+  color: var(--bianco-salina);
+  font-size: 0.85rem;
+  border-top: 4px solid var(--giallo-limone);
+}
+
+footer p {
+  margin-bottom: 0.3rem;
+}
+
+/* ==========================================
+   8. ELEMENTI INTERATTIVI (SPLASH, MODAL)
+   ========================================== */
+#splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999999;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+.splash-logo {
+  width: 220px !important;
+  max-width: 70vw !important;
+  height: auto !important;
+  border-radius: 50%;
+  animation: pulseLogo 1s infinite alternate ease-in-out;
+}
+
+@keyframes pulseLogo {
+  0% { transform: scale(0.95); opacity: 0.85; }
+  100% { transform: scale(1.05); opacity: 1; }
+}
+
+#splash-screen.fade-out {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.modal-calendario {
+  display: none;
+  position: fixed;
+  z-index: 100000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-contenuto {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  animation: comparsa 0.3s ease-out;
+}
+
+@keyframes comparsa {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.chiudi-popup {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: #94a3b8;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.chiudi-popup:hover {
+  color: #0f172a;
+}
+
+.iframe-container {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: #ffffff;
+  border: 1px solid var(--grigio-bordo);
+}
+
+.iframe-container iframe {
+  display: block;
+  width: 100%;
+  height: 430px !important;
+  margin-bottom: -50px;
+  border: none;
+}
+
+/* ==========================================
+   9. WIDGET WHATSAPP
+   ========================================== */
+.whatsapp-float {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background-color: #25d366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+  z-index: 999999;
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.whatsapp-float:hover {
+  transform: scale(1.1);
+  box-shadow: 2px 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.whatsapp-float-icon {
+  width: 35px;
+  height: 35px;
+  fill: #ffffff;
+}
+
+.box-richiesta-wa {
+  background-color: #f8fafc;
+  border: 1px solid var(--grigio-bordo);
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+  text-align: center;
+}
+
+.titolo-richiesta {
+  font-size: 0.9rem;
+  color: var(--blu-notte-testo);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.selettori-date {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.campo-data {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.campo-data label {
+  font-size: 0.8rem;
+  color: var(--grigio-testo-muto);
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.campo-data input {
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-family: inherit;
+  color: var(--blu-notte-testo);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.campo-data input:focus {
+  border-color: #25d366;
+}
+
+.btn-invia-wa {
+  background-color: #25d366;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  width: 100%;
+}
+
+.btn-invia-wa:hover {
+  background-color: #1eb954;
+  transform: translateY(-2px);
+}
+
+/* ==========================================
+   10. RESPONSIVITÀ
+   ========================================== */
+@media (min-width: 768px) {
+  .grid-3-case {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-3-case {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .nav-links {
+    gap: 0.8rem;
+  }
+  .nav-links a {
+    font-size: 0.85rem;
+  }
+  .header-logo {
+    max-width: 100px;
+  }
+  .whatsapp-float {
+    width: 50px;
+    height: 50px;
+    bottom: 15px;
+    right: 15px;
+  }
+  .whatsapp-float-icon {
+    width: 28px;
+    height: 28px;
+  }
+}
