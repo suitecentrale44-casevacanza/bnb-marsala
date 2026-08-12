@@ -14,53 +14,52 @@ class AirbnbBtn extends HTMLElement {
     `;
   }
 }
-
-// Registrazione del componente personalizzato <airbnb-button>
 customElements.define('airbnb-button', AirbnbBtn);
-<script type="text/javascript">
-  function googleTranslateElementInit() {
-    new google.translate.TranslateElement({
-      pageLanguage: 'it',
-      includedLanguages: 'en,de,fr,es,nl',
-      autoDisplay: false
-    }, 'google_translate_element');
+
+/* ==========================================
+   GOOGLE TRANSLATE E LINGUA
+   ========================================== */
+window.googleTranslateElementInit = function() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'it',
+    includedLanguages: 'en,de,fr,es,nl',
+    autoDisplay: false
+  }, 'google_translate_element');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const langBtn = document.getElementById('langBtn');
+  const langDropdown = document.getElementById('langDropdown');
+
+  if (langBtn && langDropdown) {
+    langBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      langDropdown.classList.toggle('show');
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!langDropdown.contains(e.target) && !langBtn.contains(e.target)) {
+        langDropdown.classList.remove('show');
+      }
+    });
   }
+  
+  // Timer di fallback per lo splash screen
+  setTimeout(nascondiSplash, 2000);
+});
 
-  document.addEventListener('DOMContentLoaded', function() {
-    const langBtn = document.getElementById('langBtn');
-    const langDropdown = document.getElementById('langDropdown');
-
-    if (langBtn && langDropdown) {
-      langBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        langDropdown.classList.toggle('show');
-      });
-
-      document.addEventListener('click', function(e) {
-        if (!langDropdown.contains(e.target) && !langBtn.contains(e.target)) {
-          langDropdown.classList.remove('show');
-        }
-      });
-    }
-  });
-
-function cambiaLingua(codiceLingua, flagEmoji) {
+window.cambiaLingua = function(codiceLingua, flagEmoji) {
   const activeFlag = document.getElementById('activeFlag');
   const langDropdown = document.getElementById('langDropdown');
 
-  // Aggiorna l'icona della bandiera sul pulsante
   if (activeFlag) activeFlag.textContent = flagEmoji;
   if (langDropdown) langDropdown.classList.remove('show');
 
   if (codiceLingua === 'it') {
-    // 1. Elimina i cookie di traduzione impostati da Google Translate
     document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=" + window.location.hostname + "; path=/;";
-    
-    // 2. Ricarica la pagina per mostrare il testo originale italiano in modo pulito
     window.location.reload();
   } else {
-    // Seleziona la lingua nel menu nascosto di Google Translate
     const selectElem = document.querySelector('.goog-te-combo');
     if (selectElem) {
       selectElem.value = codiceLingua;
@@ -69,5 +68,101 @@ function cambiaLingua(codiceLingua, flagEmoji) {
   }
 }
 
-</script>
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+/* ==========================================
+   COOKIE E ANALYTICS
+   ========================================== */
+const ANALYTICS_ID = 'G-C291PEHWM7';
+
+function caricaAnalytics() {
+  var script = document.createElement('script');
+  script.src = 'https://www.googletagmanager.com/gtag/js?id=' + ANALYTICS_ID;
+  script.async = true;
+  document.head.appendChild(script);
+
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', ANALYTICS_ID);
+}
+
+window.accettaCookie = function() {
+  localStorage.setItem('consenso_cookie', 'accettato');
+  const banner = document.getElementById('cookie-banner');
+  if(banner) banner.style.display = 'none';
+  caricaAnalytics();
+}
+
+window.rifiutaCookie = function() {
+  localStorage.setItem('consenso_cookie', 'rifiutato');
+  const banner = document.getElementById('cookie-banner');
+  if(banner) banner.style.display = 'none';
+}
+
+// Inizializzazione banner
+const consenso = localStorage.getItem('consenso_cookie');
+if (consenso === 'accettato') {
+  const banner = document.getElementById('cookie-banner');
+  if(banner) banner.style.display = 'none';
+  caricaAnalytics();
+} else if (consenso === 'rifiutato') {
+  const banner = document.getElementById('cookie-banner');
+  if(banner) banner.style.display = 'none';
+}
+
+/* ==========================================
+   SPLASH SCREEN LOGIC
+   ========================================== */
+window.nascondiSplash = function() {
+  const splash = document.getElementById('splash-screen');
+  if (splash && !splash.classList.contains('fade-out')) {
+    splash.classList.add('fade-out');
+    setTimeout(() => {
+      splash.style.display = 'none';
+    }, 800);
+  }
+}
+
+/* ==========================================
+   MODAL CALENDARI LOGIC
+   ========================================== */
+window.apriCalendario = function(idDelPopup) {
+  const modal = document.getElementById(idDelPopup);
+  if(modal) modal.style.display = "flex";
+}
+
+window.chiudiCalendario = function(idDelPopup) {
+  const modal = document.getElementById(idDelPopup);
+  if(modal) modal.style.display = "none";
+}
+
+window.addEventListener('click', function(event) {
+  if (event.target.classList.contains('modal-calendario')) {
+    event.target.style.display = "none";
+  }
+});
+
+/* ==========================================
+   RICHIESTA WHATSAPP LOGIC
+   ========================================== */
+window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
+  const checkin = document.getElementById(idCheckin).value;
+  const checkout = document.getElementById(idCheckout).value;
+
+  if (!checkin || !checkout) {
+    alert("Per favore, seleziona sia la data di Check-in che quella di Check-out prima di inviare!");
+    return;
+  }
+
+  if (new Date(checkout) <= new Date(checkin)) {
+    alert("La data di Check-out deve essere successiva a quella di Check-in!");
+    return;
+  }
+
+  const dataInFormattata = new Date(checkin).toLocaleDateString('it-IT');
+  const dataOutFormattata = new Date(checkout).toLocaleDateString('it-IT');
+
+  const messaggio = `Ciao! Ho visitato il vostro sito e vorrei informazioni sulla disponibilità per la ${nomeSuite} dal ${dataInFormattata} al ${dataOutFormattata}.`;
+  
+  const urlWhatsApp = `https://wa.me/393477640421?text=${encodeURIComponent(messaggio)}`;
+  window.open(urlWhatsApp, '_blank');
+}
