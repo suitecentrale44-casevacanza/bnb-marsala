@@ -152,6 +152,18 @@
         <li><a href="#posizione">📍 Posizione</a></li>
         <li><a href="#contatti">📱 Contatti</a></li>
       </ul>
+
+    <!-- SELETTORE LINGUA A PALLINA (Sulla destra) -->
+    <div class="lang-selector">
+      <button class="lang-btn" onclick="toggleLangMenu()" aria-label="Seleziona Lingua">
+        <span id="activeFlag">🇮🇹</span>
+      </button>
+      <div class="lang-dropdown" id="langDropdown">
+        <button onclick="selezionaLingua('it', '🇮🇹')">🇮🇹 Italiano</button>
+        <button onclick="selezionaLingua('en', '🇬🇧')">🇬🇧 English</button>
+
+      </div>
+    </div>
     </div>
   </nav>
 
@@ -560,20 +572,5 @@
     }
   </script>
 
-  <!-- Contenitore del Selettore Lingua -->
-<div id="google_translate_element"></div>
-
-<!-- Script di configurazione Google Traduttore -->
-<script type="text/javascript">
-  function googleTranslateElementInit() {
-    new google.translate.TranslateElement({
-      pageLanguage: 'it', // Lingua originale del sito
-      includedLanguages: 'en,de,fr,es,nl', // Lingue abilitate (Inglese, Tedesco, Francese, Spagnolo, Olandese)
-      layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-    }, 'google_translate_element');
-  }
-</script>
-<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-  
 </body>
 </html>
