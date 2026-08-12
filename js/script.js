@@ -24,7 +24,9 @@ function impostaCookieGoogleTranslate(lang) {
 window.cambiaLingua = function(codiceLingua, flagClass) {
   localStorage.setItem('lingua_selezionata', codiceLingua);
   localStorage.setItem('flag_class_selezionata', flagClass);
-  localStorage.setItem('salta_splash', 'true');
+  
+  // Imposta il flag temporaneo solo per questa sessione di cambio lingua
+  sessionStorage.setItem('salta_splash', 'true');
 
   const activeFlag = document.getElementById('activeFlag');
   if (activeFlag) {
@@ -45,30 +47,27 @@ window.nascondiSplash = function() {
   const splash = document.getElementById('splash-screen');
   if (!splash) return;
 
-  if (localStorage.getItem('salta_splash') === 'true') {
-    localStorage.removeItem('salta_splash');
-    splash.style.setProperty('display', 'none', 'important');
-    return;
-  }
-
-  if (!splash.classList.contains('fade-out')) {
+  // Se è visibile, applica la dissolvenza normale
+  if (splash.style.display !== 'none' && !splash.classList.contains('fade-out')) {
     splash.classList.add('fade-out');
     setTimeout(() => {
-      splash.style.setProperty('display', 'none', 'important');
+      splash.style.display = 'none';
     }, 800);
   }
 };
 
 /* ==========================================
-   INIZIALIZZAZIONE EVENTI
+   INIZIALIZZAZIONE EVENTI DOM
    ========================================== */
 document.addEventListener('DOMContentLoaded', function() {
+  // Ripristina la classe della bandiera salvata
   const flagClassSalvata = localStorage.getItem('flag_class_selezionata');
   const activeFlag = document.getElementById('activeFlag');
   if (flagClassSalvata && activeFlag) {
     activeFlag.className = 'flag-icon ' + flagClassSalvata;
   }
 
+  // Gestione menu a tendina lingua
   const langBtn = document.getElementById('langBtn');
   const langDropdown = document.getElementById('langDropdown');
 
@@ -85,7 +84,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  setTimeout(nascondiSplash, 2000);
+  // Se lo splash è visibile (apertura normale/F5), lo chiude dopo 1.5 secondi
+  setTimeout(nascondiSplash, 1500);
 });
 
 /* ==========================================
