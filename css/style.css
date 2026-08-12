@@ -268,22 +268,26 @@ header p {
 }
 
 /* ==========================================
-   6. PULSANTI (WHATSAPP E AIRBNB) - ALLINEAMENTO
+   6. PULSANTI (WHATSAPP, AIRBNB, BOOKING E CALENDARIO) - ALLINEAMENTO
    ========================================== */
 .pulsanti-prenotazione {
   display: flex;
-  flex-wrap: wrap; /* Permette di andare a capo se lo schermo è minuscolo */
+  flex-wrap: wrap; /* Permette di andare a capo se lo schermo è piccolo */
   gap: 0.5rem;
-  margin-top: auto; /* È QUESTO IL SEGRETO: spinge tutti i bottoni alla stessa altezza alla fine della carta! */
-  justify-content: center; /* Centra i bottoni per farli sembrare più eleganti */
+  margin-top: auto; /* Spinge tutti i bottoni alla stessa altezza alla base della scheda */
+  justify-content: center; /* Centra i bottoni per uniformità visiva */
 }
 
-/* Regole condivise per farli sembrare tutti identici e ordinati */
-.btn-wa, .btn-airbnb-official, .btn-calendario {
+/* Regole condivise per tutti i bottoni per eliminare ridondanze */
+.btn-wa, 
+.btn-airbnb-official, 
+.btn-booking-official, 
+.btn-calendario {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  gap: 6px;
+  color: #ffffff !important;
   padding: 0.6rem 1rem;
   border-radius: 8px;
   text-decoration: none;
@@ -292,70 +296,53 @@ header p {
   border: none;
   cursor: pointer;
   transition: transform 0.2s ease, background-color 0.2s ease;
-  flex: 1 1 auto; /* Permette ai bottoni di adattarsi senza deformarsi */
+  flex: 1 1 auto; /* Adatta i bottoni in modo fluido allo spazio disponibile */
 }
 
+/* WhatsApp */
 .btn-wa {
-  background: #25d366;
+  background-color: #25d366;
 }
 .btn-wa:hover {
   background-color: #1eb954;
   transform: translateY(-2px);
 }
 
+/* Airbnb */
 .btn-airbnb-official {
   background-color: #ff385c;
-  gap: 6px;
 }
 .btn-airbnb-official:hover {
   background-color: #e00b41;
   transform: translateY(-2px);
 }
 
+/* Booking.com */
+.btn-booking-official {
+  background-color: #003580;
+}
+.btn-booking-official:hover {
+  background-color: #00224f;
+  transform: translateY(-2px);
+}
+
+/* Calendario */
 .btn-calendario {
   background-color: var(--blu-mare, #0077b6);
-  gap: 6px;
 }
 .btn-calendario:hover {
   background-color: #005f8f;
   transform: translateY(-2px);
 }
 
-.airbnb-icon {
-  width: 16px;
-  height: 16px;
-  fill: #ffffff;
-}
-
-.btn-booking-official {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  background-color: #003580;
-  color: #ffffff !important;
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-  text-decoration: none;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.2s ease;
-  flex: 1 1 auto;
-}
-
-.btn-booking-official:hover {
-  background-color: #00224f;
-  transform: translateY(-2px);
-}
-
+/* Icone SVG condivise */
+.airbnb-icon, 
 .booking-icon {
   width: 16px;
   height: 16px;
   fill: #ffffff;
-}
-/* ==========================================
+  flex-shrink: 0;
+}/* ==========================================
    7. MAPPA E FOOTER
    ========================================== */
 .map-container {
