@@ -17,3 +17,42 @@ class AirbnbBtn extends HTMLElement {
 
 // Registrazione del componente personalizzato <airbnb-button>
 customElements.define('airbnb-button', AirbnbBtn);
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'it',
+      includedLanguages: 'en,de,fr,es,nl',
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const langBtn = document.getElementById('langBtn');
+    const langDropdown = document.getElementById('langDropdown');
+
+    if (langBtn && langDropdown) {
+      langBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        langDropdown.classList.toggle('show');
+      });
+
+      document.addEventListener('click', function(e) {
+        if (!langDropdown.contains(e.target) && !langBtn.contains(e.target)) {
+          langDropdown.classList.remove('show');
+        }
+      });
+    }
+  });
+
+  function cambiaLingua(codiceLingua, flagEmoji) {
+    document.getElementById('activeFlag').textContent = flagEmoji;
+    document.getElementById('langDropdown').classList.remove('show');
+
+    const selectElem = document.querySelector('.goog-te-combo');
+    if (selectElem) {
+      selectElem.value = (codiceLingua === 'it') ? '' : codiceLingua;
+      selectElem.dispatchEvent(new Event('change'));
+    }
+  }
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
