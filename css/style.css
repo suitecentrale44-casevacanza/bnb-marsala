@@ -122,13 +122,12 @@ h3 {
   color: var(--blu-mare);
 }
 
-/* Contenitore del selettore */
+/* Contenitore del selettore lingua */
 .lang-selector {
   position: relative;
   display: inline-block;
 }
 
-/* Pulsante principale */
 .lang-btn-rect {
   width: 40px;
   height: 28px;
@@ -150,7 +149,6 @@ h3 {
   transform: scale(1.05);
 }
 
-/* Struttura base per le icone delle bandiere */
 .flag-icon {
   width: 28px;
   height: 20px;
@@ -160,9 +158,10 @@ h3 {
   background-repeat: no-repeat;
   border-radius: 3px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  pointer-events: none;
 }
 
-/* Immagini di sfondo delle singole bandiere */
+/* Bandiere ad alta definizione */
 .flag-it { background-image: url('https://flagcdn.com/w40/it.png'); }
 .flag-gb { background-image: url('https://flagcdn.com/w40/gb.png'); }
 .flag-de { background-image: url('https://flagcdn.com/w40/de.png'); }
@@ -170,7 +169,6 @@ h3 {
 .flag-es { background-image: url('https://flagcdn.com/w40/es.png'); }
 .flag-nl { background-image: url('https://flagcdn.com/w40/nl.png'); }
 
-/* Menu a tendina con solo icone */
 .lang-dropdown {
   display: none;
   position: absolute;
@@ -181,7 +179,6 @@ h3 {
   border-radius: 8px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
   z-index: 99999;
-  min-width: unset;
   padding: 6px;
   flex-direction: column;
   gap: 6px;
@@ -192,7 +189,6 @@ h3 {
 }
 
 .lang-dropdown button {
-  width: 100%;
   padding: 4px;
   border: none;
   background: none;
@@ -296,7 +292,6 @@ header p {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
   background-color: #25d366;
   color: #ffffff !important;
   font-size: 0.9rem;
@@ -311,13 +306,6 @@ header p {
 .btn-wa-card:hover {
   background-color: #1eb954;
   transform: scale(1.05);
-}
-
-.wa-icon {
-  width: 18px;
-  height: 18px;
-  fill: #ffffff;
-  flex-shrink: 0;
 }
 
 /* ==========================================
@@ -411,8 +399,7 @@ header p {
 .btn-wa, 
 .btn-airbnb-official, 
 .btn-booking-official, 
-.btn-calendario,
-.btn-wa-card {
+.btn-calendario {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -429,8 +416,8 @@ header p {
   flex: 1 1 auto;
 }
 
-.btn-wa, .btn-wa-card { background-color: #25d366; }
-.btn-wa:hover, .btn-wa-card:hover { background-color: #1eb954; transform: translateY(-2px); }
+.btn-wa { background-color: #25d366; }
+.btn-wa:hover { background-color: #1eb954; transform: translateY(-2px); }
 
 .btn-airbnb-official { background-color: #ff385c; }
 .btn-airbnb-official:hover { background-color: #e00b41; transform: translateY(-2px); }
@@ -441,95 +428,8 @@ header p {
 .btn-calendario { background-color: var(--blu-mare); }
 .btn-calendario:hover { background-color: #005f8f; transform: translateY(-2px); }
 
-.airbnb-icon, .booking-icon, .wa-icon {
-  width: 16px;
-  height: 16px;
-  fill: #ffffff;
-  flex-shrink: 0;
-}
-
 /* ==========================================
-   7. SEZIONE RECENSIONI E BADGE
-   ========================================== */
-.grid-recensioni {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.2rem;
-  margin-top: 1rem;
-}
-
-.card-recensione {
-  background: #ffffff;
-  border: 1px solid var(--grigio-bordo);
-  border-radius: 10px;
-  padding: 1.2rem;
-  box-shadow: 0 4px 10px rgba(0, 119, 182, 0.08);
-  display: flex;
-  flex-direction: column;
-}
-
-.recensione-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.stelle {
-  color: var(--giallo-limone);
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-}
-
-.card-recensione p {
-  font-size: 0.9rem;
-  color: var(--blu-notte-testo);
-  line-height: 1.5;
-  font-style: italic;
-}
-
-.badge-fonte {
-  font-size: 0.75rem;
-  font-weight: bold;
-  padding: 3px 8px;
-  border-radius: 12px;
-  color: #ffffff;
-}
-
-.badge-fonte.google, .g-link { background-color: #4285f4; }
-.badge-fonte.airbnb, .a-link { background-color: #ff385c; }
-.badge-fonte.booking, .b-link { background-color: #003580; }
-
-.link-recensioni-ufficiali {
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--grigio-bordo);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--grigio-testo-muto);
-}
-
-.btn-link-fonte {
-  padding: 6px 12px;
-  border-radius: 6px;
-  text-decoration: none;
-  color: #ffffff !important;
-  font-weight: bold;
-  font-size: 0.8rem;
-  transition: opacity 0.2s ease;
-}
-
-.btn-link-fonte:hover {
-  opacity: 0.85;
-}
-
-/* ==========================================
-   8. SOCIAL BADGES, MAPPA E FOOTER
+   7. SOCIAL, MAPPA E FOOTER
    ========================================== */
 .social-grid {
   display: flex;
@@ -542,7 +442,6 @@ header p {
 .social-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
   padding: 6px 14px;
   background-color: #f8fafc;
   border: 1px solid var(--grigio-bordo);
@@ -558,12 +457,6 @@ header p {
   background-color: #ffffff;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   transform: translateY(-1px);
-}
-
-.badge-icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
 }
 
 .map-container {
@@ -595,7 +488,7 @@ footer p {
 }
 
 /* ==========================================
-   9. ELEMENTI INTERATTIVI (SPLASH, MODAL, IFRAME)
+   8. ELEMENTI INTERATTIVI (SPLASH, MODAL)
    ========================================== */
 #splash-screen {
   position: fixed;
@@ -695,7 +588,7 @@ footer p {
 }
 
 /* ==========================================
-   10. WIDGET WHATSAPP & RICHIESTA DATE
+   9. WIDGET WHATSAPP
    ========================================== */
 .whatsapp-float {
   position: fixed;
@@ -795,7 +688,7 @@ footer p {
 }
 
 /* ==========================================
-   11. MEDIA QUERIES (RESPONSIVITÀ)
+   10. RESPONSIVITÀ
    ========================================== */
 @media (min-width: 768px) {
   .grid-3-case {
