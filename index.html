@@ -30,16 +30,15 @@
     </button>
   </div>
 
-  <!-- Splash Screen / Schermata di Benvenuto -->
+  <!-- Splash Screen -->
   <div id="splash-screen">
     <img src="image/Logo_Suite.jpg" alt="Suite Centrale 44 Logo" class="splash-logo">
   </div>
+  <!-- Script sincrono immediato per disattivare lo splash al cambio lingua -->
   <script>
-    // Consuma il flag temporaneo al ricaricamento da cambio lingua
-    if (sessionStorage.getItem('salta_splash') === 'true') {
-      sessionStorage.removeItem('salta_splash');
-      var splashElem = document.getElementById('splash-screen');
-      if (splashElem) splashElem.style.display = 'none';
+    if (localStorage.getItem('salta_splash') === 'true') {
+      var s = document.getElementById('splash-screen');
+      if (s) s.style.setProperty('display', 'none', 'important');
     }
   </script>
 
@@ -100,6 +99,7 @@
   </header>
 
   <main class="container">
+    <!-- Sezione Strutture -->
     <section id="strutture" class="section">
       <h2>🏠 Le Nostre Strutture</h2>
       <div class="grid-3-case">
