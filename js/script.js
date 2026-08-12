@@ -166,3 +166,46 @@ window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
   const urlWhatsApp = `https://wa.me/393477640421?text=${encodeURIComponent(messaggio)}`;
   window.open(urlWhatsApp, '_blank');
 }
+document.addEventListener('DOMContentLoaded', function() {
+  const langBtn = document.getElementById('langBtn');
+  const langDropdown = document.getElementById('langDropdown');
+
+  // Ripristina la classe della bandiera salvata
+  const flagClassSalvata = localStorage.getItem('flag_class_selezionata');
+  const activeFlag = document.getElementById('activeFlag');
+  if (flagClassSalvata && activeFlag) {
+    activeFlag.className = 'flag-icon ' + flagClassSalvata;
+  }
+
+  if (langBtn && langDropdown) {
+    langBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      langDropdown.classList.toggle('show');
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!langDropdown.contains(e.target) && !langBtn.contains(e.target)) {
+        langDropdown.classList.remove('show');
+      }
+    });
+  }
+});
+
+window.cambiaLingua = function(codiceLingua, flagClass) {
+  // Salva la classe della bandiera e il codice della lingua
+  localStorage.setItem('lingua_selezionata', codiceLingua);
+  localStorage.setItem('flag_class_selezionata', flagClass);
+
+  // Aggiorna la classe del pulsante visibile
+  const activeFlag = document.getElementById('activeFlag');
+  if (activeFlag) {
+    activeFlag.className = 'flag-icon ' + flagClass;
+  }
+
+  const langDropdown = document.getElementById('langDropdown');
+  if (langDropdown) langDropdown.classList.remove('show');
+
+  // Gestione cookie e ricarica della pagina
+  impostaCookieGoogleTranslate(codiceLingua);
+  window.location.reload();
+}
