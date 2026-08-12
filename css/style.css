@@ -516,20 +516,18 @@ footer p {
 .iframe-container {
   position: relative;
   width: 100%;
-  height: 300px; /* Fissiamo l'altezza visibile */
-  overflow: hidden; /* Tutto ciò che esce da 300px viene tagliato (ghigliottinato!) */
+  height: 380px; /* Aumentata per mostrare interamente le caselle del mese */
+  overflow: hidden;
   border-radius: 8px;
   background-color: #ffffff;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
   border: 1px solid #e2e8f0;
-  margin-top: 15px; /* Spazio dal titolo del popup */
 }
 
 .iframe-container iframe {
   display: block;
   width: 100%;
-  height: 360px !important; /* Facciamo il calendario più alto del suo contenitore */
-  margin-bottom: -60px; /* Tiriamo il calendario in su, nascondendo la barra in basso! */
+  height: 430px !important; /* Garantisce lo spazio per i giorni della settimana e gli eventi */
+  margin-bottom: -50px; /* Rifila solo la fascia inferiore di Google */
   border: none;
 }
 
