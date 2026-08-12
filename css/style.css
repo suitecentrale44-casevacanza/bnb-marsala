@@ -327,6 +327,34 @@ header p {
   fill: #ffffff;
 }
 
+.btn-booking-official {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: #003580;
+  color: #ffffff !important;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  flex: 1 1 auto;
+}
+
+.btn-booking-official:hover {
+  background-color: #00224f;
+  transform: translateY(-2px);
+}
+
+.booking-icon {
+  width: 16px;
+  height: 16px;
+  fill: #ffffff;
+}
 /* ==========================================
    7. MAPPA E FOOTER
    ========================================== */
