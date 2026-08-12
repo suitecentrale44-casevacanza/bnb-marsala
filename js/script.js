@@ -45,32 +45,29 @@ customElements.define('airbnb-button', AirbnbBtn);
   });
 
 function cambiaLingua(codiceLingua, flagEmoji) {
-  // 1. Mostra la bandiera selezionata nel pulsante
   const activeFlag = document.getElementById('activeFlag');
   const langDropdown = document.getElementById('langDropdown');
 
+  // Aggiorna l'icona della bandiera sul pulsante
   if (activeFlag) activeFlag.textContent = flagEmoji;
   if (langDropdown) langDropdown.classList.remove('show');
 
-  // 2. Gestione della traduzione
-  const selectElem = document.querySelector('.goog-te-combo');
-
   if (codiceLingua === 'it') {
-    // Ripristina la lingua originale italiana azzerando Google Translate
-    if (selectElem) {
-      selectElem.value = '';
-      selectElem.dispatchEvent(new Event('change'));
-    }
-    // Cancella il cookie della traduzione
+    // 1. Elimina i cookie di traduzione impostati da Google Translate
     document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=" + window.location.hostname + "; path=/;";
+    
+    // 2. Ricarica la pagina per mostrare il testo originale italiano in modo pulito
+    window.location.reload();
   } else {
-    // Applica la traduzione selezionata
+    // Seleziona la lingua nel menu nascosto di Google Translate
+    const selectElem = document.querySelector('.goog-te-combo');
     if (selectElem) {
       selectElem.value = codiceLingua;
       selectElem.dispatchEvent(new Event('change'));
     }
   }
 }
+
 </script>
 <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
