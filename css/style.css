@@ -716,3 +716,55 @@ footer p {
   height: 18px;
   flex-shrink: 0;
 }
+/* ==========================================
+   16. STILI SEZIONE RECENSIONI
+   ========================================== */
+.grid-recensioni {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.2rem;
+  margin-top: 1rem;
+}
+
+.card-recensione {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.2rem;
+  box-shadow: 0 4px 10px rgba(0, 119, 182, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.recensione-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.stelle {
+  color: #ffb703; /* Colore giallo per le stelle */
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-recensione p {
+  font-size: 0.9rem;
+  color: #1d3557;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* Badge colorati per le piattaforme */
+.badge-fonte {
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 3px 8px;
+  border-radius: 12px;
+  color: #ffffff;
+}
+
+.badge-fonte.google { background-color: #4285f4; }
+.badge-fonte.airbnb { background-color: #ff385c; }
+.badge-fonte.booking { background-color: #003580; }
