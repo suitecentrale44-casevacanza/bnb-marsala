@@ -134,37 +134,42 @@ h3 {
   display: inline-block;
 }
 
-/* Pulsante Rettangolare */
+/* Pulsante Rettangolare ad alto riempimento (senza sfondo bianco e senza scritte) */
 .lang-btn-rect {
-  width: 48px;
-  height: 32px;
-  border-radius: 6px;
+  width: 42px;
+  height: 28px;
+  border-radius: 5px;
   border: 1px solid #cbd5e1;
-  background-color: #ffffff;
+  background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
+  overflow: hidden;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 .lang-btn-rect:hover {
   border-color: #0284c7;
-  background-color: #f8fafc;
+  transform: scale(1.05);
 }
 
-.flag-icon {
-  font-size: 1.3rem;
+/* Dimensione della bandiera per riempire interamente il rettangolo */
+.lang-btn-rect .flag-icon {
+  font-size: 1.8rem;
   line-height: 1;
+  transform: scale(1.25);
+  display: block;
 }
 
-/* Menu a tendina */
+/* Menu a tendina delle lingue */
 .lang-dropdown {
   display: none;
   position: absolute;
   right: 0;
-  top: 40px;
+  top: 36px;
   background-color: #ffffff;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
@@ -195,7 +200,7 @@ h3 {
   background-color: #f1f5f9;
 }
 
-/* Nasconde gli elementi grafici invasivi di Google Translate */
+/* Nasconde elementi nativi di Google Translate */
 .goog-te-banner-frame, 
 .skiptranslate,
 #goog-gt-tt { 
@@ -205,7 +210,6 @@ h3 {
 body { 
   top: 0px !important; 
 }
-
 /* Rimuove la barra e i banner automatici di Google Translate */
 .goog-te-banner-frame, 
 .skiptranslate,
