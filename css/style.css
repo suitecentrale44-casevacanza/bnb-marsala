@@ -127,43 +127,48 @@ h3 {
   padding: 0 20px;
 }
 
-/* Stile Selettore Lingua a Pallina */
+/* Stile Selettore Lingua*/
+/* Contenitore selettore */
 .lang-selector {
   position: relative;
-  margin-left: 15px;
+  display: inline-block;
 }
 
-.lang-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid #cbd5e1;
+/* Pulsante Rettangolare con Bandiera */
+.lang-btn-rect {
+  width: 46px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
   background-color: #ffffff;
-  font-size: 1.3rem;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
 }
 
-.lang-btn:hover {
-  transform: scale(1.08);
+.lang-btn-rect:hover {
   border-color: #0284c7;
+  transform: translateY(-1px);
 }
 
-/* Menu a tendina delle lingue */
+.flag-icon {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+/* Menu a tendina */
 .lang-dropdown {
   display: none;
   position: absolute;
   right: 0;
-  top: 50px;
+  top: 38px;
   background-color: #ffffff;
   border: 1px solid #cbd5e1;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 10000;
   min-width: 140px;
 }
@@ -174,7 +179,7 @@ h3 {
 
 .lang-dropdown button {
   width: 100%;
-  padding: 10px 15px;
+  padding: 8px 12px;
   border: none;
   background: none;
   text-align: left;
@@ -182,7 +187,7 @@ h3 {
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   color: #0f172a;
 }
 
@@ -190,9 +195,16 @@ h3 {
   background-color: #f1f5f9;
 }
 
-/* Nasconde elementi visivi indesiderati di Google Translate */
-.goog-te-banner-frame { display: none !important; }
-body { top: 0px !important; }
+/* Rimuove la barra e i banner automatici di Google Translate */
+.goog-te-banner-frame, 
+.skiptranslate,
+#goog-gt-tt { 
+  display: none !important; 
+}
+
+body { 
+  top: 0px !important; 
+}
 
 /* ==========================================
    3. HEADER CON LOGO
