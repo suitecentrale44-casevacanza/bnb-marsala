@@ -153,17 +153,24 @@
         <li><a href="#contatti">📱 Contatti</a></li>
       </ul>
 
-    <!-- SELETTORE LINGUA A PALLINA (Sulla destra) -->
-    <div class="lang-selector">
-      <button class="lang-btn" onclick="toggleLangMenu()" aria-label="Seleziona Lingua">
-        <span id="activeFlag">🇮🇹</span>
-      </button>
-      <div class="lang-dropdown" id="langDropdown">
-        <button onclick="selezionaLingua('it', '🇮🇹')">🇮🇹 Italiano</button>
-        <button onclick="selezionaLingua('en', '🇬🇧')">🇬🇧 English</button>
+    <!-- Selettore Lingua Rettangolare (Senza testo del codice lingua) -->
+<div class="lang-selector">
+  <button class="lang-btn-rect" onclick="toggleLangMenu()" aria-label="Seleziona Lingua">
+    <span id="activeFlag" class="flag-icon">🇮🇹</span>
+  </button>
+  
+  <div class="lang-dropdown" id="langDropdown">
+    <button onclick="cambiaLingua('it', '🇮🇹')"><span class="flag-icon">🇮🇹</span> Italiano</button>
+    <button onclick="cambiaLingua('en', '🇬🇧')"><span class="flag-icon">🇬🇧</span> English</button>
+    <button onclick="cambiaLingua('de', '🇩🇪')"><span class="flag-icon">🇩🇪</span> Deutsch</button>
+    <button onclick="cambiaLingua('fr', '🇫🇷')"><span class="flag-icon">🇫🇷</span> Français</button>
+    <button onclick="cambiaLingua('es', '🇪🇸')"><span class="flag-icon">🇪🇸</span> Español</button>
+    <button onclick="cambiaLingua('nl', '🇳🇱')"><span class="flag-icon">🇳🇱</span> Nederlands</button>
+  </div>
+</div>
 
-      </div>
-    </div>
+<!-- Contenitore Google Translate (Nascosto) -->
+<div id="google_translate_element" style="display:none;"></div>
     </div>
   </nav>
 
