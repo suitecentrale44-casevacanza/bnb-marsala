@@ -169,56 +169,54 @@ window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
 };
 
 /* ==========================================
-   11. MOTORE GALLERIE FOTO AUTOMATICO (MULTI-ESTENSIONE)
+   11. MOTORE GALLERIE FOTO (GRIGLIA + ESPANSIONE)
    ========================================== */
 
-// Abbiamo rimosso "estensione" da qui, ora è tutto automatico!
 const configurazioneGallerie = {
-  'centrale': { cartella: 'image/suite-centrale/' },
-  'corallo':  { cartella: 'image/suite-corallo/' },
-  'oceano':   { cartella: 'image/suite-oceano/' }
+  'centrale': { cartella: 'image/suite-centrale/', titolo: 'Suite Centrale 44' },
+  'corallo':  { cartella: 'image/suite-corallo/',  titolo: 'Suite Corallo' },
+  'oceano':   { cartella: 'image/suite-oceano/',   titolo: 'Suite Oceano' }
 };
 
-// Elenco delle estensioni da provare, in ordine di priorità
 const estensioniPossibili = ["jpeg", "jpg", "JPEG", "JPG", "png"];
 
 let playlistFotoAttuale = [];
 let indiceFotoAttuale = 0;
-let ricercaInCorso = false; // Protezione per evitare che l'utente clicchi due volte
+let ricercaInCorso = false;
 
+// 1. APRE LA FINESTRA PRINCIPALE (MODALITÀ GRIGLIA)
 window.apriGalleria = function(nomeSuite) {
   if (ricercaInCorso) return; 
   ricercaInCorso = true;
   
   const config = configurazioneGallerie[nomeSuite];
   playlistFotoAttuale = [];
-  indiceFotoAttuale = 0;
   
-  // Blocca la pagina sotto e mostra la finestra modale
+  // Modifica il titolo in alto (es. "Galleria Foto - Suite Corallo")
+  document.getElementById('titolo-galleria').innerText = `Galleria Foto - ${config.titolo}`;
+  
+  // Prepara la griglia pulendola dai caricamenti precedenti
+  const griglia = document.getElementById('galleria-griglia');
+  griglia.innerHTML = '<div id="stato-ricerca" style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">Ricerca foto in corso, attendere...</div>';
+  
+  // Mostra il contenitore principale bloccando lo scroll della pagina sotto
   const modal = document.getElementById('modal-galleria');
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden'; 
   
-  const contatore = document.getElementById('contatore-foto');
-  const imgElement = document.getElementById('img-galleria');
-  
-  contatore.innerText = "Ricerca automatica foto...";
-  imgElement.src = ""; // Svuota l'immagine precedente
-  
-  // Inizia la ricerca dalla foto numero 1, provando la primissima estensione (indice 0)
+  // Inizia la ricerca automatica sicura (parte dalla foto 1, estensione 0)
   cercaFotoInModoSicuro(config.cartella, 1, 0);
 };
 
+// 2. FUNZIONE CHE CERCA LE FOTO NEL SERVER
 function cercaFotoInModoSicuro(cartella, numero, indiceEst) {
-  // Se abbiamo provato TUTTE le estensioni per questo numero e nessuna funziona,
-  // significa che non ci sono più foto in cartella. Abbiamo finito!
   if (indiceEst >= estensioniPossibili.length) {
+    // Abbiamo provato tutte le estensioni e fallito: le foto sono finite!
     ricercaInCorso = false; 
-    
-    if (playlistFotoAttuale.length === 0) {
-      document.getElementById('contatore-foto').innerText = "Nessuna foto trovata nella cartella.";
-    } else {
-      aggiornaVistaFoto(); // Imposta il contatore finale (es. "1 / 15")
+    const stato = document.getElementById('stato-ricerca');
+    if (stato) {
+      stato.innerText = playlistFotoAttuale.length === 0 ? "Nessuna foto trovata nella cartella." : "";
+      if(playlistFotoAttuale.length > 0) stato.remove();
     }
     return;
   }
@@ -227,53 +225,78 @@ function cercaFotoInModoSicuro(cartella, numero, indiceEst) {
   const percorso = `${cartella}${numero}.${estensioneCorrente}`;
   const img = new Image();
   
-  // CASO A: Il server risponde che la foto ESISTE!
+  // CASO A: La foto ESISTE
   img.onload = function() {
+    // Rimuove la scritta "Ricerca in corso" appena trova la prima foto
+    const stato = document.getElementById('stato-ricerca');
+    if(stato) stato.remove();
+
+    // Aggiunge il percorso alla nostra playlist
+    const indiceAssegnato = playlistFotoAttuale.length;
     playlistFotoAttuale.push(percorso);
     
-    // Mostriamo immediatamente la prima foto appena trovata per non far aspettare
-    if (numero === 1) {
-      aggiornaVistaFoto();
-    } else {
-      document.getElementById('contatore-foto').innerText = `${indiceFotoAttuale + 1} / ${playlistFotoAttuale.length}`;
-    }
+    // Crea la miniatura da mettere nella griglia!
+    const griglia = document.getElementById('galleria-griglia');
+    const imgThumb = document.createElement('img');
+    imgThumb.src = percorso;
+    imgThumb.loading = "lazy"; // Ottimizzazione prestazioni
     
-    // Ora cerchiamo la foto successiva (numero + 1), ripartendo dalla prima estensione (0)
+    // Quando clicco sulla miniatura, si apre la modalità "Espansa"
+    imgThumb.onclick = function() {
+      apriFotoEspansa(indiceAssegnato);
+    };
+    
+    griglia.appendChild(imgThumb);
+    
+    // Cerca la foto successiva
     cercaFotoInModoSicuro(cartella, numero + 1, 0);
   };
   
-  // CASO B: La foto NON ESISTE con questa estensione. Proviamo la successiva nell'elenco!
+  // CASO B: La foto NON ESISTE, provo la prossima estensione
   img.onerror = function() {
     cercaFotoInModoSicuro(cartella, numero, indiceEst + 1);
   };
   
-  // Questa riga fa partire la verifica sicura chiedendo la foto al server
   img.src = percorso;
 }
 
+// 3. APRE LA FOTO SINGOLA INGRANDITA
+window.apriFotoEspansa = function(indice) {
+  indiceFotoAttuale = indice;
+  const contenitoreEspanso = document.getElementById('galleria-espansa');
+  contenitoreEspanso.style.display = 'flex';
+  aggiornaVistaFoto();
+};
+
+// 4. CHIUDE LA FOTO INGRANDITA (TORNA ALLA GRIGLIA)
+window.chiudiFotoEspansa = function() {
+  const contenitoreEspanso = document.getElementById('galleria-espansa');
+  contenitoreEspanso.style.display = 'none';
+};
+
+// 5. CHIUDE TUTTA LA GALLERIA (TORNA AL SITO)
+window.chiudiGalleria = function() {
+  const modal = document.getElementById('modal-galleria');
+  modal.style.display = 'none';
+  // Chiude anche quella espansa, per sicurezza, se era aperta
+  chiudiFotoEspansa();
+  document.body.style.overflow = 'auto'; // Riattiva lo scroll del sito
+};
+
+// 6. SCORRE LE FOTO QUANDO SONO INGRANDITE
 window.cambiaFotoGalleria = function(direzione) {
-  // Evita errori se l'utente clicca le frecce mentre sta ancora caricando
   if (playlistFotoAttuale.length === 0) return;
 
   indiceFotoAttuale += direzione;
-
-  // Effetto "circolare": se scorri oltre l'ultima, torni alla prima
   if (indiceFotoAttuale < 0) {
     indiceFotoAttuale = playlistFotoAttuale.length - 1;
   } else if (indiceFotoAttuale >= playlistFotoAttuale.length) {
     indiceFotoAttuale = 0;
   }
-
   aggiornaVistaFoto();
 };
 
-window.chiudiGalleria = function() {
-  const modal = document.getElementById('modal-galleria');
-  modal.style.display = 'none';
-  // Sblocca la pagina per poter scorrere di nuovo il sito
-  document.body.style.overflow = 'auto'; 
-};
-
+// 7. AGGIORNA IMMAGINE E CONTATORE
 function aggiornaVistaFoto() {
   const imgElement = document.getElementById('img-galleria');
   const contatore = document.getElementById('contatore-foto');
@@ -282,12 +305,19 @@ function aggiornaVistaFoto() {
   contatore.innerText = `${indiceFotoAttuale + 1} / ${playlistFotoAttuale.length}`;
 }
 
-// Navigazione comoda e sicura con la tastiera del computer
+// 8. COMANDI DA TASTIERA
 document.addEventListener('keydown', function(event) {
-  const modal = document.getElementById('modal-galleria');
-  if (modal && modal.style.display === 'flex') {
+  const espansaAperta = document.getElementById('galleria-espansa').style.display === 'flex';
+  const grigliaAperta = document.getElementById('modal-galleria').style.display === 'flex';
+  
+  // Se stiamo guardando la foto ingrandita:
+  if (espansaAperta) {
     if (event.key === 'ArrowLeft') cambiaFotoGalleria(-1);
     if (event.key === 'ArrowRight') cambiaFotoGalleria(1);
-    if (event.key === 'Escape') chiudiGalleria();
+    if (event.key === 'Escape') chiudiFotoEspansa(); // L'ESC torna alla griglia
+  } 
+  // Se stiamo guardando la griglia (ma non la foto espansa):
+  else if (grigliaAperta) {
+    if (event.key === 'Escape') chiudiGalleria(); // L'ESC torna al sito
   }
 });
