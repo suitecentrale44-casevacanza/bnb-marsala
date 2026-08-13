@@ -982,3 +982,36 @@ html, body {
 
 .cal-legend .dot.lib { background-color: #e0f2fe; border: 1px solid #0369a1; }
 .cal-legend .dot.occ { background-color: #fee2e2; border: 1px solid #dc2626; }
+
+
+/* ==========================================
+   13. STILI SELEZIONE INTERATTIVA CALENDARIO
+   ========================================== */
+.cal-day.disponibile {
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.cal-day.disponibile:hover {
+  transform: scale(1.1);
+  background-color: #93c5fd;
+}
+
+.cal-day.occupato {
+  pointer-events: none;
+}
+
+.cal-day.selezionato-checkin,
+.cal-day.selezionato-checkout {
+  background-color: #25d366 !important;
+  color: #ffffff !important;
+  font-weight: bold;
+  border-radius: 6px;
+  transform: scale(1.05);
+}
+
+.cal-day.in-range {
+  background-color: #bbf7d0 !important;
+  color: #14532d !important;
+  font-weight: 600;
+}
