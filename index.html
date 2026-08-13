@@ -72,9 +72,9 @@
 
       <!-- Selettore Lingua (Solo Bandiere) -->
       <div class="lang-selector">
-        <button type="button" class="lang-btn-rect" id="langBtn" aria-label="Seleziona Lingua">
-          <span id="activeFlag" class="flag-icon flag-it"></span>
-        </button>
+  <button type="button" class="lang-btn-rect" id="langBtn" onclick="toggleLangDropdown(event)" aria-label="Seleziona Lingua">
+    <span id="activeFlag" class="flag-icon flag-it"></span>
+  </button>
         
         <div class="lang-dropdown" id="langDropdown">
           <button type="button" onclick="cambiaLingua('it', 'flag-it')" aria-label="Italiano">
