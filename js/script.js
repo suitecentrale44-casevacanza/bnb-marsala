@@ -178,7 +178,7 @@ window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
 };
 
 /* ==========================================
-   5. MOTORE GALLERIA DINAMICO E AUTOMATICO
+   5. MOTORE GALLERIA ULTRA-VELOCE (LOTTI PARALLELI)
    ========================================== */
 
 const configurazioneGallerie = {
@@ -187,12 +187,12 @@ const configurazioneGallerie = {
   'oceano':   { cartella: 'image/suite-oceano/',   titolo: 'Suite Oceano' }
 };
 
-// Formati supportati (WebP per primo perché è il più leggero e veloce)
+// Formati supportati (WebP per primo perché è il più rapido da scaricare)
 const estensioniPossibili = ["webp", "jpg", "png", "jpeg", "WEBP", "JPG", "PNG", "JPEG"];
 
 let playlistFotoAttuale = [];
 let indiceFotoAttuale = 0;
-let sessioneGalleriaId = 0; // Previene sovrapposizioni se si aprono/chiudono modali velocemente
+let sessioneGalleriaId = 0;
 
 window.apriGalleria = async function(nomeSuite) {
   const config = configurazioneGallerie[nomeSuite];
@@ -204,48 +204,69 @@ window.apriGalleria = async function(nomeSuite) {
 
   document.getElementById('titolo-galleria').innerText = `Galleria Foto - ${config.titolo}`;
   const griglia = document.getElementById('galleria-griglia');
-  
-  // Messaggio temporaneo di caricamento
-  griglia.innerHTML = '<div id="stato-ricerca" style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">⚡ Caricamento foto...</div>';
+  griglia.innerHTML = '<div style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">⚡ Caricamento foto...</div>';
 
   const modal = document.getElementById('modal-galleria');
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 
-  let numero = 0; // LA NUMERAZIONE PARTE DA 0!
+  let numeroInizio = 0; // Numerazione parte da 0
+  const DIMENSIONE_LOTTO = 10; // Cerca 10 foto contemporaneamente in parallelo!
+  let continuaScansione = true;
   let trovataAlmenoUna = false;
 
-  // Scansione progressiva: cerca 0.*, poi 1.*, poi 2.* finché non trova buchi
-  while (true) {
+  while (continuaScansione) {
     if (sessioneGalleriaId !== sessioneCorrente) return;
 
-    // Cerca in parallelo tra le estensioni per l'indice corrente
-    const percorsoEsistente = await cercaPrimoFormatoValido(config.cartella, numero);
+    // Crea 10 richieste parallele [numeroInizio ... numeroInizio + 9]
+    const promesseLotto = [];
+    for (let i = 0; i < DIMENSIONE_LOTTO; i++) {
+      const idx = numeroInizio + i;
+      promesseLotto.push(
+        cercaPrimoFormatoValido(config.cartella, idx).then(percorso => ({ idx, percorso }))
+      );
+    }
+
+    // Attende tutte e 10 le verifiche nello stesso identico istante
+    const risultati = await Promise.all(promesseLotto);
 
     if (sessioneGalleriaId !== sessioneCorrente) return;
 
-    if (percorsoEsistente) {
-      if (!trovataAlmenoUna) {
-        trovataAlmenoUna = true;
-        griglia.innerHTML = ''; // Rimuove il testo "Caricamento" appena trova la prima foto
+    // Ordina per indice numerico corretto (0, 1, 2, 3...)
+    risultati.sort((a, b) => a.idx - b.idx);
+
+    let trovateNelLotto = 0;
+
+    for (const item of risultati) {
+      if (item.percorso) {
+        trovateNelLotto++;
+        if (!trovataAlmenoUna) {
+          trovataAlmenoUna = true;
+          griglia.innerHTML = ''; // Pulisce il messaggio di caricamento
+        }
+
+        const indexInLista = playlistFotoAttuale.length;
+        playlistFotoAttuale.push(item.percorso);
+
+        // Rendering immediato della miniatura
+        const imgThumb = document.createElement('img');
+        imgThumb.src = item.percorso;
+        imgThumb.loading = "lazy";
+        imgThumb.decoding = "async"; // Decodifica in background senza bloccare lo schermo
+        imgThumb.alt = `${config.titolo} - Foto ${item.idx}`;
+        imgThumb.onclick = () => apriFotoEspansa(indexInLista);
+        griglia.appendChild(imgThumb);
+      } else {
+        // Appena si interrompe la sequenza numerica, fermiamo la ricerca
+        continuaScansione = false;
+        break;
       }
+    }
 
-      const indexInLista = playlistFotoAttuale.length;
-      playlistFotoAttuale.push(percorsoEsistente);
-
-      // Crea e inserisce la miniatura immediatamente
-      const imgThumb = document.createElement('img');
-      imgThumb.src = percorsoEsistente;
-      imgThumb.loading = "lazy";
-      imgThumb.decoding = "async"; // Non blocca l'interfaccia utente
-      imgThumb.alt = `${config.titolo} - Foto ${numero}`;
-      imgThumb.onclick = () => apriFotoEspansa(indexInLista);
-      griglia.appendChild(imgThumb);
-
-      numero++; // Passa al numero successivo (0 -> 1 -> 2...)
+    if (trovateNelLotto < DIMENSIONE_LOTTO) {
+      continuaScansione = false; // Meno di 10 foto nel lotto = le foto sono finite
     } else {
-      // Nessuna foto trovata per questo numero: la galleria della suite è finita
-      break;
+      numeroInizio += DIMENSIONE_LOTTO; // Passa al lotto successivo (10-19, 20-29...)
     }
   }
 
@@ -254,7 +275,7 @@ window.apriGalleria = async function(nomeSuite) {
   }
 };
 
-// Cerca tutte le estensioni in parallelo e restituisce subito la prima valida
+// Cerca tutte le estensioni dell'indice in parallelo
 function cercaPrimoFormatoValido(cartella, numero) {
   const verifiche = estensioniPossibili.map(ext => {
     return new Promise((resolve, reject) => {
@@ -266,7 +287,6 @@ function cercaPrimoFormatoValido(cartella, numero) {
     });
   });
 
-  // Risolve al primo successo o restituisce null se nessuna estensione esiste
   return Promise.any(verifiche).catch(() => null);
 }
 
@@ -281,7 +301,7 @@ window.chiudiFotoEspansa = function() {
 };
 
 window.chiudiGalleria = function() {
-  sessioneGalleriaId++; // Ferma le scansioni in background
+  sessioneGalleriaId++;
   document.getElementById('modal-galleria').style.display = 'none';
   chiudiFotoEspansa();
   document.body.style.overflow = 'auto';
