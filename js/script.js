@@ -1,5 +1,5 @@
 /* ==========================================
-   1. GESTIONE LINGUA STABILE E SENZA CRASH
+   1. GESTIONE LINGUA UNIFICATA E BLINDATA
    ========================================== */
 
 window.googleTranslateElementInit = function() {
@@ -10,7 +10,7 @@ window.googleTranslateElementInit = function() {
   }, 'google_translate_element');
 };
 
-// Apre e chiude il menu a tendina delle bandiere
+// Toggle del menu bandiere
 window.toggleLangDropdown = function(e) {
   if (e) e.stopPropagation();
   const langDropdown = document.getElementById('langDropdown');
@@ -28,47 +28,42 @@ document.addEventListener('click', function(e) {
   }
 });
 
+// Pulizia universale dei cookie di traduzione compatibile con Safari e Chrome
 function impostaCookieGoogleTranslate(lang) {
-  const domain = window.location.hostname;
+  const hostname = window.location.hostname;
+  const domini = ['', hostname, '.' + hostname];
   
-  // Pulisce tutti i cookie di traduzione precedenti
-  document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=" + domain + "; path=/;";
-  document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=." + domain + "; path=/;";
+  // Rimuove vecchi cookie su tutti i percorsi possibili
+  domini.forEach(d => {
+    const domainAttr = d ? '; domain=' + d : '';
+    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/' + domainAttr;
+  });
 
-  // Se è una lingua straniera, imposta il cookie nativo
+  // Imposta il nuovo cookie nativo in modo pulito
   if (lang && lang !== 'it') {
-    document.cookie = "googtrans=/it/" + lang + "; path=/;";
-    document.cookie = "googtrans=/it/" + lang + "; domain=" + domain + "; path=/;";
+    document.cookie = 'googtrans=/it/' + lang + '; path=/';
   }
 }
 
-// CAMBIO LINGUA BLINDATO
+// CAMBIO LINGUA STABILE
 window.cambiaLingua = function(codiceLingua, flagClass) {
-  // 1. Memorizza le preferenze
   localStorage.setItem('lingua_selezionata', codiceLingua);
   localStorage.setItem('flag_class_selezionata', flagClass);
-  
-  // 2. FONDAMENTALE: Dice al sito di SALTARE il logo al ricaricamento
   localStorage.setItem('salta_splash', 'true');
 
-  // 3. Imposta i cookie corretti
   impostaCookieGoogleTranslate(codiceLingua);
-
-  // 4. Ricarica la pagina in modo pulito (senza mostrare lo Splash Screen)
   window.location.reload();
 };
 
 /* ==========================================
-   2. GESTIONE SPLASH SCREEN
+   2. GESTIONE SPLASH SCREEN ED EVENTI AVVIO
    ========================================== */
 window.nascondiSplash = function() {
   const splash = document.getElementById('splash-screen');
   if (!splash) return;
 
-  // Se abbiamo impostato di saltare lo splash screen (es. cambio lingua), lo nasconde all'istante
   if (localStorage.getItem('salta_splash') === 'true') {
-    localStorage.removeItem('salta_splash'); // Pulisce per le visite future
+    localStorage.removeItem('salta_splash');
     splash.style.setProperty('display', 'none', 'important');
     return;
   }
@@ -82,11 +77,6 @@ window.nascondiSplash = function() {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Controlla subito se dobbiamo saltare lo splash
-  if (localStorage.getItem('salta_splash') === 'true') {
-    window.nascondiSplash();
-  }
-
   // Ripristina la bandiera attiva
   const flagClassSalvata = localStorage.getItem('flag_class_selezionata');
   const activeFlag = document.getElementById('activeFlag');
@@ -94,16 +84,23 @@ document.addEventListener('DOMContentLoaded', function() {
     activeFlag.className = 'flag-icon ' + flagClassSalvata;
   }
 
-  // Se è la prima visita normale, nasconde lo splash dopo un breve istante
-  setTimeout(window.nascondiSplash, 600);
+  // Se dobbiamo saltare lo splash screen (es. cambio lingua), lo chiude subito
+  if (localStorage.getItem('salta_splash') === 'true') {
+    window.nascondiSplash();
+  } else {
+    setTimeout(window.nascondiSplash, 600);
+  }
 });
 
 /* ==========================================
-   3. COOKIE E GOOGLE ANALYTICS
+   3. COOKIE BANNER E GOOGLE ANALYTICS
    ========================================== */
 const ANALYTICS_ID = 'G-C291PEHWM7';
 
 function caricaAnalytics() {
+  if (window.analyticsCaricato) return;
+  window.analyticsCaricato = true;
+
   var script = document.createElement('script');
   script.src = 'https://www.googletagmanager.com/gtag/js?id=' + ANALYTICS_ID;
   script.async = true;
@@ -175,7 +172,7 @@ window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
 };
 
 /* ==========================================
-   5. MOTORE GALLERIE FOTO (PARALLELO AD ALTE PRESTAZIONI)
+   5. MOTORE GALLERIA RISPARMIO RISORSE (OPTIMIZED)
    ========================================== */
 const configurazioneGallerie = {
   'centrale': { cartella: 'image/suite-centrale/', titolo: 'Suite Centrale 44' },
@@ -184,7 +181,7 @@ const configurazioneGallerie = {
 };
 
 const estensioniPossibili = ["jpg", "jpeg", "png", "JPG", "JPEG"];
-const MAX_FOTO_DA_CONTROLLARE = 30;
+const MAX_FOTO = 25; // Limite ottimizzato per non appesantire la rete
 
 let playlistFotoAttuale = [];
 let indiceFotoAttuale = 0;
@@ -195,19 +192,25 @@ window.apriGalleria = async function(nomeSuite) {
   
   document.getElementById('titolo-galleria').innerText = `Galleria Foto - ${config.titolo}`;
   const griglia = document.getElementById('galleria-griglia');
-  griglia.innerHTML = '<div id="stato-ricerca" style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">⚡ Caricamento rapido in corso...</div>';
+  griglia.innerHTML = '<div id="stato-ricerca" style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">⚡ Caricamento galleria...</div>';
   
   const modal = document.getElementById('modal-galleria');
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden'; 
 
-  const controlli = [];
-  for (let i = 1; i <= MAX_FOTO_DA_CONTROLLARE; i++) {
-    controlli.push(trovaFotoEsistente(config.cartella, i));
+  // Cerca le foto a blocchi da 5 per evitare di saturare la banda di rete
+  for (let i = 1; i <= MAX_FOTO; i += 5) {
+    const blocco = [];
+    for (let j = i; j < i + 5 && j <= MAX_FOTO; j++) {
+      blocco.push(trovaFotoEsistente(config.cartella, j));
+    }
+    const risultati = await Promise.all(blocco);
+    const trovate = risultati.filter(p => p !== null);
+    
+    // Se un intero blocco non trova immagini, significa che la cartella è finita
+    if (trovate.length === 0 && playlistFotoAttuale.length > 0) break;
+    playlistFotoAttuale.push(...trovate);
   }
-
-  const risultati = await Promise.all(controlli);
-  playlistFotoAttuale = risultati.filter(percorso => percorso !== null);
 
   griglia.innerHTML = ''; 
 
