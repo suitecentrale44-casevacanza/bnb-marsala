@@ -147,24 +147,18 @@ if (localStorage.getItem('consenso_cookie') === 'accettato') {
 const configurazioneCalendari = {
   'centrale': {
     elementId: 'cal-centrale',
-    checkinId: 'checkin-centrale',
-    checkoutId: 'checkout-centrale',
     icalUrls: [
       'https://calendar.google.com/calendar/ical/usn7es2f9plpcssjkrlc6mpmg4u5i0i4@import.calendar.google.com/public/basic.ics'
     ]
   },
   'corallo': {
     elementId: 'cal-corallo',
-    checkinId: 'checkin-corallo',
-    checkoutId: 'checkout-corallo',
     icalUrls: [
       'https://calendar.google.com/calendar/ical/houpucjjv0mu4cr02bk5n8cd9v6ele8o@import.calendar.google.com/public/basic.ics'
     ]
   },
   'oceano': {
     elementId: 'cal-oceano',
-    checkinId: 'checkin-oceano',
-    checkoutId: 'checkout-oceano',
     icalUrls: [
       'https://calendar.google.com/calendar/ical/lmtdlre4n8fj9qhk8ksqf9lsi91qbhho@import.calendar.google.com/public/basic.ics'
     ]
@@ -295,37 +289,67 @@ window.addEventListener('click', function(event) {
 
 // Gestione selezione mediante clic sui giorni
 window.selezionaDataGiorno = function(nomeSuite, dataStr) {
-  const config = configurazioneCalendari[nomeSuite];
   const sel = selezioneDate[nomeSuite] || { checkin: null, checkout: null };
   const prenotazioni = cachePrenotazioni[nomeSuite] || [];
+  const infoElem = document.getElementById(`info-selezione-${nomeSuite}`);
 
-  const inputCheckin = document.getElementById(config.checkinId);
-  const inputCheckout = document.getElementById(config.checkoutId);
-
+  // Primo Clic (o ripartenza da capo): imposta il Check-in
   if (!sel.checkin || (sel.checkin && sel.checkout)) {
     sel.checkin = dataStr;
     sel.checkout = null;
-    if (inputCheckin) inputCheckin.value = dataStr;
-    if (inputCheckout) inputCheckout.value = '';
+    if (infoElem) {
+      const p = dataStr.split('-');
+      infoElem.innerText = `Check-in: ${p[2]}/${p[1]}/${p[0]} ➔ Clicca sulla data di Check-out`;
+      infoElem.style.color = 'var(--blu-mare)';
+    }
   } 
+  // Secondo Clic: imposta il Check-out
   else if (sel.checkin && !sel.checkout) {
     if (dataStr <= sel.checkin) {
+      // Se si clicca una data precedente, si imposta la nuova data come Check-in
       sel.checkin = dataStr;
       sel.checkout = null;
-      if (inputCheckin) inputCheckin.value = dataStr;
-      if (inputCheckout) inputCheckout.value = '';
+      if (infoElem) {
+        const p = dataStr.split('-');
+        infoElem.innerText = `Check-in: ${p[2]}/${p[1]}/${p[0]} ➔ Clicca sulla data di Check-out`;
+        infoElem.style.color = 'var(--blu-mare)';
+      }
     } else {
-      const haOccupatiInMezzo = prenotazioni.some(r => {
-        return (r.da < dataStr && r.a > sel.checkin);
-      });
+      // Verifica giorno per giorno che non vi siano date occupate nell'intervallo
+      let tempDate = new Date(sel.checkin + 'T00:00:00');
+      const endDate = new Date(dataStr + 'T00:00:00');
+      let haOccupatiInMezzo = false;
+
+      while (tempDate < endDate) {
+        const yyyy = tempDate.getFullYear();
+        const mm = String(tempDate.getMonth() + 1).padStart(2, '0');
+        const dd = String(tempDate.getDate()).padStart(2, '0');
+        const dStr = `${yyyy}-${mm}-${dd}`;
+
+        const isDayOccupied = prenotazioni.some(r => {
+          if (r.da === r.a) return dStr === r.da;
+          return dStr >= r.da && dStr < r.a;
+        });
+
+        if (isDayOccupied) {
+          haOccupatiInMezzo = true;
+          break;
+        }
+        tempDate.setDate(tempDate.getDate() + 1);
+      }
 
       if (haOccupatiInMezzo) {
-        alert("L'intervallo selezionato include giorni non disponibili!");
+        alert("L'intervallo selezionato include giorni non disponibili! Scegli un'altra data.");
         return;
       }
 
       sel.checkout = dataStr;
-      if (inputCheckout) inputCheckout.value = dataStr;
+      if (infoElem) {
+        const pIn = sel.checkin.split('-');
+        const pOut = sel.checkout.split('-');
+        infoElem.innerText = `Soggiorno: dal ${pIn[2]}/${pIn[1]}/${pIn[0]} al ${pOut[2]}/${pOut[1]}/${pOut[0]}`;
+        infoElem.style.color = '#25d366';
+      }
     }
   }
 
@@ -412,24 +436,20 @@ window.cambiaMeseSuite = function(nomeSuite, dir) {
   }
 };
 
-window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
-  const checkin = document.getElementById(idCheckin).value;
-  const checkout = document.getElementById(idCheckout).value;
+window.inviaRichiestaWA = function(nomeSuiteKey, nomeSuiteTitolo) {
+  const sel = selezioneDate[nomeSuiteKey];
 
-  if (!checkin || !checkout) {
-    alert("Per favore, seleziona sia la data di Check-in che quella di Check-out prima di inviare!");
+  if (!sel || !sel.checkin || !sel.checkout) {
+    alert("Per favore, seleziona la data di Check-in e di Check-out cliccando direttamente sui giorni liberi del calendario!");
     return;
   }
 
-  if (new Date(checkout) <= new Date(checkin)) {
-    alert("La data di Check-out deve essere successiva a quella di Check-in!");
-    return;
-  }
+  const partsIn = sel.checkin.split('-');
+  const partsOut = sel.checkout.split('-');
+  const dataInFormattata = `${partsIn[2]}/${partsIn[1]}/${partsIn[0]}`;
+  const dataOutFormattata = `${partsOut[2]}/${partsOut[1]}/${partsOut[0]}`;
 
-  const dataInFormattata = new Date(checkin).toLocaleDateString('it-IT');
-  const dataOutFormattata = new Date(checkout).toLocaleDateString('it-IT');
-
-  const messaggio = `Ciao! Ho visitato il vostro sito e vorrei informazioni sulla disponibilità per la ${nomeSuite} dal ${dataInFormattata} al ${dataOutFormattata}.`;
+  const messaggio = `Ciao! Ho visitato il vostro sito e vorrei informazioni sulla disponibilità per la ${nomeSuiteTitolo} dal ${dataInFormattata} al ${dataOutFormattata}.`;
   
   const urlWhatsApp = `https://wa.me/393477640421?text=${encodeURIComponent(messaggio)}`;
   window.open(urlWhatsApp, '_blank');
