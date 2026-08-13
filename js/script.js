@@ -10,7 +10,7 @@ window.googleTranslateElementInit = function() {
   }, 'google_translate_element');
 };
 
-// Apre/Chiude il menu delle bandiere
+// Apre e chiude il menu a tendina delle bandiere
 window.toggleLangDropdown = function(e) {
   if (e) e.stopPropagation();
   const langDropdown = document.getElementById('langDropdown');
@@ -39,68 +39,61 @@ function impostaCookieGoogleTranslate(lang) {
   }
 }
 
-// CAMBIO LINGUA DINAMICO
+// CAMBIO LINGUA DINAMICO E ISTANTANEO
 window.cambiaLingua = function(codiceLingua, flagClass) {
-  // 1. Salva la preferenza dell'utente
   localStorage.setItem('lingua_selezionata', codiceLingua);
   localStorage.setItem('flag_class_selezionata', flagClass);
 
-  // 2. Aggiorna subito l'icona della bandiera nel pulsante
   const activeFlag = document.getElementById('activeFlag');
   if (activeFlag) {
     activeFlag.className = 'flag-icon ' + flagClass;
   }
 
-  // 3. Chiude il menu a tendina
   const langDropdown = document.getElementById('langDropdown');
   if (langDropdown) langDropdown.classList.remove('show');
 
-  // 4. Aggiorna i cookie in background
   impostaCookieGoogleTranslate(codiceLingua);
 
-  // 5. TRADUCE LA PAGINA ALL'ISTANTE SENZA RICARICARE E SENZA SPLASH SCREEN
   const selectGoogle = document.querySelector('.goog-te-combo');
   if (selectGoogle) {
     selectGoogle.value = (codiceLingua === 'it') ? '' : codiceLingua;
     selectGoogle.dispatchEvent(new Event('change'));
   } else {
-    // Riserva di sicurezza solo se lo script non si è ancora avviato
     window.location.reload();
   }
 };
 
 /* ==========================================
-   2. SPLASH SCREEN E INIZIALIZZAZIONE
+   2. SPLASH SCREEN (CON PARACADUTE AUTOMATICO)
    ========================================== */
 window.nascondiSplash = function() {
   const splash = document.getElementById('splash-screen');
   if (!splash) return;
 
-  if (localStorage.getItem('salta_splash') === 'true') {
-    localStorage.removeItem('salta_splash');
-    splash.style.setProperty('display', 'none', 'important');
-    return;
-  }
-
   if (!splash.classList.contains('fade-out')) {
     splash.classList.add('fade-out');
     setTimeout(() => {
       splash.style.setProperty('display', 'none', 'important');
-    }, 800);
+    }, 600);
   }
 };
 
+// Inizializzazione rapida all'avvio della pagina
 document.addEventListener('DOMContentLoaded', function() {
-  // Protezione: se la traduzione impiega tempo, mostra comunque la pagina entro 800ms
-  setTimeout(mostraPaginaTradotta, 800);
-
+  // Ripristina la bandiera della lingua salvata
   const flagClassSalvata = localStorage.getItem('flag_class_selezionata');
   const activeFlag = document.getElementById('activeFlag');
   if (flagClassSalvata && activeFlag) {
     activeFlag.className = 'flag-icon ' + flagClassSalvata;
   }
 
-  setTimeout(nascondiSplash, 1800);
+  // PARACADUTE: Nasconde lo splash screen dopo soli 600 millisecondi per massima velocità
+  setTimeout(window.nascondiSplash, 600);
+});
+
+// Secondo paracadute di sicurezza se il caricamento della rete è lento
+window.addEventListener('load', function() {
+  setTimeout(window.nascondiSplash, 300);
 });
 
 /* ==========================================
@@ -138,7 +131,7 @@ if (localStorage.getItem('consenso_cookie') === 'accettato') {
 }
 
 /* ==========================================
-   4. MODAL CALENDARI E RICHIESTE WHATSAPP
+   4. MODAL CALENDARI E WHATSAPP
    ========================================== */
 window.apriCalendario = function(idDelPopup) {
   const modal = document.getElementById(idDelPopup);
