@@ -1,12 +1,21 @@
 /* ==========================================
-   GOOGLE TRANSLATE E GESTIONE COOKIE
+   GOOGLE TRANSLATE E GESTIONE COOKIE (OTTIMIZZATO)
    ========================================== */
+
+// Funzione per mostrare di nuovo la pagina in sicurezza
+function mostraPaginaTradotta() {
+  document.documentElement.style.opacity = '1';
+}
+
 window.googleTranslateElementInit = function() {
   new google.translate.TranslateElement({
     pageLanguage: 'it',
     includedLanguages: 'en,de,fr,es,nl',
     autoDisplay: false
   }, 'google_translate_element');
+
+  // Appena Google Translate ha finito di caricarsi, mostriamo la pagina
+  setTimeout(mostraPaginaTradotta, 100);
 };
 
 function impostaCookieGoogleTranslate(lang) {
@@ -37,6 +46,38 @@ window.cambiaLingua = function(codiceLingua, flagClass) {
   impostaCookieGoogleTranslate(codiceLingua);
   window.location.reload();
 };
+
+/* ==========================================
+   INIZIALIZZAZIONE EVENTI E PROTEZIONE
+   ========================================== */
+document.addEventListener('DOMContentLoaded', function() {
+  // Salva-vita: Se Google Translate impiega troppo a caricare, mostra comunque la pagina dopo 1 secondo
+  setTimeout(mostraPaginaTradotta, 1000);
+
+  const flagClassSalvata = localStorage.getItem('flag_class_selezionata');
+  const activeFlag = document.getElementById('activeFlag');
+  if (flagClassSalvata && activeFlag) {
+    activeFlag.className = 'flag-icon ' + flagClassSalvata;
+  }
+
+  const langBtn = document.getElementById('langBtn');
+  const langDropdown = document.getElementById('langDropdown');
+
+  if (langBtn && langDropdown) {
+    langBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      langDropdown.classList.toggle('show');
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!langDropdown.contains(e.target) && !langBtn.contains(e.target)) {
+        langDropdown.classList.remove('show');
+      }
+    });
+  }
+
+  setTimeout(nascondiSplash, 2000);
+});
 
 /* ==========================================
    SPLASH SCREEN LOGIC
