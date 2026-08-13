@@ -167,3 +167,80 @@ window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
   const urlWhatsApp = `https://wa.me/393477640421?text=${encodeURIComponent(messaggio)}`;
   window.open(urlWhatsApp, '_blank');
 };
+
+/* ==========================================
+   11. MOTORE GALLERIE FOTO UNIFICATO
+   ========================================== */
+
+// Configurazione delle 3 Suite. 
+// Modifica "totaleFoto" con il numero esatto di foto per ogni casa.
+const configurazioneGallerie = {
+  'centrale': { cartella: 'image/suite-centrale/', totaleFoto: 15, estensione: 'jpg' },
+  'corallo':  { cartella: 'image/suite-corallo/',  totaleFoto: 15, estensione: 'jpg' },
+  'oceano':   { cartella: 'image/suite-oceano/',   totaleFoto: 15, estensione: 'jpg' }
+};
+
+let playlistFotoAttuale = [];
+let indiceFotoAttuale = 0;
+
+window.apriGalleria = function(nomeSuite) {
+  const config = configurazioneGallerie[nomeSuite];
+  
+  // Svuota la playlist e la riempie con le foto della suite cliccata
+  playlistFotoAttuale = [];
+  for (let i = 1; i <= config.totaleFoto; i++) {
+    playlistFotoAttuale.push(`${config.cartella}${i}.${config.estensione}`);
+  }
+
+  // Resetta l'indice e mostra la finestra
+  indiceFotoAttuale = 0;
+  aggiornaVistaFoto();
+  
+  const modal = document.getElementById('modal-galleria');
+  modal.style.display = 'flex';
+  
+  // Blocca lo scorrimento della pagina di sottofondo
+  document.body.style.overflow = 'hidden'; 
+};
+
+window.cambiaFotoGalleria = function(direzione) {
+  indiceFotoAttuale += direzione;
+
+  // Effetto pac-man: se vado oltre la fine, torno all'inizio e viceversa
+  if (indiceFotoAttuale < 0) {
+    indiceFotoAttuale = playlistFotoAttuale.length - 1;
+  } else if (indiceFotoAttuale >= playlistFotoAttuale.length) {
+    indiceFotoAttuale = 0;
+  }
+
+  aggiornaVistaFoto();
+};
+
+window.chiudiGalleria = function() {
+  const modal = document.getElementById('modal-galleria');
+  modal.style.display = 'none';
+  
+  // Sblocca lo scorrimento della pagina
+  document.body.style.overflow = 'auto'; 
+};
+
+function aggiornaVistaFoto() {
+  const imgElement = document.getElementById('img-galleria');
+  const contatore = document.getElementById('contatore-foto');
+  
+  // Mostra l'immagine
+  imgElement.src = playlistFotoAttuale[indiceFotoAttuale];
+  
+  // Mostra il numeretto (es. 1 / 15)
+  contatore.innerText = `${indiceFotoAttuale + 1} / ${playlistFotoAttuale.length}`;
+}
+
+// Supporto per la tastiera (Frecce ed ESC)
+document.addEventListener('keydown', function(event) {
+  const modal = document.getElementById('modal-galleria');
+  if (modal && modal.style.display === 'flex') {
+    if (event.key === 'ArrowLeft') cambiaFotoGalleria(-1);
+    if (event.key === 'ArrowRight') cambiaFotoGalleria(1);
+    if (event.key === 'Escape') chiudiGalleria();
+  }
+});
