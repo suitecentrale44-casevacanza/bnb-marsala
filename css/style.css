@@ -893,3 +893,28 @@ body {
   top: 0px !important;
   position: static !important;
 }
+
+/* ==========================================
+   PROTEZIONE E VISIBILITÀ GOOGLE TRANSLATE
+   ========================================== */
+
+/* Forza la visibilità ed evita schermate bianche */
+html, body {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+}
+
+/* Rimuove i riquadri e i banner invasivi di Google Translate */
+.goog-te-banner-frame, 
+.goog-te-balloon-frame, 
+#goog-gt-tt, 
+.goog-te-spinner-pos,
+.skiptranslate:not(.lang-selector) {
+  display: none !important;
+}
+
+body {
+  top: 0px !important;
+  position: static !important;
+}
