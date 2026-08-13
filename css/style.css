@@ -122,7 +122,6 @@ h3 {
   color: var(--blu-mare);
 }
 
-/* Contenitore del selettore lingua */
 .lang-selector {
   position: relative;
   display: inline-block;
@@ -161,7 +160,6 @@ h3 {
   pointer-events: none;
 }
 
-/* Bandiere ad alta definizione */
 .flag-it { background-image: url('https://flagcdn.com/w40/it.png'); }
 .flag-gb { background-image: url('https://flagcdn.com/w40/gb.png'); }
 .flag-de { background-image: url('https://flagcdn.com/w40/de.png'); }
@@ -569,24 +567,6 @@ footer p {
   color: #0f172a;
 }
 
-.iframe-container {
-  position: relative;
-  width: 100%;
-  height: 380px;
-  overflow: hidden;
-  border-radius: 8px;
-  background-color: #ffffff;
-  border: 1px solid var(--grigio-bordo);
-}
-
-.iframe-container iframe {
-  display: block;
-  width: 100%;
-  height: 430px !important;
-  margin-bottom: -50px;
-  border: none;
-}
-
 /* ==========================================
    9. WIDGET WHATSAPP
    ========================================== */
@@ -728,12 +708,9 @@ footer p {
   }
 }
 
-
 /* ==========================================
    11. GALLERIA FOTO (GRIGLIA + INGRANDIMENTO)
    ========================================== */
-
-/* Contenitore Principale (sfondo scuro) */
 .modal-galleria {
   display: none;
   position: fixed;
@@ -741,7 +718,7 @@ footer p {
   top: 0; left: 0; width: 100%; height: 100%;
   background-color: rgba(15, 23, 42, 0.98);
   flex-direction: column;
-  overflow-y: auto; /* Permette di scorrere la griglia */
+  overflow-y: auto;
   backdrop-filter: blur(5px);
 }
 
@@ -767,7 +744,6 @@ footer p {
 }
 .modal-close:hover, .modal-close-espansa:hover { color: var(--giallo-limone); }
 
-/* LIVELLO 1: Griglia */
 .galleria-griglia {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -785,7 +761,7 @@ footer p {
   border-radius: 8px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  background-color: #1e293b; /* Sfondo mentre carica */
+  background-color: #1e293b;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
@@ -794,12 +770,11 @@ footer p {
   box-shadow: 0 8px 20px rgba(0,0,0,0.5);
 }
 
-/* LIVELLO 2: Foto Espansa (Sopra la griglia) */
 .galleria-espansa {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
   background-color: rgba(0, 0, 0, 0.98);
-  display: flex; /* Verrà attivato dal JS */
+  display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2000000;
@@ -874,7 +849,6 @@ footer p {
   .modal-close-espansa { top: 15px; right: 20px; }
 }
 
-/* Transizione fluida al cambio lingua */
 html {
   transition: opacity 0.2s ease-in-out;
 }
@@ -899,3 +873,112 @@ html, body {
   opacity: 1 !important;
   visibility: visible !important;
 }
+
+/* ==========================================
+   12. STILI CALENDARIO CUSTOM NATIVO
+   ========================================== */
+.calendario-wrapper {
+  background: #ffffff;
+  border: 1px solid var(--grigio-bordo);
+  border-radius: 10px;
+  padding: 15px;
+  max-width: 450px;
+  margin: 0 auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.cal-loading {
+  text-align: center;
+  padding: 30px;
+  color: var(--blu-mare);
+  font-weight: 600;
+}
+
+.cal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.cal-header h4 {
+  color: var(--blu-mare);
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.cal-header button {
+  background: #f1f5f9;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--blu-notte-testo);
+  transition: background 0.2s;
+}
+
+.cal-header button:hover {
+  background: var(--grigio-bordo);
+}
+
+.cal-weekdays, 
+.cal-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  gap: 4px;
+}
+
+.cal-weekdays span {
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: var(--grigio-testo-muto);
+  padding-bottom: 6px;
+}
+
+.cal-day {
+  padding: 8px 0;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  background-color: #f8fafc;
+  color: var(--blu-notte-testo);
+}
+
+.cal-day.disponibile {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  font-weight: 600;
+}
+
+.cal-day.occupato {
+  background-color: #fee2e2;
+  color: #dc2626;
+  text-decoration: line-through;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.cal-day.empty {
+  background-color: transparent;
+}
+
+.cal-legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: var(--grigio-testo-muto);
+}
+
+.cal-legend .dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+.cal-legend .dot.lib { background-color: #e0f2fe; border: 1px solid #0369a1; }
+.cal-legend .dot.occ { background-color: #fee2e2; border: 1px solid #dc2626; }
