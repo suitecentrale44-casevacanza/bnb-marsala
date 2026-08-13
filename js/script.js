@@ -148,8 +148,8 @@ const configurazioneCalendari = {
   'centrale': {
     elementId: 'cal-centrale',
     icalUrls: [
-      'https://calendar.google.com/calendar/ical/suitecentrale44@gmail.com/public/basic.ics',
-      'https://calendar.google.com/calendar/ical/usn7es2f9plpcsjklc6mpmg4u5i0i4@import.calendar.google.com/public/basic.ics'
+      'https://calendar.google.com/calendar/ical/suitecentrale44%40gmail.com/public/basic.ics',
+      'https://calendar.google.com/calendar/embed?src=usn7es2f9plpcssjkrlc6mpmg4u5i0i4%40import.calendar.google.com&ctz=Europe%2FRome'
     ]
   },
   'corallo': {
