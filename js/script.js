@@ -1,5 +1,5 @@
 /* ==========================================
-   1. PULIZIA COOKIE E GESTIONE LINGUA
+   1. GESTIONE LINGUA STABILE E SICURA
    ========================================== */
 
 window.googleTranslateElementInit = function() {
@@ -10,24 +10,7 @@ window.googleTranslateElementInit = function() {
   }, 'google_translate_element');
 };
 
-// Funzione per eliminare radicalmente i cookie di Google Translate
-function pulisciCookieTraduzione() {
-  const hostname = window.location.hostname;
-  const domini = ['', hostname, '.' + hostname];
-  
-  const domainParts = hostname.split('.');
-  if (domainParts.length > 1) {
-    domini.push('.' + domainParts.slice(-2).join('.'));
-  }
-
-  domini.forEach(d => {
-    const domainAttr = d ? '; domain=' + d : '';
-    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/' + domainAttr;
-    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;' + domainAttr;
-  });
-}
-
-// Toggle menu bandiere
+// Toggle del menu delle bandiere
 window.toggleLangDropdown = function(e) {
   if (e) e.stopPropagation();
   const langDropdown = document.getElementById('langDropdown');
@@ -45,36 +28,37 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// CAMBIO LINGUA DEFINITIVO
+// Gestione pulita dei cookie di traduzione
+function gestisciCookieTranslate(lang) {
+  const domain = window.location.hostname;
+  document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + domain + ";";
+
+  if (lang && lang !== 'it') {
+    document.cookie = "googtrans=/it/" + lang + "; path=/;";
+  }
+}
+
+// CAMBIO LINGUA
 window.cambiaLingua = function(codiceLingua, flagClass) {
   localStorage.setItem('lingua_selezionata', codiceLingua);
   localStorage.setItem('flag_class_selezionata', flagClass);
   localStorage.setItem('salta_splash', 'true');
 
-  // Pulisce sempre i vecchi cookie
-  pulisciCookieTraduzione();
+  gestisciCookieTranslate(codiceLingua);
 
-  // Se è una lingua straniera, imposta il cookie di traduzione
-  if (codiceLingua !== 'it') {
-    document.cookie = 'googtrans=/it/' + codiceLingua + '; path=/;';
-  }
+  const activeFlag = document.getElementById('activeFlag');
+  if (activeFlag) activeFlag.className = 'flag-icon ' + flagClass;
 
-  // Ricarica la pagina in modo pulito e sicuro
+  const langDropdown = document.getElementById('langDropdown');
+  if (langDropdown) langDropdown.classList.remove('show');
+
   window.location.reload();
 };
 
 /* ==========================================
    2. GESTIONE SPLASH SCREEN
    ========================================== */
-
-// Script immediato per evitare il flash dello splash screen al cambio lingua
-if (localStorage.getItem('salta_splash') === 'true') {
-  const style = document.createElement('style');
-  style.id = 'anti-splash-style';
-  style.innerHTML = '#splash-screen { display: none !important; }';
-  document.head.appendChild(style);
-}
-
 window.nascondiSplash = function() {
   const splash = document.getElementById('splash-screen');
   if (!splash) return;
@@ -94,7 +78,6 @@ window.nascondiSplash = function() {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Ripristina la bandiera attiva nel pulsante
   const flagClassSalvata = localStorage.getItem('flag_class_selezionata');
   const activeFlag = document.getElementById('activeFlag');
   if (flagClassSalvata && activeFlag) {
@@ -104,12 +87,12 @@ document.addEventListener('DOMContentLoaded', function() {
   if (localStorage.getItem('salta_splash') === 'true') {
     window.nascondiSplash();
   } else {
-    setTimeout(window.nascondiSplash, 500);
+    setTimeout(window.nascondiSplash, 400);
   }
 });
 
 /* ==========================================
-   3. COOKIE BANNER E GOOGLE ANALYTICS
+   3. COOKIE BANNER E ANALYTICS
    ========================================== */
 const ANALYTICS_ID = 'G-C291PEHWM7';
 
@@ -188,87 +171,46 @@ window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
 };
 
 /* ==========================================
-   5. MOTORE GALLERIA AD ALTA VELOCITÀ
+   5. MOTORE GALLERIA ISTANTANEO (ULTRA-FAST)
    ========================================== */
-const configurazioneGallerie = {
-  'centrale': { cartella: 'image/suite-centrale/', titolo: 'Suite Centrale 44' },
-  'corallo':  { cartella: 'image/suite-corallo/',  titolo: 'Suite Corallo' },
-  'oceano':   { cartella: 'image/suite-oceano/',   titolo: 'Suite Oceano' }
-};
 
-const estensioniPossibili = ["jpg", "jpeg", "png", "JPG", "JPEG"];
-const MAX_FOTO = 25;
+// Modifica "foto" con il numero esatto di immagini presenti in ogni cartella
+const configurazioneGallerie = {
+  'centrale': { cartella: 'image/suite-centrale/', titolo: 'Suite Centrale 44', foto: 15, ext: 'jpg' },
+  'corallo':  { cartella: 'image/suite-corallo/',  titolo: 'Suite Corallo',     foto: 15, ext: 'jpg' },
+  'oceano':   { cartella: 'image/suite-oceano/',   titolo: 'Suite Oceano',      foto: 15, ext: 'jpg' }
+};
 
 let playlistFotoAttuale = [];
 let indiceFotoAttuale = 0;
 
-window.apriGalleria = async function(nomeSuite) {
+window.apriGalleria = function(nomeSuite) {
   const config = configurazioneGallerie[nomeSuite];
   playlistFotoAttuale = [];
   
   document.getElementById('titolo-galleria').innerText = `Galleria Foto - ${config.titolo}`;
   const griglia = document.getElementById('galleria-griglia');
-  griglia.innerHTML = '<div id="stato-ricerca" style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">⚡ Caricamento galleria...</div>';
+  griglia.innerHTML = '';
   
   const modal = document.getElementById('modal-galleria');
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden'; 
 
-  for (let i = 1; i <= MAX_FOTO; i += 5) {
-    const blocco = [];
-    for (let j = i; j < i + 5 && j <= MAX_FOTO; j++) {
-      blocco.push(trovaFotoEsistente(config.cartella, j));
-    }
-    const risultati = await Promise.all(blocco);
-    const trovate = risultati.filter(p => p !== null);
-    
-    if (trovate.length === 0 && playlistFotoAttuale.length > 0) break;
-    playlistFotoAttuale.push(...trovate);
-  }
+  // Generazione istantanea senza attendere tentativi di rete
+  for (let i = 1; i <= config.foto; i++) {
+    const percorso = `${config.cartella}${i}.${config.ext}`;
+    playlistFotoAttuale.push(percorso);
 
-  griglia.innerHTML = ''; 
-
-  if (playlistFotoAttuale.length === 0) {
-    griglia.innerHTML = '<div style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">Nessuna foto trovata nella cartella.</div>';
-    return;
-  }
-
-  playlistFotoAttuale.forEach((percorso, index) => {
     const imgThumb = document.createElement('img');
     imgThumb.src = percorso;
-    imgThumb.loading = "lazy";
+    imgThumb.loading = "lazy"; // Carica le immagini solo quando si scorre
+    imgThumb.alt = `${config.titolo} - Foto ${i}`;
+    
+    const index = i - 1;
     imgThumb.onclick = () => apriFotoEspansa(index);
     griglia.appendChild(imgThumb);
-  });
+  }
 };
-
-function trovaFotoEsistente(cartella, numero) {
-  return new Promise((resolve) => {
-    let trovata = false;
-    let tentativi = 0;
-
-    estensioniPossibili.forEach((ext) => {
-      const percorso = `${cartella}${numero}.${ext}`;
-      const img = new Image();
-
-      img.onload = () => {
-        if (!trovata) {
-          trovata = true;
-          resolve(percorso);
-        }
-      };
-
-      img.onerror = () => {
-        tentativi++;
-        if (tentativi === estensioniPossibili.length && !trovata) {
-          resolve(null);
-        }
-      };
-
-      img.src = percorso;
-    });
-  });
-}
 
 window.apriFotoEspansa = function(indice) {
   indiceFotoAttuale = indice;
