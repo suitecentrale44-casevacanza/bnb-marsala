@@ -148,21 +148,18 @@ const configurazioneCalendari = {
   'centrale': {
     elementId: 'cal-centrale',
     icalUrls: [
-      'https://calendar.google.com/calendar/ical/suitecentrale44%40gmail.com/public/basic.ics',
-      'https://calendar.google.com/calendar/embed?src=usn7es2f9plpcssjkrlc6mpmg4u5i0i4%40import.calendar.google.com&ctz=Europe%2FRome'
+      'https://calendar.google.com/calendar/ical/usn7es2f9plpcssjkrlc6mpmg4u5i0i4%40import.calendar.google.com/public/basic.ics'
     ]
   },
   'corallo': {
     elementId: 'cal-corallo',
     icalUrls: [
-      'https://calendar.google.com/calendar/ical/f118fc936bf65f97fec173ca1aec2486f030d9f175ac5177502eb3250ea1c466@group.calendar.google.com/public/basic.ics',
       'https://calendar.google.com/calendar/ical/houpucjjv0mu4cr02bk5n8cd9v6ele8o@import.calendar.google.com/public/basic.ics'
     ]
   },
   'oceano': {
     elementId: 'cal-oceano',
     icalUrls: [
-      'https://calendar.google.com/calendar/ical/748b2c73f083c8ff32af24899404f64541430871f37ae98f30cda555123b2ea3@group.calendar.google.com/public/basic.ics',
       'https://calendar.google.com/calendar/ical/lmtdlre4n8fj9qhk8ksqf9lsi91qbhho@import.calendar.google.com/public/basic.ics'
     ]
   }
