@@ -141,7 +141,7 @@ if (localStorage.getItem('consenso_cookie') === 'accettato') {
 }
 
 /* ==========================================
-   4. CALENDARI NATIVI SINGOLI CON SELEZIONE INTERATTIVA
+   4. CALENDARI NATIVI CON DISABILITAZIONE DATE PASSATE
    ========================================== */
 
 const configurazioneCalendari = {
@@ -169,7 +169,6 @@ const cachePrenotazioni = {};
 const statoMeseCalendario = {};
 const selezioneDate = {};
 
-// Scarica con TIMEOUT a 2 secondi per non bloccare l'interfaccia
 async function scaricaIcalConTimeout(urlProxy, timeoutMs = 2000) {
   const controller = new AbortController();
   const idTimer = setTimeout(() => controller.abort(), timeoutMs);
@@ -231,7 +230,6 @@ async function precaricaTuttiICalInSilenzio() {
   }
 }
 
-// Estrattore privato: rileva solo le cifre delle date YYYYMMDD
 function estraiDateDaICS(icsText) {
   const intervalli = [];
   if (!icsText) return intervalli;
@@ -287,17 +285,13 @@ window.addEventListener('click', function(event) {
   }
 });
 
-// Gestione selezione e deselezione mediante clic sui giorni
+// Gestione selezione e deselezione con clic sui giorni
 window.selezionaDataGiorno = function(nomeSuite, dataStr) {
   const sel = selezioneDate[nomeSuite] || { checkin: null, checkout: null };
   const prenotazioni = cachePrenotazioni[nomeSuite] || [];
   const infoElem = document.getElementById(`info-selezione-${nomeSuite}`);
 
-  // ----------------------------------------------------
-  // CASI DI DESELEZIONE (Toggle con secondo clic)
-  // ----------------------------------------------------
-  
-  // 1. Clic sul Check-out già selezionato -> Annulla solo il Check-out
+  // Deselezione Check-out
   if (sel.checkout === dataStr) {
     sel.checkout = null;
     if (infoElem) {
@@ -306,7 +300,7 @@ window.selezionaDataGiorno = function(nomeSuite, dataStr) {
       infoElem.style.color = 'var(--blu-mare)';
     }
   }
-  // 2. Clic sul Check-in già selezionato (senza Check-out o con entrambi) -> Azzera la selezione
+  // Deselezione Check-in (Reset completo)
   else if (sel.checkin === dataStr) {
     sel.checkin = null;
     sel.checkout = null;
@@ -315,12 +309,7 @@ window.selezionaDataGiorno = function(nomeSuite, dataStr) {
       infoElem.style.color = 'var(--blu-notte-testo)';
     }
   }
-
-  // ----------------------------------------------------
-  // CASI DI NUOVA SELEZIONE
-  // ----------------------------------------------------
-
-  // 3. Imposta nuovo Check-in (se non c'è nulla o se c'erano già entrambe le date)
+  // Selezione Check-in
   else if (!sel.checkin || (sel.checkin && sel.checkout)) {
     sel.checkin = dataStr;
     sel.checkout = null;
@@ -330,11 +319,9 @@ window.selezionaDataGiorno = function(nomeSuite, dataStr) {
       infoElem.style.color = 'var(--blu-mare)';
     }
   } 
-  
-  // 4. Imposta Check-out
+  // Selezione Check-out
   else if (sel.checkin && !sel.checkout) {
     if (dataStr <= sel.checkin) {
-      // Se si clicca una data precedente al Check-in, la nuova data diventa il Check-in
       sel.checkin = dataStr;
       sel.checkout = null;
       if (infoElem) {
@@ -343,7 +330,6 @@ window.selezionaDataGiorno = function(nomeSuite, dataStr) {
         infoElem.style.color = 'var(--blu-mare)';
       }
     } else {
-      // Verifica che nell'intervallo scelto non vi siano giorni occupati
       let tempDate = new Date(sel.checkin + 'T00:00:00');
       const endDate = new Date(dataStr + 'T00:00:00');
       let haOccupatiInMezzo = false;
@@ -421,12 +407,22 @@ function renderizzaGrigliaCalendario(nomeSuite) {
   const prenotazioni = cachePrenotazioni[nomeSuite] || [];
   const sel = selezioneDate[nomeSuite] || { checkin: null, checkout: null };
 
+  // DATA ODIERNA: azzera l'orario per un confronto puro tra sole date
+  const oggi = new Date();
+  oggi.setHours(0, 0, 0, 0);
+
   for (let g = 1; g <= giorniNelMese; g++) {
     const meseStr = String(mese + 1).padStart(2, '0');
     const gStr = String(g).padStart(2, '0');
     const dataStr = `${anno}-${meseStr}-${gStr}`;
 
-    const occupato = prenotazioni.some(r => {
+    const dataCella = new Date(anno, mese, g);
+    dataCella.setHours(0, 0, 0, 0);
+
+    // CONTROLLO DATE PASSATE: se la data della cella è minore di oggi, viene segnata occupata
+    const ePassata = dataCella < oggi;
+
+    const occupato = ePassata || prenotazioni.some(r => {
       if (r.da === r.a) return dataStr === r.da;
       return dataStr >= r.da && dataStr < r.a;
     });
