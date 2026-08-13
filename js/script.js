@@ -141,7 +141,7 @@ if (localStorage.getItem('consenso_cookie') === 'accettato') {
 }
 
 /* ==========================================
-   4. CALENDARI NATIVI ULTRA-VELOCI (PRE-FETCHING & MULTI-PROXY)
+   4. CALENDARI NATIVI ULTRA-VELOCI (TIMEOUT 2s & RENDER ISTANTANEO)
    ========================================== */
 
 const configurazioneCalendari = {
@@ -171,45 +171,47 @@ const configurazioneCalendari = {
 const cachePrenotazioni = {};
 const statoMeseCalendario = {};
 
-// Gara di velocità tra proxy con pulizia dell'URL
-async function scaricaIcalVeloce(icalUrl) {
-  // Garantisce che l'URL sia pulito e senza doppie codifiche (%40 -> @)
-  const urlPulito = decodeURIComponent(icalUrl);
+// Scarica i dati con TIMEOUT SEVERO di 2 secondi: se un proxy dorme, viene ucciso subito!
+async function scaricaIcalConTimeout(urlProxy, timeoutMs = 2000) {
+  const controller = new AbortController();
+  const idTimer = setTimeout(() => controller.abort(), timeoutMs);
 
+  try {
+    const res = await fetch(urlProxy, { signal: controller.signal });
+    clearTimeout(idTimer);
+    if (!res.ok) throw new Error("HTTP Errore");
+    const text = await res.text();
+    if (text && text.includes("BEGIN:VCALENDAR")) return text;
+    throw new Error("Formato non valido");
+  } catch (err) {
+    clearTimeout(idTimer);
+    throw err;
+  }
+}
+
+// Prova i proxy in sequenza rapida (max 2 secondi a tentata risposta)
+async function scaricaIcalVeloce(icalUrl) {
+  const urlPulito = decodeURIComponent(icalUrl);
+  
   const proxies = [
-    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(urlPulito)}`,
     `https://api.allorigins.win/raw?url=${encodeURIComponent(urlPulito)}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(urlPulito)}`,
     `https://corsproxy.io/?${encodeURIComponent(urlPulito)}`
   ];
 
-  const tentativi = proxies.map(p => 
-    fetch(p)
-      .then(res => {
-        if (!res.ok) throw new Error("Risposta non valida");
-        return res.text();
-      })
-      .then(text => {
-        if (text && text.includes("BEGIN:VCALENDAR")) return text;
-        throw new Error("Formato ICS non valido");
-      })
-  );
-
-  try {
-    return await Promise.any(tentativi);
-  } catch (e) {
-    console.warn("Impossibile scaricare l'iCal:", urlPulito);
-    return null;
+  for (const proxy of proxies) {
+    try {
+      const testo = await scaricaIcalConTimeout(proxy, 2000);
+      if (testo) return testo;
+    } catch (e) {
+      // Passa istantaneamente al proxy successivo in caso di blocco/timeout
+      continue;
+    }
   }
+  return null;
 }
 
-// Pre-caricamento in background all'apertura del sito
-async function precaricaTuttiICalInSilenzio() {
-  for (const key of Object.keys(configurazioneCalendari)) {
-    statoMeseCalendario[key] = new Date();
-    caricaEUnisciDateSuite(key);
-  }
-}
-
+// Scarica e unisce le prenotazioni per la suite
 async function caricaEUnisciDateSuite(nomeSuite) {
   const config = configurazioneCalendari[nomeSuite];
   if (!config) return [];
@@ -228,7 +230,15 @@ async function caricaEUnisciDateSuite(nomeSuite) {
   return tutteLeDate;
 }
 
-// Estrattore privato: legge solo le date numeriche YYYYMMDD
+// Pre-caricamento silenzioso delle 3 suite subito all'avvio della pagina
+async function precaricaTuttiICalInSilenzio() {
+  for (const key of Object.keys(configurazioneCalendari)) {
+    statoMeseCalendario[key] = new Date();
+    caricaEUnisciDateSuite(key);
+  }
+}
+
+// Estrattore privato: legge solo le cifre delle date YYYYMMDD
 function estraiDateDaICS(icsText) {
   const intervalli = [];
   if (!icsText) return intervalli;
@@ -262,13 +272,15 @@ window.apriCalendario = async function(idDelPopup, nomeSuite) {
       statoMeseCalendario[nomeSuite] = new Date();
     }
 
-    if (!cachePrenotazioni[nomeSuite] || cachePrenotazioni[nomeSuite].length === 0) {
-      const container = document.getElementById(configurazioneCalendari[nomeSuite].elementId);
-      if (container) container.innerHTML = '<div class="cal-loading">⚡ Caricamento disponibilità...</div>';
-      await caricaEUnisciDateSuite(nomeSuite);
-    }
-
+    // Mostra la griglia all'istante
     renderizzaGrigliaCalendario(nomeSuite);
+
+    // Se le date non sono ancora scaricate, le aggiorna in sottofondo
+    if (!cachePrenotazioni[nomeSuite] || cachePrenotazioni[nomeSuite].length === 0) {
+      caricaEUnisciDateSuite(nomeSuite).then(() => {
+        renderizzaGrigliaCalendario(nomeSuite);
+      });
+    }
   }
 };
 
@@ -350,6 +362,7 @@ window.cambiaMeseSuite = function(nomeSuite, dir) {
     renderizzaGrigliaCalendario(nomeSuite);
   }
 };
+
 /* ==========================================
    5. MOTORE GALLERIA ULTRA-VELOCE (LOTTI PARALLELI)
    ========================================== */
