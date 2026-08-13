@@ -1,11 +1,6 @@
 /* ==========================================
-   1. GESTIONE VISIBILITÀ E LINGUA (ANTI-FLASH)
+   1. GESTIONE LINGUA IN TEMPO REALE (SENZA REFRESH)
    ========================================== */
-
-// Rende visibile la pagina non appena la lingua è pronta o scade il tempo
-function mostraPaginaTradotta() {
-  document.documentElement.style.opacity = '1';
-}
 
 window.googleTranslateElementInit = function() {
   new google.translate.TranslateElement({
@@ -13,11 +8,9 @@ window.googleTranslateElementInit = function() {
     includedLanguages: 'en,de,fr,es,nl',
     autoDisplay: false
   }, 'google_translate_element');
-
-  setTimeout(mostraPaginaTradotta, 50);
 };
 
-// Funzione diretta per aprire/chiudere il menu lingua senza attese
+// Apre/Chiude il menu delle bandiere
 window.toggleLangDropdown = function(e) {
   if (e) e.stopPropagation();
   const langDropdown = document.getElementById('langDropdown');
@@ -26,7 +19,7 @@ window.toggleLangDropdown = function(e) {
   }
 };
 
-// Chiude il menu lingua se si clicca in un punto qualsiasi fuori da esso
+// Chiude il menu se si clicca in un punto qualsiasi fuori da esso
 document.addEventListener('click', function(e) {
   const langBtn = document.getElementById('langBtn');
   const langDropdown = document.getElementById('langDropdown');
@@ -39,7 +32,6 @@ function impostaCookieGoogleTranslate(lang) {
   const domain = window.location.hostname;
   document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=" + domain + "; path=/;";
-  document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=." + domain + "; path=/;";
 
   if (lang !== 'it') {
     document.cookie = "googtrans=/it/" + lang + "; path=/;";
@@ -47,13 +39,34 @@ function impostaCookieGoogleTranslate(lang) {
   }
 }
 
+// CAMBIO LINGUA DINAMICO
 window.cambiaLingua = function(codiceLingua, flagClass) {
+  // 1. Salva la preferenza dell'utente
   localStorage.setItem('lingua_selezionata', codiceLingua);
   localStorage.setItem('flag_class_selezionata', flagClass);
-  localStorage.setItem('salta_splash', 'true');
 
+  // 2. Aggiorna subito l'icona della bandiera nel pulsante
+  const activeFlag = document.getElementById('activeFlag');
+  if (activeFlag) {
+    activeFlag.className = 'flag-icon ' + flagClass;
+  }
+
+  // 3. Chiude il menu a tendina
+  const langDropdown = document.getElementById('langDropdown');
+  if (langDropdown) langDropdown.classList.remove('show');
+
+  // 4. Aggiorna i cookie in background
   impostaCookieGoogleTranslate(codiceLingua);
-  window.location.reload();
+
+  // 5. TRADUCE LA PAGINA ALL'ISTANTE SENZA RICARICARE E SENZA SPLASH SCREEN
+  const selectGoogle = document.querySelector('.goog-te-combo');
+  if (selectGoogle) {
+    selectGoogle.value = (codiceLingua === 'it') ? '' : codiceLingua;
+    selectGoogle.dispatchEvent(new Event('change'));
+  } else {
+    // Riserva di sicurezza solo se lo script non si è ancora avviato
+    window.location.reload();
+  }
 };
 
 /* ==========================================
