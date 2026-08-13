@@ -1,8 +1,8 @@
 /* ==========================================
-   GOOGLE TRANSLATE E GESTIONE COOKIE (OTTIMIZZATO)
+   1. GESTIONE VISIBILITÀ E LINGUA (ANTI-FLASH)
    ========================================== */
 
-// Funzione per mostrare di nuovo la pagina in sicurezza
+// Rende visibile la pagina non appena la lingua è pronta o scade il tempo
 function mostraPaginaTradotta() {
   document.documentElement.style.opacity = '1';
 }
@@ -14,9 +14,26 @@ window.googleTranslateElementInit = function() {
     autoDisplay: false
   }, 'google_translate_element');
 
-  // Appena Google Translate ha finito di caricarsi, mostriamo la pagina
-  setTimeout(mostraPaginaTradotta, 100);
+  setTimeout(mostraPaginaTradotta, 50);
 };
+
+// Funzione diretta per aprire/chiudere il menu lingua senza attese
+window.toggleLangDropdown = function(e) {
+  if (e) e.stopPropagation();
+  const langDropdown = document.getElementById('langDropdown');
+  if (langDropdown) {
+    langDropdown.classList.toggle('show');
+  }
+};
+
+// Chiude il menu lingua se si clicca in un punto qualsiasi fuori da esso
+document.addEventListener('click', function(e) {
+  const langBtn = document.getElementById('langBtn');
+  const langDropdown = document.getElementById('langDropdown');
+  if (langDropdown && langBtn && !langDropdown.contains(e.target) && !langBtn.contains(e.target)) {
+    langDropdown.classList.remove('show');
+  }
+});
 
 function impostaCookieGoogleTranslate(lang) {
   const domain = window.location.hostname;
@@ -35,52 +52,12 @@ window.cambiaLingua = function(codiceLingua, flagClass) {
   localStorage.setItem('flag_class_selezionata', flagClass);
   localStorage.setItem('salta_splash', 'true');
 
-  const activeFlag = document.getElementById('activeFlag');
-  if (activeFlag) {
-    activeFlag.className = 'flag-icon ' + flagClass;
-  }
-
-  const langDropdown = document.getElementById('langDropdown');
-  if (langDropdown) langDropdown.classList.remove('show');
-
   impostaCookieGoogleTranslate(codiceLingua);
   window.location.reload();
 };
 
 /* ==========================================
-   INIZIALIZZAZIONE EVENTI E PROTEZIONE
-   ========================================== */
-document.addEventListener('DOMContentLoaded', function() {
-  // Salva-vita: Se Google Translate impiega troppo a caricare, mostra comunque la pagina dopo 1 secondo
-  setTimeout(mostraPaginaTradotta, 1000);
-
-  const flagClassSalvata = localStorage.getItem('flag_class_selezionata');
-  const activeFlag = document.getElementById('activeFlag');
-  if (flagClassSalvata && activeFlag) {
-    activeFlag.className = 'flag-icon ' + flagClassSalvata;
-  }
-
-  const langBtn = document.getElementById('langBtn');
-  const langDropdown = document.getElementById('langDropdown');
-
-  if (langBtn && langDropdown) {
-    langBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      langDropdown.classList.toggle('show');
-    });
-
-    document.addEventListener('click', function(e) {
-      if (!langDropdown.contains(e.target) && !langBtn.contains(e.target)) {
-        langDropdown.classList.remove('show');
-      }
-    });
-  }
-
-  setTimeout(nascondiSplash, 2000);
-});
-
-/* ==========================================
-   SPLASH SCREEN LOGIC
+   2. SPLASH SCREEN E INIZIALIZZAZIONE
    ========================================== */
 window.nascondiSplash = function() {
   const splash = document.getElementById('splash-screen');
@@ -100,37 +77,21 @@ window.nascondiSplash = function() {
   }
 };
 
-/* ==========================================
-   INIZIALIZZAZIONE EVENTI
-   ========================================== */
 document.addEventListener('DOMContentLoaded', function() {
+  // Protezione: se la traduzione impiega tempo, mostra comunque la pagina entro 800ms
+  setTimeout(mostraPaginaTradotta, 800);
+
   const flagClassSalvata = localStorage.getItem('flag_class_selezionata');
   const activeFlag = document.getElementById('activeFlag');
   if (flagClassSalvata && activeFlag) {
     activeFlag.className = 'flag-icon ' + flagClassSalvata;
   }
 
-  const langBtn = document.getElementById('langBtn');
-  const langDropdown = document.getElementById('langDropdown');
-
-  if (langBtn && langDropdown) {
-    langBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      langDropdown.classList.toggle('show');
-    });
-
-    document.addEventListener('click', function(e) {
-      if (!langDropdown.contains(e.target) && !langBtn.contains(e.target)) {
-        langDropdown.classList.remove('show');
-      }
-    });
-  }
-
-  setTimeout(nascondiSplash, 2000);
+  setTimeout(nascondiSplash, 1800);
 });
 
 /* ==========================================
-   COOKIE E ANALYTICS
+   3. COOKIE E GOOGLE ANALYTICS
    ========================================== */
 const ANALYTICS_ID = 'G-C291PEHWM7';
 
@@ -159,13 +120,12 @@ window.rifiutaCookie = function() {
   if(banner) banner.style.display = 'none';
 };
 
-const consenso = localStorage.getItem('consenso_cookie');
-if (consenso === 'accettato') {
+if (localStorage.getItem('consenso_cookie') === 'accettato') {
   caricaAnalytics();
 }
 
 /* ==========================================
-   MODAL CALENDARI
+   4. MODAL CALENDARI E RICHIESTE WHATSAPP
    ========================================== */
 window.apriCalendario = function(idDelPopup) {
   const modal = document.getElementById(idDelPopup);
@@ -183,9 +143,6 @@ window.addEventListener('click', function(event) {
   }
 });
 
-/* ==========================================
-   RICHIESTA WHATSAPP
-   ========================================== */
 window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
   const checkin = document.getElementById(idCheckin).value;
   const checkout = document.getElementById(idCheckout).value;
@@ -210,9 +167,8 @@ window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
 };
 
 /* ==========================================
-   11. MOTORE GALLERIE FOTO (PARALLELO AD ALTE PRESTAZIONI)
+   5. MOTORE GALLERIE FOTO (PARALLELO AD ALTE PRESTAZIONI)
    ========================================== */
-
 const configurazioneGallerie = {
   'centrale': { cartella: 'image/suite-centrale/', titolo: 'Suite Centrale 44' },
   'corallo':  { cartella: 'image/suite-corallo/',  titolo: 'Suite Corallo' },
@@ -220,54 +176,47 @@ const configurazioneGallerie = {
 };
 
 const estensioniPossibili = ["jpg", "jpeg", "png", "JPG", "JPEG"];
-const MAX_FOTO_DA_CONTROLLARE = 30; // Numero massimo di foto da cercare per cartella
+const MAX_FOTO_DA_CONTROLLARE = 30;
 
 let playlistFotoAttuale = [];
 let indiceFotoAttuale = 0;
 
-// 1. APRE LA GALLERIA E CARICA LE FOTO IN PARALLELO
 window.apriGalleria = async function(nomeSuite) {
   const config = configurazioneGallerie[nomeSuite];
   playlistFotoAttuale = [];
   
   document.getElementById('titolo-galleria').innerText = `Galleria Foto - ${config.titolo}`;
   const griglia = document.getElementById('galleria-griglia');
-  griglia.innerHTML = '<div id="stato-ricerca" style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">Caricamento  in corso...</div>';
+  griglia.innerHTML = '<div id="stato-ricerca" style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">⚡ Caricamento rapido in corso...</div>';
   
   const modal = document.getElementById('modal-galleria');
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden'; 
 
-  // Avvia la ricerca di TUTTE le foto contemporaneamente
   const controlli = [];
   for (let i = 1; i <= MAX_FOTO_DA_CONTROLLARE; i++) {
     controlli.push(trovaFotoEsistente(config.cartella, i));
   }
 
-  // Attende la verifica istantanea
   const risultati = await Promise.all(controlli);
-  
-  // Filtra solo le foto realmente esistenti mantenendo l'ordine numerico esatto
   playlistFotoAttuale = risultati.filter(percorso => percorso !== null);
 
-  griglia.innerHTML = ''; // Pulisce il messaggio di attesa
+  griglia.innerHTML = ''; 
 
   if (playlistFotoAttuale.length === 0) {
     griglia.innerHTML = '<div style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">Nessuna foto trovata nella cartella.</div>';
     return;
   }
 
-  // Genera le miniature nella griglia
   playlistFotoAttuale.forEach((percorso, index) => {
     const imgThumb = document.createElement('img');
     imgThumb.src = percorso;
-    imgThumb.loading = "lazy"; // Differisce il caricamento pesante delle foto fuori dallo schermo
+    imgThumb.loading = "lazy";
     imgThumb.onclick = () => apriFotoEspansa(index);
     griglia.appendChild(imgThumb);
   });
 };
 
-// Funzione ausiliaria che prova le estensioni in parallelo per una singola foto
 function trovaFotoEsistente(cartella, numero) {
   return new Promise((resolve) => {
     let trovata = false;
@@ -296,7 +245,6 @@ function trovaFotoEsistente(cartella, numero) {
   });
 }
 
-// 2. GESTIONE FOTO INGRANDITA
 window.apriFotoEspansa = function(indice) {
   indiceFotoAttuale = indice;
   document.getElementById('galleria-espansa').style.display = 'flex';
@@ -333,7 +281,6 @@ function aggiornaVistaFoto() {
   contatore.innerText = `${indiceFotoAttuale + 1} / ${playlistFotoAttuale.length}`;
 }
 
-// Navigazione da tastiera
 document.addEventListener('keydown', function(event) {
   const espansa = document.getElementById('galleria-espansa').style.display === 'flex';
   const griglia = document.getElementById('modal-galleria').style.display === 'flex';
