@@ -191,7 +191,7 @@ window.apriGalleria = async function(nomeSuite) {
   
   document.getElementById('titolo-galleria').innerText = `Galleria Foto - ${config.titolo}`;
   const griglia = document.getElementById('galleria-griglia');
-  griglia.innerHTML = '<div id="stato-ricerca" style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">⚡ Caricamento rapido in corso...</div>';
+  griglia.innerHTML = '<div id="stato-ricerca" style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">Caricamento  in corso...</div>';
   
   const modal = document.getElementById('modal-galleria');
   modal.style.display = 'flex';
