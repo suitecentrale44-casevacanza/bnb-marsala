@@ -873,3 +873,8 @@ footer p {
   .modal-next { right: 10px; }
   .modal-close-espansa { top: 15px; right: 20px; }
 }
+
+/* Transizione fluida al cambio lingua */
+html {
+  transition: opacity 0.2s ease-in-out;
+}
