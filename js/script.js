@@ -287,14 +287,41 @@ window.addEventListener('click', function(event) {
   }
 });
 
-// Gestione selezione mediante clic sui giorni
+// Gestione selezione e deselezione mediante clic sui giorni
 window.selezionaDataGiorno = function(nomeSuite, dataStr) {
   const sel = selezioneDate[nomeSuite] || { checkin: null, checkout: null };
   const prenotazioni = cachePrenotazioni[nomeSuite] || [];
   const infoElem = document.getElementById(`info-selezione-${nomeSuite}`);
 
-  // Primo Clic (o ripartenza da capo): imposta il Check-in
-  if (!sel.checkin || (sel.checkin && sel.checkout)) {
+  // ----------------------------------------------------
+  // CASI DI DESELEZIONE (Toggle con secondo clic)
+  // ----------------------------------------------------
+  
+  // 1. Clic sul Check-out già selezionato -> Annulla solo il Check-out
+  if (sel.checkout === dataStr) {
+    sel.checkout = null;
+    if (infoElem) {
+      const p = sel.checkin.split('-');
+      infoElem.innerText = `Check-in: ${p[2]}/${p[1]}/${p[0]} ➔ Clicca sulla data di Check-out`;
+      infoElem.style.color = 'var(--blu-mare)';
+    }
+  }
+  // 2. Clic sul Check-in già selezionato (senza Check-out o con entrambi) -> Azzera la selezione
+  else if (sel.checkin === dataStr) {
+    sel.checkin = null;
+    sel.checkout = null;
+    if (infoElem) {
+      infoElem.innerText = "👉 Clicca sui giorni liberi nel calendario per scegliere Check-in e Check-out";
+      infoElem.style.color = 'var(--blu-notte-testo)';
+    }
+  }
+
+  // ----------------------------------------------------
+  // CASI DI NUOVA SELEZIONE
+  // ----------------------------------------------------
+
+  // 3. Imposta nuovo Check-in (se non c'è nulla o se c'erano già entrambe le date)
+  else if (!sel.checkin || (sel.checkin && sel.checkout)) {
     sel.checkin = dataStr;
     sel.checkout = null;
     if (infoElem) {
@@ -303,10 +330,11 @@ window.selezionaDataGiorno = function(nomeSuite, dataStr) {
       infoElem.style.color = 'var(--blu-mare)';
     }
   } 
-  // Secondo Clic: imposta il Check-out
+  
+  // 4. Imposta Check-out
   else if (sel.checkin && !sel.checkout) {
     if (dataStr <= sel.checkin) {
-      // Se si clicca una data precedente, si imposta la nuova data come Check-in
+      // Se si clicca una data precedente al Check-in, la nuova data diventa il Check-in
       sel.checkin = dataStr;
       sel.checkout = null;
       if (infoElem) {
@@ -315,7 +343,7 @@ window.selezionaDataGiorno = function(nomeSuite, dataStr) {
         infoElem.style.color = 'var(--blu-mare)';
       }
     } else {
-      // Verifica giorno per giorno che non vi siano date occupate nell'intervallo
+      // Verifica che nell'intervallo scelto non vi siano giorni occupati
       let tempDate = new Date(sel.checkin + 'T00:00:00');
       const endDate = new Date(dataStr + 'T00:00:00');
       let haOccupatiInMezzo = false;
