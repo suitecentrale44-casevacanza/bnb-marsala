@@ -10,7 +10,6 @@ window.googleTranslateElementInit = function() {
   }, 'google_translate_element');
 };
 
-// Toggle del menu bandiere
 window.toggleLangDropdown = function(e) {
   if (e) e.stopPropagation();
   const langDropdown = document.getElementById('langDropdown');
@@ -19,7 +18,6 @@ window.toggleLangDropdown = function(e) {
   }
 };
 
-// Chiude il menu se si clicca fuori
 document.addEventListener('click', function(e) {
   const langBtn = document.getElementById('langBtn');
   const langDropdown = document.getElementById('langDropdown');
@@ -28,27 +26,22 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// Pulizia profonda e rimozione cookie di traduzione
 function gestisciCookieTranslate(lang) {
   const dominio = window.location.hostname;
-  
-  // Cancella i cookie da tutti i possibili percorsi e domini
   document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + dominio + ";";
   document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=." + dominio + ";";
 
-  // Imposta il nuovo cookie solo se la lingua NON è l'italiano
   if (lang && lang !== 'it') {
     document.cookie = "googtrans=/it/" + lang + "; path=/;";
     document.cookie = "googtrans=/it/" + lang + "; path=/; domain=" + dominio + ";";
   }
 }
 
-// CAMBIO LINGUA
 window.cambiaLingua = function(codiceLingua, flagClass) {
   localStorage.setItem('lingua_selezionata', codiceLingua);
   localStorage.setItem('flag_class_selezionata', flagClass);
-  localStorage.setItem('salta_splash', 'true'); // Evita di mostrare di nuovo lo splash screen
+  localStorage.setItem('salta_splash', 'true');
 
   gestisciCookieTranslate(codiceLingua);
 
@@ -58,13 +51,11 @@ window.cambiaLingua = function(codiceLingua, flagClass) {
   const langDropdown = document.getElementById('langDropdown');
   if (langDropdown) langDropdown.classList.remove('show');
 
-  // SE SI TORNA ALL'ITALIANO: ricarica rapida per ripristinare il testo pulito dal server
   if (codiceLingua === 'it') {
     window.location.reload();
     return;
   }
 
-  // PER LE ALTRE LINGUE: applica subito la traduzione via selettore Google
   const selectGoogle = document.querySelector('.goog-te-combo');
   if (selectGoogle) {
     selectGoogle.value = codiceLingua;
@@ -73,6 +64,7 @@ window.cambiaLingua = function(codiceLingua, flagClass) {
     window.location.reload();
   }
 };
+
 /* ==========================================
    2. GESTIONE SPLASH SCREEN ED EVENTI AVVIO
    ========================================== */
@@ -146,16 +138,44 @@ if (localStorage.getItem('consenso_cookie') === 'accettato') {
 }
 
 /* ==========================================
-   4. MODAL CALENDARI E WHATSAPP
+   4. MODAL CALENDARI E INTEGRATE GOOGLE ICAL
    ========================================== */
-window.apriCalendario = function(idDelPopup) {
+
+// Configurazione dei flussi Google iCal ufficiali estratti dai tuoi calendari
+const configurazioneCalendari = {
+  'centrale': {
+    icalUrl: 'https://calendar.google.com/calendar/ical/suitecentrale44%40gmail.com/public/basic.ics',
+    elementId: 'cal-centrale'
+  },
+  'corallo': {
+    icalUrl: 'https://calendar.google.com/calendar/ical/f118fc936bf65f97fec173ca1aec2486f030d9f175ac5177502eb3250ea1c466%40group.calendar.google.com/public/basic.ics',
+    elementId: 'cal-corallo'
+  },
+  'oceano': {
+    icalUrl: 'https://calendar.google.com/calendar/ical/748b2c73f083c8ff32af24899404f64541430871f37ae98f30cda555123b2ea3%40group.calendar.google.com/public/basic.ics',
+    elementId: 'cal-oceano'
+  }
+};
+
+// Memoria locale per salvare le prenotazioni ed evitare inutili richieste di rete
+const cachePrenotazioni = {};
+const statoMeseCalendario = {};
+
+window.apriCalendario = async function(idDelPopup, nomeSuite) {
   const modal = document.getElementById(idDelPopup);
-  if(modal) modal.style.display = "flex";
+  if (modal) modal.style.display = "flex";
+
+  if (nomeSuite && configurazioneCalendari[nomeSuite]) {
+    if (!statoMeseCalendario[nomeSuite]) {
+      statoMeseCalendario[nomeSuite] = new Date();
+    }
+    await inizializzaCalendarioNative(nomeSuite);
+  }
 };
 
 window.chiudiCalendario = function(idDelPopup) {
   const modal = document.getElementById(idDelPopup);
-  if(modal) modal.style.display = "none";
+  if (modal) modal.style.display = "none";
 };
 
 window.addEventListener('click', function(event) {
@@ -163,6 +183,112 @@ window.addEventListener('click', function(event) {
     event.target.style.display = "none";
   }
 });
+
+// CARICAMENTO ED ESTRAZIONE PRIVATA DATE DA GOOGLE
+async function inizializzaCalendarioNative(nomeSuite) {
+  const config = configurazioneCalendari[nomeSuite];
+  const container = document.getElementById(config.elementId);
+  if (!container) return;
+
+  if (!cachePrenotazioni[nomeSuite]) {
+    container.innerHTML = '<div class="cal-loading">⚡ Caricamento disponibilità...</div>';
+    try {
+      // Proxy leggero per aggirare le restrizioni CORS
+      const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(config.icalUrl)}`);
+      const textICS = await res.text();
+      cachePrenotazioni[nomeSuite] = estraiDateDaICS(textICS);
+    } catch (e) {
+      console.error("Errore caricamento iCal per " + nomeSuite, e);
+      cachePrenotazioni[nomeSuite] = [];
+    }
+  }
+
+  renderizzaGrigliaCalendario(nomeSuite);
+}
+
+// Estrattore pignolo: prende SOLO le date (DTSTART e DTEND). Ignora nomi, email e dati personali!
+function estraiDateDaICS(icsText) {
+  const intervalli = [];
+  const eventi = icsText.split("BEGIN:VEVENT");
+
+  eventi.forEach(evt => {
+    const startMatch = evt.match(/DTSTART(?:;VALUE=DATE)?:(\d{8})/);
+    const endMatch = evt.match(/DTEND(?:;VALUE=DATE)?:(\d{8})/);
+
+    if (startMatch && endMatch) {
+      const da = `${startMatch[1].substr(0,4)}-${startMatch[1].substr(4,2)}-${startMatch[1].substr(6,2)}`;
+      const a = `${endMatch[1].substr(0,4)}-${endMatch[1].substr(4,2)}-${endMatch[1].substr(6,2)}`;
+      intervalli.push({ da, a });
+    }
+  });
+
+  return intervalli;
+}
+
+function renderizzaGrigliaCalendario(nomeSuite) {
+  const config = configurazioneCalendari[nomeSuite];
+  const container = document.getElementById(config.elementId);
+  if (!container) return;
+
+  const dataRif = statoMeseCalendario[nomeSuite];
+  const anno = dataRif.getFullYear();
+  const mese = dataRif.getMonth();
+
+  const nomiMesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", 
+                    "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+
+  let html = `
+    <div class="cal-native-container">
+      <div class="cal-header">
+        <button type="button" onclick="cambiaMeseSuite('${nomeSuite}', -1)">❮</button>
+        <h4>${nomiMesi[mese]} ${anno}</h4>
+        <button type="button" onclick="cambiaMeseSuite('${nomeSuite}', 1)">❯</button>
+      </div>
+      <div class="cal-weekdays">
+        <span>Lun</span><span>Mar</span><span>Mer</span><span>Gio</span><span>Ven</span><span>Sab</span><span>Dom</span>
+      </div>
+      <div class="cal-days-grid">
+  `;
+
+  const primoGiornoMese = new Date(anno, mese, 1).getDay();
+  const giorniNelMese = new Date(anno, mese + 1, 0).getDate();
+  const offsetInizio = (primoGiornoMese === 0) ? 6 : primoGiornoMese - 1;
+
+  for (let i = 0; i < offsetInizio; i++) {
+    html += `<div class="cal-day empty"></div>`;
+  }
+
+  const prenotazioni = cachePrenotazioni[nomeSuite] || [];
+
+  for (let g = 1; g <= giorniNelMese; g++) {
+    const meseStr = String(mese + 1).padStart(2, '0');
+    const gStr = String(g).padStart(2, '0');
+    const dataStr = `${anno}-${meseStr}-${gStr}`;
+
+    const occupato = prenotazioni.some(r => dataStr >= r.da && dataStr < r.a);
+    const classeStato = occupato ? 'occupato' : 'disponibile';
+
+    html += `<div class="cal-day ${classeStato}">${g}</div>`;
+  }
+
+  html += `
+      </div>
+      <div class="cal-legend">
+        <span><i class="dot lib"></i> Libero</span>
+        <span><i class="dot occ"></i> Occupato</span>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
+window.cambiaMeseSuite = function(nomeSuite, dir) {
+  if (statoMeseCalendario[nomeSuite]) {
+    statoMeseCalendario[nomeSuite].setMonth(statoMeseCalendario[nomeSuite].getMonth() + dir);
+    renderizzaGrigliaCalendario(nomeSuite);
+  }
+};
 
 window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
   const checkin = document.getElementById(idCheckin).value;
@@ -197,7 +323,6 @@ const configurazioneGallerie = {
   'oceano':   { cartella: 'image/suite-oceano/',   titolo: 'Suite Oceano' }
 };
 
-// Formati supportati (WebP per primo perché è il più rapido da scaricare)
 const estensioniPossibili = ["webp", "jpg", "png", "jpeg", "WEBP", "JPG", "PNG", "JPEG"];
 
 let playlistFotoAttuale = [];
@@ -220,15 +345,14 @@ window.apriGalleria = async function(nomeSuite) {
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 
-  let numeroInizio = 0; // Numerazione parte da 0
-  const DIMENSIONE_LOTTO = 10; // Cerca 10 foto contemporaneamente in parallelo!
+  let numeroInizio = 0;
+  const DIMENSIONE_LOTTO = 10;
   let continuaScansione = true;
   let trovataAlmenoUna = false;
 
   while (continuaScansione) {
     if (sessioneGalleriaId !== sessioneCorrente) return;
 
-    // Crea 10 richieste parallele [numeroInizio ... numeroInizio + 9]
     const promesseLotto = [];
     for (let i = 0; i < DIMENSIONE_LOTTO; i++) {
       const idx = numeroInizio + i;
@@ -237,12 +361,10 @@ window.apriGalleria = async function(nomeSuite) {
       );
     }
 
-    // Attende tutte e 10 le verifiche nello stesso identico istante
     const risultati = await Promise.all(promesseLotto);
 
     if (sessioneGalleriaId !== sessioneCorrente) return;
 
-    // Ordina per indice numerico corretto (0, 1, 2, 3...)
     risultati.sort((a, b) => a.idx - b.idx);
 
     let trovateNelLotto = 0;
@@ -252,31 +374,29 @@ window.apriGalleria = async function(nomeSuite) {
         trovateNelLotto++;
         if (!trovataAlmenoUna) {
           trovataAlmenoUna = true;
-          griglia.innerHTML = ''; // Pulisce il messaggio di caricamento
+          griglia.innerHTML = '';
         }
 
         const indexInLista = playlistFotoAttuale.length;
         playlistFotoAttuale.push(item.percorso);
 
-        // Rendering immediato della miniatura
         const imgThumb = document.createElement('img');
         imgThumb.src = item.percorso;
         imgThumb.loading = "lazy";
-        imgThumb.decoding = "async"; // Decodifica in background senza bloccare lo schermo
+        imgThumb.decoding = "async";
         imgThumb.alt = `${config.titolo} - Foto ${item.idx}`;
         imgThumb.onclick = () => apriFotoEspansa(indexInLista);
         griglia.appendChild(imgThumb);
       } else {
-        // Appena si interrompe la sequenza numerica, fermiamo la ricerca
         continuaScansione = false;
         break;
       }
     }
 
     if (trovateNelLotto < DIMENSIONE_LOTTO) {
-      continuaScansione = false; // Meno di 10 foto nel lotto = le foto sono finite
+      continuaScansione = false;
     } else {
-      numeroInizio += DIMENSIONE_LOTTO; // Passa al lotto successivo (10-19, 20-29...)
+      numeroInizio += DIMENSIONE_LOTTO;
     }
   }
 
@@ -285,7 +405,6 @@ window.apriGalleria = async function(nomeSuite) {
   }
 };
 
-// Cerca tutte le estensioni dell'indice in parallelo
 function cercaPrimoFormatoValido(cartella, numero) {
   const verifiche = estensioniPossibili.map(ext => {
     return new Promise((resolve, reject) => {
@@ -338,7 +457,6 @@ function aggiornaVistaFoto() {
   contatore.innerText = `${indiceFotoAttuale + 1} / ${playlistFotoAttuale.length}`;
 }
 
-// Navigazione da tastiera
 document.addEventListener('keydown', function(event) {
   const espansa = document.getElementById('galleria-espansa').style.display === 'flex';
   const griglia = document.getElementById('modal-galleria').style.display === 'flex';
