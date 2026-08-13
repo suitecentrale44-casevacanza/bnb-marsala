@@ -169,19 +169,22 @@ window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
 };
 
 /* ==========================================
-   11. MOTORE GALLERIE FOTO AUTOMATICO (SICURO)
+   11. MOTORE GALLERIE FOTO AUTOMATICO (MULTI-ESTENSIONE)
    ========================================== */
 
-// Niente più conteggi manuali! Diciamo solo al sistema dove cercare.
+// Abbiamo rimosso "estensione" da qui, ora è tutto automatico!
 const configurazioneGallerie = {
-  'centrale': { cartella: 'image/suite-centrale/', estensione: 'jpg' },
-  'corallo':  { cartella: 'image/suite-corallo/',  estensione: 'jpg' },
-  'oceano':   { cartella: 'image/suite-oceano/',   estensione: 'jpg' }
+  'centrale': { cartella: 'image/suite-centrale/' },
+  'corallo':  { cartella: 'image/suite-corallo/' },
+  'oceano':   { cartella: 'image/suite-oceano/' }
 };
+
+// Elenco delle estensioni da provare, in ordine di priorità
+const estensioniPossibili = ["jpeg", "jpg", "JPEG", "JPG", "png"];
 
 let playlistFotoAttuale = [];
 let indiceFotoAttuale = 0;
-let ricercaInCorso = false; // Protezione per evitare click multipli
+let ricercaInCorso = false; // Protezione per evitare che l'utente clicchi due volte
 
 window.apriGalleria = function(nomeSuite) {
   if (ricercaInCorso) return; 
@@ -202,47 +205,54 @@ window.apriGalleria = function(nomeSuite) {
   contatore.innerText = "Ricerca automatica foto...";
   imgElement.src = ""; // Svuota l'immagine precedente
   
-  // Avvia la ricerca partendo in automatico dalla foto numero 1
-  cercaFotoInModoSicuro(config.cartella, config.estensione, 1);
+  // Inizia la ricerca dalla foto numero 1, provando la primissima estensione (indice 0)
+  cercaFotoInModoSicuro(config.cartella, 1, 0);
 };
 
-function cercaFotoInModoSicuro(cartella, estensione, numero) {
-  const percorso = `${cartella}${numero}.${estensione}`;
-  const img = new Image();
-  
-  // Se il server risponde che la foto ESISTE:
-  img.onload = function() {
-    playlistFotoAttuale.push(percorso);
-    
-    // Mostriamo immediatamente la prima foto senza far aspettare l'utente
-    if (numero === 1) {
-      aggiornaVistaFoto();
-    } else {
-      // Aggiorna il numeretto (es: "1 / 4", "1 / 5"...) in tempo reale
-      document.getElementById('contatore-foto').innerText = `${indiceFotoAttuale + 1} / ${playlistFotoAttuale.length}`;
-    }
-    
-    // Il sistema prova automaticamente a cercare la foto successiva
-    cercaFotoInModoSicuro(cartella, estensione, numero + 1);
-  };
-  
-  // Se la foto NON ESISTE (siamo arrivati alla fine della cartella):
-  img.onerror = function() {
-    ricercaInCorso = false; // Ricerca conclusa con successo
+function cercaFotoInModoSicuro(cartella, numero, indiceEst) {
+  // Se abbiamo provato TUTTE le estensioni per questo numero e nessuna funziona,
+  // significa che non ci sono più foto in cartella. Abbiamo finito!
+  if (indiceEst >= estensioniPossibili.length) {
+    ricercaInCorso = false; 
     
     if (playlistFotoAttuale.length === 0) {
       document.getElementById('contatore-foto').innerText = "Nessuna foto trovata nella cartella.";
     } else {
-      aggiornaVistaFoto(); // Imposta il contatore finale
+      aggiornaVistaFoto(); // Imposta il contatore finale (es. "1 / 15")
     }
+    return;
+  }
+
+  const estensioneCorrente = estensioniPossibili[indiceEst];
+  const percorso = `${cartella}${numero}.${estensioneCorrente}`;
+  const img = new Image();
+  
+  // CASO A: Il server risponde che la foto ESISTE!
+  img.onload = function() {
+    playlistFotoAttuale.push(percorso);
+    
+    // Mostriamo immediatamente la prima foto appena trovata per non far aspettare
+    if (numero === 1) {
+      aggiornaVistaFoto();
+    } else {
+      document.getElementById('contatore-foto').innerText = `${indiceFotoAttuale + 1} / ${playlistFotoAttuale.length}`;
+    }
+    
+    // Ora cerchiamo la foto successiva (numero + 1), ripartendo dalla prima estensione (0)
+    cercaFotoInModoSicuro(cartella, numero + 1, 0);
   };
   
-  // Questa riga fa partire la verifica sicura
+  // CASO B: La foto NON ESISTE con questa estensione. Proviamo la successiva nell'elenco!
+  img.onerror = function() {
+    cercaFotoInModoSicuro(cartella, numero, indiceEst + 1);
+  };
+  
+  // Questa riga fa partire la verifica sicura chiedendo la foto al server
   img.src = percorso;
 }
 
 window.cambiaFotoGalleria = function(direzione) {
-  // Evita errori se l'utente clicca le frecce prima del tempo
+  // Evita errori se l'utente clicca le frecce mentre sta ancora caricando
   if (playlistFotoAttuale.length === 0) return;
 
   indiceFotoAttuale += direzione;
@@ -272,7 +282,7 @@ function aggiornaVistaFoto() {
   contatore.innerText = `${indiceFotoAttuale + 1} / ${playlistFotoAttuale.length}`;
 }
 
-// Navigazione comoda e sicura anche con la tastiera del computer
+// Navigazione comoda e sicura con la tastiera del computer
 document.addEventListener('keydown', function(event) {
   const modal = document.getElementById('modal-galleria');
   if (modal && modal.style.display === 'flex') {
