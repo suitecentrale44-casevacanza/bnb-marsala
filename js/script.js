@@ -1,5 +1,5 @@
 /* ==========================================
-   1. GESTIONE LINGUA ULTRA-STABILE (NO WHITE SCREEN)
+   1. GESTIONE LINGUA ULTRA-STABILE E VELOCE
    ========================================== */
 
 window.googleTranslateElementInit = function() {
@@ -28,23 +28,27 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// Pulizia e impostazione dei cookie
+// Pulizia profonda e rimozione cookie di traduzione
 function gestisciCookieTranslate(lang) {
+  const dominio = window.location.hostname;
+  
+  // Cancella i cookie da tutti i possibili percorsi e domini
   document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  if (window.location.hostname) {
-    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname + ";";
-  }
+  document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + dominio + ";";
+  document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=." + dominio + ";";
 
+  // Imposta il nuovo cookie solo se la lingua NON è l'italiano
   if (lang && lang !== 'it') {
     document.cookie = "googtrans=/it/" + lang + "; path=/;";
+    document.cookie = "googtrans=/it/" + lang + "; path=/; domain=" + dominio + ";";
   }
 }
 
-// CAMBIO LINGUA SICURO
+// CAMBIO LINGUA
 window.cambiaLingua = function(codiceLingua, flagClass) {
   localStorage.setItem('lingua_selezionata', codiceLingua);
   localStorage.setItem('flag_class_selezionata', flagClass);
-  localStorage.setItem('salta_splash', 'true');
+  localStorage.setItem('salta_splash', 'true'); // Evita di mostrare di nuovo lo splash screen
 
   gestisciCookieTranslate(codiceLingua);
 
@@ -54,15 +58,21 @@ window.cambiaLingua = function(codiceLingua, flagClass) {
   const langDropdown = document.getElementById('langDropdown');
   if (langDropdown) langDropdown.classList.remove('show');
 
+  // SE SI TORNA ALL'ITALIANO: ricarica rapida per ripristinare il testo pulito dal server
+  if (codiceLingua === 'it') {
+    window.location.reload();
+    return;
+  }
+
+  // PER LE ALTRE LINGUE: applica subito la traduzione via selettore Google
   const selectGoogle = document.querySelector('.goog-te-combo');
   if (selectGoogle) {
-    selectGoogle.value = (codiceLingua === 'it') ? '' : codiceLingua;
+    selectGoogle.value = codiceLingua;
     selectGoogle.dispatchEvent(new Event('change'));
   } else {
     window.location.reload();
   }
 };
-
 /* ==========================================
    2. GESTIONE SPLASH SCREEN ED EVENTI AVVIO
    ========================================== */
