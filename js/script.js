@@ -1,5 +1,5 @@
 /* ==========================================
-   1. GESTIONE LINGUA IN TEMPO REALE (SENZA REFRESH)
+   1. GESTIONE LINGUA OTTIMIZZATA
    ========================================== */
 
 window.googleTranslateElementInit = function() {
@@ -19,7 +19,7 @@ window.toggleLangDropdown = function(e) {
   }
 };
 
-// Chiude il menu se si clicca in un punto qualsiasi fuori da esso
+// Chiude il menu se si clicca fuori
 document.addEventListener('click', function(e) {
   const langBtn = document.getElementById('langBtn');
   const langDropdown = document.getElementById('langDropdown');
@@ -30,16 +30,18 @@ document.addEventListener('click', function(e) {
 
 function impostaCookieGoogleTranslate(lang) {
   const domain = window.location.hostname;
+  // Cancella tutti i cookie di traduzione precedenti
   document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=" + domain + "; path=/;";
+  document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=." + domain + "; path=/;";
 
-  if (lang !== 'it') {
+  if (lang && lang !== 'it') {
     document.cookie = "googtrans=/it/" + lang + "; path=/;";
     document.cookie = "googtrans=/it/" + lang + "; domain=" + domain + "; path=/;";
   }
 }
 
-// CAMBIO LINGUA DINAMICO E ISTANTANEO
+// CAMBIO LINGUA CORRETTO
 window.cambiaLingua = function(codiceLingua, flagClass) {
   localStorage.setItem('lingua_selezionata', codiceLingua);
   localStorage.setItem('flag_class_selezionata', flagClass);
@@ -52,11 +54,19 @@ window.cambiaLingua = function(codiceLingua, flagClass) {
   const langDropdown = document.getElementById('langDropdown');
   if (langDropdown) langDropdown.classList.remove('show');
 
+  // Pulizia/Impostazione dei cookie
   impostaCookieGoogleTranslate(codiceLingua);
 
+  // SE SI TORNA IN ITALIANO: Ricarica pulita per ripristinare il testo originale
+  if (codiceLingua === 'it') {
+    window.location.reload();
+    return;
+  }
+
+  // PER LE ALTRE LINGUE: Cambio dinamico istantaneo
   const selectGoogle = document.querySelector('.goog-te-combo');
   if (selectGoogle) {
-    selectGoogle.value = (codiceLingua === 'it') ? '' : codiceLingua;
+    selectGoogle.value = codiceLingua;
     selectGoogle.dispatchEvent(new Event('change'));
   } else {
     window.location.reload();
@@ -64,7 +74,7 @@ window.cambiaLingua = function(codiceLingua, flagClass) {
 };
 
 /* ==========================================
-   2. SPLASH SCREEN (CON PARACADUTE AUTOMATICO)
+   2. SPLASH SCREEN (DISATTIVAZIONE RAPIDA)
    ========================================== */
 window.nascondiSplash = function() {
   const splash = document.getElementById('splash-screen');
@@ -74,26 +84,24 @@ window.nascondiSplash = function() {
     splash.classList.add('fade-out');
     setTimeout(() => {
       splash.style.setProperty('display', 'none', 'important');
-    }, 600);
+    }, 500);
   }
 };
 
-// Inizializzazione rapida all'avvio della pagina
 document.addEventListener('DOMContentLoaded', function() {
-  // Ripristina la bandiera della lingua salvata
+  // Ripristina la bandiera salvata dall'utente
   const flagClassSalvata = localStorage.getItem('flag_class_selezionata');
   const activeFlag = document.getElementById('activeFlag');
   if (flagClassSalvata && activeFlag) {
     activeFlag.className = 'flag-icon ' + flagClassSalvata;
   }
 
-  // PARACADUTE: Nasconde lo splash screen dopo soli 600 millisecondi per massima velocità
-  setTimeout(window.nascondiSplash, 600);
+  // Nasconde lo splash screen rapidamente (500ms)
+  setTimeout(window.nascondiSplash, 500);
 });
 
-// Secondo paracadute di sicurezza se il caricamento della rete è lento
 window.addEventListener('load', function() {
-  setTimeout(window.nascondiSplash, 300);
+  setTimeout(window.nascondiSplash, 200);
 });
 
 /* ==========================================
