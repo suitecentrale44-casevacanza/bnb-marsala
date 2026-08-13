@@ -169,44 +169,85 @@ window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
 };
 
 /* ==========================================
-   11. MOTORE GALLERIE FOTO UNIFICATO
+   11. MOTORE GALLERIE FOTO AUTOMATICO (SICURO)
    ========================================== */
 
-// Configurazione delle 3 Suite. 
-// Modifica "totaleFoto" con il numero esatto di foto per ogni casa.
+// Niente più conteggi manuali! Diciamo solo al sistema dove cercare.
 const configurazioneGallerie = {
-  'centrale': { cartella: 'image/suite-centrale/', totaleFoto: 15, estensione: 'jpg' },
-  'corallo':  { cartella: 'image/suite-corallo/',  totaleFoto: 15, estensione: 'jpg' },
-  'oceano':   { cartella: 'image/suite-oceano/',   totaleFoto: 15, estensione: 'jpg' }
+  'centrale': { cartella: 'image/suite-centrale/', estensione: 'jpg' },
+  'corallo':  { cartella: 'image/suite-corallo/',  estensione: 'jpg' },
+  'oceano':   { cartella: 'image/suite-oceano/',   estensione: 'jpg' }
 };
 
 let playlistFotoAttuale = [];
 let indiceFotoAttuale = 0;
+let ricercaInCorso = false; // Protezione per evitare click multipli
 
 window.apriGalleria = function(nomeSuite) {
+  if (ricercaInCorso) return; 
+  ricercaInCorso = true;
+  
   const config = configurazioneGallerie[nomeSuite];
-  
-  // Svuota la playlist e la riempie con le foto della suite cliccata
   playlistFotoAttuale = [];
-  for (let i = 1; i <= config.totaleFoto; i++) {
-    playlistFotoAttuale.push(`${config.cartella}${i}.${config.estensione}`);
-  }
-
-  // Resetta l'indice e mostra la finestra
   indiceFotoAttuale = 0;
-  aggiornaVistaFoto();
   
+  // Blocca la pagina sotto e mostra la finestra modale
   const modal = document.getElementById('modal-galleria');
   modal.style.display = 'flex';
-  
-  // Blocca lo scorrimento della pagina di sottofondo
   document.body.style.overflow = 'hidden'; 
+  
+  const contatore = document.getElementById('contatore-foto');
+  const imgElement = document.getElementById('img-galleria');
+  
+  contatore.innerText = "Ricerca automatica foto...";
+  imgElement.src = ""; // Svuota l'immagine precedente
+  
+  // Avvia la ricerca partendo in automatico dalla foto numero 1
+  cercaFotoInModoSicuro(config.cartella, config.estensione, 1);
 };
 
+function cercaFotoInModoSicuro(cartella, estensione, numero) {
+  const percorso = `${cartella}${numero}.${estensione}`;
+  const img = new Image();
+  
+  // Se il server risponde che la foto ESISTE:
+  img.onload = function() {
+    playlistFotoAttuale.push(percorso);
+    
+    // Mostriamo immediatamente la prima foto senza far aspettare l'utente
+    if (numero === 1) {
+      aggiornaVistaFoto();
+    } else {
+      // Aggiorna il numeretto (es: "1 / 4", "1 / 5"...) in tempo reale
+      document.getElementById('contatore-foto').innerText = `${indiceFotoAttuale + 1} / ${playlistFotoAttuale.length}`;
+    }
+    
+    // Il sistema prova automaticamente a cercare la foto successiva
+    cercaFotoInModoSicuro(cartella, estensione, numero + 1);
+  };
+  
+  // Se la foto NON ESISTE (siamo arrivati alla fine della cartella):
+  img.onerror = function() {
+    ricercaInCorso = false; // Ricerca conclusa con successo
+    
+    if (playlistFotoAttuale.length === 0) {
+      document.getElementById('contatore-foto').innerText = "Nessuna foto trovata nella cartella.";
+    } else {
+      aggiornaVistaFoto(); // Imposta il contatore finale
+    }
+  };
+  
+  // Questa riga fa partire la verifica sicura
+  img.src = percorso;
+}
+
 window.cambiaFotoGalleria = function(direzione) {
+  // Evita errori se l'utente clicca le frecce prima del tempo
+  if (playlistFotoAttuale.length === 0) return;
+
   indiceFotoAttuale += direzione;
 
-  // Effetto pac-man: se vado oltre la fine, torno all'inizio e viceversa
+  // Effetto "circolare": se scorri oltre l'ultima, torni alla prima
   if (indiceFotoAttuale < 0) {
     indiceFotoAttuale = playlistFotoAttuale.length - 1;
   } else if (indiceFotoAttuale >= playlistFotoAttuale.length) {
@@ -219,8 +260,7 @@ window.cambiaFotoGalleria = function(direzione) {
 window.chiudiGalleria = function() {
   const modal = document.getElementById('modal-galleria');
   modal.style.display = 'none';
-  
-  // Sblocca lo scorrimento della pagina
+  // Sblocca la pagina per poter scorrere di nuovo il sito
   document.body.style.overflow = 'auto'; 
 };
 
@@ -228,14 +268,11 @@ function aggiornaVistaFoto() {
   const imgElement = document.getElementById('img-galleria');
   const contatore = document.getElementById('contatore-foto');
   
-  // Mostra l'immagine
   imgElement.src = playlistFotoAttuale[indiceFotoAttuale];
-  
-  // Mostra il numeretto (es. 1 / 15)
   contatore.innerText = `${indiceFotoAttuale + 1} / ${playlistFotoAttuale.length}`;
 }
 
-// Supporto per la tastiera (Frecce ed ESC)
+// Navigazione comoda e sicura anche con la tastiera del computer
 document.addEventListener('keydown', function(event) {
   const modal = document.getElementById('modal-galleria');
   if (modal && modal.style.display === 'flex') {
