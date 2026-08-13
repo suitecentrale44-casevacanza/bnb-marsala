@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(window.nascondiSplash, 500);
   }
 
-  // Pre-caricamento immediato e silenzioso di tutti i calendari all'avvio
+  // Pre-caricamento immediato in background
   precaricaTuttiICalInSilenzio();
 });
 
@@ -141,24 +141,30 @@ if (localStorage.getItem('consenso_cookie') === 'accettato') {
 }
 
 /* ==========================================
-   4. CALENDARI NATIVI ULTRA-VELOCI (TIMEOUT 2s & RENDER ISTANTANEO)
+   4. CALENDARI NATIVI SINGOLI CON SELEZIONE INTERATTIVA
    ========================================== */
 
 const configurazioneCalendari = {
   'centrale': {
     elementId: 'cal-centrale',
+    checkinId: 'checkin-centrale',
+    checkoutId: 'checkout-centrale',
     icalUrls: [
-      'https://calendar.google.com/calendar/ical/usn7es2f9plpcssjkrlc6mpmg4u5i0i4%40import.calendar.google.com/public/basic.ics'
+      'https://calendar.google.com/calendar/ical/usn7es2f9plpcssjkrlc6mpmg4u5i0i4@import.calendar.google.com/public/basic.ics'
     ]
   },
   'corallo': {
     elementId: 'cal-corallo',
+    checkinId: 'checkin-corallo',
+    checkoutId: 'checkout-corallo',
     icalUrls: [
       'https://calendar.google.com/calendar/ical/houpucjjv0mu4cr02bk5n8cd9v6ele8o@import.calendar.google.com/public/basic.ics'
     ]
   },
   'oceano': {
     elementId: 'cal-oceano',
+    checkinId: 'checkin-oceano',
+    checkoutId: 'checkout-oceano',
     icalUrls: [
       'https://calendar.google.com/calendar/ical/lmtdlre4n8fj9qhk8ksqf9lsi91qbhho@import.calendar.google.com/public/basic.ics'
     ]
@@ -167,8 +173,9 @@ const configurazioneCalendari = {
 
 const cachePrenotazioni = {};
 const statoMeseCalendario = {};
+const selezioneDate = {};
 
-// Scarica i dati con TIMEOUT SEVERO di 2 secondi: se un proxy dorme, viene ucciso subito!
+// Scarica con TIMEOUT a 2 secondi per non bloccare l'interfaccia
 async function scaricaIcalConTimeout(urlProxy, timeoutMs = 2000) {
   const controller = new AbortController();
   const idTimer = setTimeout(() => controller.abort(), timeoutMs);
@@ -186,10 +193,8 @@ async function scaricaIcalConTimeout(urlProxy, timeoutMs = 2000) {
   }
 }
 
-// Prova i proxy in sequenza rapida (max 2 secondi a tentata risposta)
 async function scaricaIcalVeloce(icalUrl) {
   const urlPulito = decodeURIComponent(icalUrl);
-  
   const proxies = [
     `https://api.allorigins.win/raw?url=${encodeURIComponent(urlPulito)}`,
     `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(urlPulito)}`,
@@ -201,14 +206,12 @@ async function scaricaIcalVeloce(icalUrl) {
       const testo = await scaricaIcalConTimeout(proxy, 2000);
       if (testo) return testo;
     } catch (e) {
-      // Passa istantaneamente al proxy successivo in caso di blocco/timeout
       continue;
     }
   }
   return null;
 }
 
-// Scarica e unisce le prenotazioni per la suite
 async function caricaEUnisciDateSuite(nomeSuite) {
   const config = configurazioneCalendari[nomeSuite];
   if (!config) return [];
@@ -227,7 +230,6 @@ async function caricaEUnisciDateSuite(nomeSuite) {
   return tutteLeDate;
 }
 
-// Pre-caricamento silenzioso delle 3 suite subito all'avvio della pagina
 async function precaricaTuttiICalInSilenzio() {
   for (const key of Object.keys(configurazioneCalendari)) {
     statoMeseCalendario[key] = new Date();
@@ -235,7 +237,7 @@ async function precaricaTuttiICalInSilenzio() {
   }
 }
 
-// Estrattore privato: legge solo le cifre delle date YYYYMMDD
+// Estrattore privato: rileva solo le cifre delle date YYYYMMDD
 function estraiDateDaICS(icsText) {
   const intervalli = [];
   if (!icsText) return intervalli;
@@ -249,10 +251,8 @@ function estraiDateDaICS(icsText) {
     if (startMatch && endMatch) {
       const s = startMatch[1];
       const e = endMatch[1];
-
       const da = `${s.substring(0,4)}-${s.substring(4,6)}-${s.substring(6,8)}`;
       const a = `${e.substring(0,4)}-${e.substring(4,6)}-${e.substring(6,8)}`;
-
       intervalli.push({ da, a });
     }
   });
@@ -268,11 +268,12 @@ window.apriCalendario = async function(idDelPopup, nomeSuite) {
     if (!statoMeseCalendario[nomeSuite]) {
       statoMeseCalendario[nomeSuite] = new Date();
     }
+    if (!selezioneDate[nomeSuite]) {
+      selezioneDate[nomeSuite] = { checkin: null, checkout: null };
+    }
 
-    // Mostra la griglia all'istante
     renderizzaGrigliaCalendario(nomeSuite);
 
-    // Se le date non sono ancora scaricate, le aggiorna in sottofondo
     if (!cachePrenotazioni[nomeSuite] || cachePrenotazioni[nomeSuite].length === 0) {
       caricaEUnisciDateSuite(nomeSuite).then(() => {
         renderizzaGrigliaCalendario(nomeSuite);
@@ -291,6 +292,46 @@ window.addEventListener('click', function(event) {
     event.target.style.display = "none";
   }
 });
+
+// Gestione selezione mediante clic sui giorni
+window.selezionaDataGiorno = function(nomeSuite, dataStr) {
+  const config = configurazioneCalendari[nomeSuite];
+  const sel = selezioneDate[nomeSuite] || { checkin: null, checkout: null };
+  const prenotazioni = cachePrenotazioni[nomeSuite] || [];
+
+  const inputCheckin = document.getElementById(config.checkinId);
+  const inputCheckout = document.getElementById(config.checkoutId);
+
+  if (!sel.checkin || (sel.checkin && sel.checkout)) {
+    sel.checkin = dataStr;
+    sel.checkout = null;
+    if (inputCheckin) inputCheckin.value = dataStr;
+    if (inputCheckout) inputCheckout.value = '';
+  } 
+  else if (sel.checkin && !sel.checkout) {
+    if (dataStr <= sel.checkin) {
+      sel.checkin = dataStr;
+      sel.checkout = null;
+      if (inputCheckin) inputCheckin.value = dataStr;
+      if (inputCheckout) inputCheckout.value = '';
+    } else {
+      const haOccupatiInMezzo = prenotazioni.some(r => {
+        return (r.da < dataStr && r.a > sel.checkin);
+      });
+
+      if (haOccupatiInMezzo) {
+        alert("L'intervallo selezionato include giorni non disponibili!");
+        return;
+      }
+
+      sel.checkout = dataStr;
+      if (inputCheckout) inputCheckout.value = dataStr;
+    }
+  }
+
+  selezioneDate[nomeSuite] = sel;
+  renderizzaGrigliaCalendario(nomeSuite);
+};
 
 function renderizzaGrigliaCalendario(nomeSuite) {
   const config = configurazioneCalendari[nomeSuite];
@@ -326,6 +367,7 @@ function renderizzaGrigliaCalendario(nomeSuite) {
   }
 
   const prenotazioni = cachePrenotazioni[nomeSuite] || [];
+  const sel = selezioneDate[nomeSuite] || { checkin: null, checkout: null };
 
   for (let g = 1; g <= giorniNelMese; g++) {
     const meseStr = String(mese + 1).padStart(2, '0');
@@ -337,8 +379,18 @@ function renderizzaGrigliaCalendario(nomeSuite) {
       return dataStr >= r.da && dataStr < r.a;
     });
 
-    const classeStato = occupato ? 'occupato' : 'disponibile';
-    html += `<div class="cal-day ${classeStato}">${g}</div>`;
+    let classeStato = occupato ? 'occupato' : 'disponibile';
+    let onClickAttr = occupato ? '' : `onclick="selezionaDataGiorno('${nomeSuite}', '${dataStr}')"`;
+
+    if (dataStr === sel.checkin) {
+      classeStato += ' selezionato-checkin';
+    } else if (dataStr === sel.checkout) {
+      classeStato += ' selezionato-checkout';
+    } else if (sel.checkin && sel.checkout && dataStr > sel.checkin && dataStr < sel.checkout) {
+      classeStato += ' in-range';
+    }
+
+    html += `<div class="cal-day ${classeStato}" ${onClickAttr}>${g}</div>`;
   }
 
   html += `
@@ -358,6 +410,29 @@ window.cambiaMeseSuite = function(nomeSuite, dir) {
     statoMeseCalendario[nomeSuite].setMonth(statoMeseCalendario[nomeSuite].getMonth() + dir);
     renderizzaGrigliaCalendario(nomeSuite);
   }
+};
+
+window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
+  const checkin = document.getElementById(idCheckin).value;
+  const checkout = document.getElementById(idCheckout).value;
+
+  if (!checkin || !checkout) {
+    alert("Per favore, seleziona sia la data di Check-in che quella di Check-out prima di inviare!");
+    return;
+  }
+
+  if (new Date(checkout) <= new Date(checkin)) {
+    alert("La data di Check-out deve essere successiva a quella di Check-in!");
+    return;
+  }
+
+  const dataInFormattata = new Date(checkin).toLocaleDateString('it-IT');
+  const dataOutFormattata = new Date(checkout).toLocaleDateString('it-IT');
+
+  const messaggio = `Ciao! Ho visitato il vostro sito e vorrei informazioni sulla disponibilità per la ${nomeSuite} dal ${dataInFormattata} al ${dataOutFormattata}.`;
+  
+  const urlWhatsApp = `https://wa.me/393477640421?text=${encodeURIComponent(messaggio)}`;
+  window.open(urlWhatsApp, '_blank');
 };
 
 /* ==========================================
