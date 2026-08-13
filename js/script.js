@@ -138,21 +138,31 @@ if (localStorage.getItem('consenso_cookie') === 'accettato') {
 }
 
 /* ==========================================
-   4. MODAL CALENDARI E INTEGRATE GOOGLE ICAL
+   4. MODAL CALENDARI E INTEGRATE GOOGLE ICAL (MULTI-CALENDARIO)
    ========================================== */
 
+// Configurazione precisa con TUTTI i calendari (Principale + Importati Airbnb/Booking)
 const configurazioneCalendari = {
   'centrale': {
-    icalUrl: 'https://calendar.google.com/calendar/ical/suitecentrale44%40gmail.com/public/basic.ics',
-    elementId: 'cal-centrale'
+    elementId: 'cal-centrale',
+    icalUrls: [
+      'https://calendar.google.com/calendar/ical/suitecentrale44%40gmail.com/public/basic.ics',
+      'https://calendar.google.com/calendar/ical/usn7es2f9plpcsjklc6mpmg4u5i0i4%40import.calendar.google.com/public/basic.ics'
+    ]
   },
   'corallo': {
-    icalUrl: 'https://calendar.google.com/calendar/ical/f118fc936bf65f97fec173ca1aec2486f030d9f175ac5177502eb3250ea1c466%40group.calendar.google.com/public/basic.ics',
-    elementId: 'cal-corallo'
+    elementId: 'cal-corallo',
+    icalUrls: [
+      'https://calendar.google.com/calendar/ical/f118fc936bf65f97fec173ca1aec2486f030d9f175ac5177502eb3250ea1c466%40group.calendar.google.com/public/basic.ics',
+      'https://calendar.google.com/calendar/ical/houpucjjv0mu4cr02bk5n8cd9v6ele8o%40import.calendar.google.com/public/basic.ics'
+    ]
   },
   'oceano': {
-    icalUrl: 'https://calendar.google.com/calendar/ical/748b2c73f083c8ff32af24899404f64541430871f37ae98f30cda555123b2ea3%40group.calendar.google.com/public/basic.ics',
-    elementId: 'cal-oceano'
+    elementId: 'cal-oceano',
+    icalUrls: [
+      'https://calendar.google.com/calendar/ical/748b2c73f083c8ff32af24899404f64541430871f37ae98f30cda555123b2ea3%40group.calendar.google.com/public/basic.ics',
+      'https://calendar.google.com/calendar/ical/lmtdlre4n8fj9qhk8ksqf9lsi91qbhho%40import.calendar.google.com/public/basic.ics'
+    ]
   }
 };
 
@@ -182,7 +192,7 @@ window.addEventListener('click', function(event) {
   }
 });
 
-// Download resiliente con Fallback multi-proxy
+// Download ultra-veloce con Fallback
 async function scaricaIcalConFallback(icalUrl) {
   const proxies = [
     `https://api.allorigins.win/raw?url=${encodeURIComponent(icalUrl)}`,
@@ -203,25 +213,34 @@ async function scaricaIcalConFallback(icalUrl) {
   return null;
 }
 
+// Inizializza e unisce tutti i calendari della suite in parallelo
 async function inizializzaCalendarioNative(nomeSuite) {
   const config = configurazioneCalendari[nomeSuite];
   const container = document.getElementById(config.elementId);
   if (!container) return;
 
+  // Se i dati sono già in memoria (cache), non fa alcuna richiesta di rete!
   if (!cachePrenotazioni[nomeSuite]) {
     container.innerHTML = '<div class="cal-loading">⚡ Caricamento disponibilità...</div>';
     
-    const textICS = await scaricaIcalConFallback(config.icalUrl);
-    if (textICS) {
-      cachePrenotazioni[nomeSuite] = estraiDateDaICS(textICS);
-    } else {
-      cachePrenotazioni[nomeSuite] = [];
-    }
+    // Scarica tutti i flussi iCal della suite contemporaneamente
+    const promesse = config.icalUrls.map(url => scaricaIcalConFallback(url));
+    const risultati = await Promise.all(promesse);
+
+    let tutteLeDate = [];
+    risultati.forEach(textICS => {
+      if (textICS) {
+        tutteLeDate = tutteLeDate.concat(estraiDateDaICS(textICS));
+      }
+    });
+
+    cachePrenotazioni[nomeSuite] = tutteLeDate;
   }
 
   renderizzaGrigliaCalendario(nomeSuite);
 }
 
+// Estrattore privato: legge solo le date numeriche (DTSTART e DTEND)
 function estraiDateDaICS(icsText) {
   const intervalli = [];
   const eventi = icsText.split("BEGIN:VEVENT");
@@ -304,30 +323,6 @@ window.cambiaMeseSuite = function(nomeSuite, dir) {
     renderizzaGrigliaCalendario(nomeSuite);
   }
 };
-
-window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
-  const checkin = document.getElementById(idCheckin).value;
-  const checkout = document.getElementById(idCheckout).value;
-
-  if (!checkin || !checkout) {
-    alert("Per favore, seleziona sia la data di Check-in che quella di Check-out prima di inviare!");
-    return;
-  }
-
-  if (new Date(checkout) <= new Date(checkin)) {
-    alert("La data di Check-out deve essere successiva a quella di Check-in!");
-    return;
-  }
-
-  const dataInFormattata = new Date(checkin).toLocaleDateString('it-IT');
-  const dataOutFormattata = new Date(checkout).toLocaleDateString('it-IT');
-
-  const messaggio = `Ciao! Ho visitato il vostro sito e vorrei informazioni sulla disponibilità per la ${nomeSuite} dal ${dataInFormattata} al ${dataOutFormattata}.`;
-  
-  const urlWhatsApp = `https://wa.me/393477640421?text=${encodeURIComponent(messaggio)}`;
-  window.open(urlWhatsApp, '_blank');
-};
-
 /* ==========================================
    5. MOTORE GALLERIA ULTRA-VELOCE (LOTTI PARALLELI)
    ========================================== */
