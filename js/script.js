@@ -1,5 +1,5 @@
 /* ==========================================
-   1. GESTIONE LINGUA STABILE E SICURA
+   1. GESTIONE LINGUA ULTRA-STABILE (NO WHITE SCREEN)
    ========================================== */
 
 window.googleTranslateElementInit = function() {
@@ -10,7 +10,7 @@ window.googleTranslateElementInit = function() {
   }, 'google_translate_element');
 };
 
-// Toggle del menu delle bandiere
+// Toggle del menu bandiere
 window.toggleLangDropdown = function(e) {
   if (e) e.stopPropagation();
   const langDropdown = document.getElementById('langDropdown');
@@ -28,18 +28,21 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// Gestione pulita dei cookie di traduzione
+// Pulizia e impostazione dei cookie
 function gestisciCookieTranslate(lang) {
-  const domain = window.location.hostname;
+  // Pulisce i vecchi cookie di traduzione
   document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + domain + ";";
+  if (window.location.hostname) {
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname + ";";
+  }
 
+  // Imposta il nuovo cookie se la lingua è diversa dall'italiano
   if (lang && lang !== 'it') {
     document.cookie = "googtrans=/it/" + lang + "; path=/;";
   }
 }
 
-// CAMBIO LINGUA
+// CAMBIO LINGUA SICURO
 window.cambiaLingua = function(codiceLingua, flagClass) {
   localStorage.setItem('lingua_selezionata', codiceLingua);
   localStorage.setItem('flag_class_selezionata', flagClass);
@@ -47,17 +50,26 @@ window.cambiaLingua = function(codiceLingua, flagClass) {
 
   gestisciCookieTranslate(codiceLingua);
 
+  // Aggiorna l'icona della bandiera nel pulsante
   const activeFlag = document.getElementById('activeFlag');
   if (activeFlag) activeFlag.className = 'flag-icon ' + flagClass;
 
   const langDropdown = document.getElementById('langDropdown');
   if (langDropdown) langDropdown.classList.remove('show');
 
-  window.location.reload();
+  // Proviamo prima il cambio dinamico senza refresh
+  const selectGoogle = document.querySelector('.goog-te-combo');
+  if (selectGoogle) {
+    selectGoogle.value = (codiceLingua === 'it') ? '' : codiceLingua;
+    selectGoogle.dispatchEvent(new Event('change'));
+  } else {
+    // Se lo script Google non è ancora pronto nel DOM, ricarica in sicurezza
+    window.location.reload();
+  }
 };
 
 /* ==========================================
-   2. GESTIONE SPLASH SCREEN
+   2. GESTIONE SPLASH SCREEN ED EVENTI AVVIO
    ========================================== */
 window.nascondiSplash = function() {
   const splash = document.getElementById('splash-screen');
@@ -78,6 +90,7 @@ window.nascondiSplash = function() {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
+  // Ripristina la bandiera attiva selezionata precedentemente
   const flagClassSalvata = localStorage.getItem('flag_class_selezionata');
   const activeFlag = document.getElementById('activeFlag');
   if (flagClassSalvata && activeFlag) {
@@ -87,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (localStorage.getItem('salta_splash') === 'true') {
     window.nascondiSplash();
   } else {
-    setTimeout(window.nascondiSplash, 400);
+    setTimeout(window.nascondiSplash, 500);
   }
 });
 
@@ -171,46 +184,87 @@ window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
 };
 
 /* ==========================================
-   5. MOTORE GALLERIA ISTANTANEO (ULTRA-FAST)
+   5. MOTORE GALLERIA AD ALTA VELOCITÀ (PARALLELO)
    ========================================== */
-
-// Modifica "foto" con il numero esatto di immagini presenti in ogni cartella
 const configurazioneGallerie = {
-  'centrale': { cartella: 'image/suite-centrale/', titolo: 'Suite Centrale 44', foto: 15, ext: 'jpg' },
-  'corallo':  { cartella: 'image/suite-corallo/',  titolo: 'Suite Corallo',     foto: 15, ext: 'jpg' },
-  'oceano':   { cartella: 'image/suite-oceano/',   titolo: 'Suite Oceano',      foto: 15, ext: 'jpg' }
+  'centrale': { cartella: 'image/suite-centrale/', titolo: 'Suite Centrale 44' },
+  'corallo':  { cartella: 'image/suite-corallo/',  titolo: 'Suite Corallo' },
+  'oceano':   { cartella: 'image/suite-oceano/',   titolo: 'Suite Oceano' }
 };
+
+const estensioniPossibili = ["jpg", "jpeg", "png", "JPG", "JPEG"];
+const MAX_FOTO = 25;
 
 let playlistFotoAttuale = [];
 let indiceFotoAttuale = 0;
 
-window.apriGalleria = function(nomeSuite) {
+window.apriGalleria = async function(nomeSuite) {
   const config = configurazioneGallerie[nomeSuite];
   playlistFotoAttuale = [];
   
   document.getElementById('titolo-galleria').innerText = `Galleria Foto - ${config.titolo}`;
   const griglia = document.getElementById('galleria-griglia');
-  griglia.innerHTML = '';
+  griglia.innerHTML = '<div id="stato-ricerca" style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">⚡ Caricamento galleria...</div>';
   
   const modal = document.getElementById('modal-galleria');
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden'; 
 
-  // Generazione istantanea senza attendere tentativi di rete
-  for (let i = 1; i <= config.foto; i++) {
-    const percorso = `${config.cartella}${i}.${config.ext}`;
-    playlistFotoAttuale.push(percorso);
+  for (let i = 1; i <= MAX_FOTO; i += 5) {
+    const blocco = [];
+    for (let j = i; j < i + 5 && j <= MAX_FOTO; j++) {
+      blocco.push(trovaFotoEsistente(config.cartella, j));
+    }
+    const risultati = await Promise.all(blocco);
+    const trovate = risultati.filter(p => p !== null);
+    
+    if (trovate.length === 0 && playlistFotoAttuale.length > 0) break;
+    playlistFotoAttuale.push(...trovate);
+  }
 
+  griglia.innerHTML = ''; 
+
+  if (playlistFotoAttuale.length === 0) {
+    griglia.innerHTML = '<div style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">Nessuna foto trovata nella cartella.</div>';
+    return;
+  }
+
+  playlistFotoAttuale.forEach((percorso, index) => {
     const imgThumb = document.createElement('img');
     imgThumb.src = percorso;
-    imgThumb.loading = "lazy"; // Carica le immagini solo quando si scorre
-    imgThumb.alt = `${config.titolo} - Foto ${i}`;
-    
-    const index = i - 1;
+    imgThumb.loading = "lazy";
     imgThumb.onclick = () => apriFotoEspansa(index);
     griglia.appendChild(imgThumb);
-  }
+  });
 };
+
+function trovaFotoEsistente(cartella, numero) {
+  return new Promise((resolve) => {
+    let trovata = false;
+    let tentativi = 0;
+
+    estensioniPossibili.forEach((ext) => {
+      const percorso = `${cartella}${numero}.${ext}`;
+      const img = new Image();
+
+      img.onload = () => {
+        if (!trovata) {
+          trovata = true;
+          resolve(percorso);
+        }
+      };
+
+      img.onerror = () => {
+        tentativi++;
+        if (tentativi === estensioniPossibili.length && !trovata) {
+          resolve(null);
+        }
+      };
+
+      img.src = percorso;
+    });
+  });
+}
 
 window.apriFotoEspansa = function(indice) {
   indiceFotoAttuale = indice;
