@@ -141,7 +141,6 @@ if (localStorage.getItem('consenso_cookie') === 'accettato') {
    4. MODAL CALENDARI E INTEGRATE GOOGLE ICAL
    ========================================== */
 
-// Configurazione dei flussi Google iCal ufficiali estratti dai tuoi calendari
 const configurazioneCalendari = {
   'centrale': {
     icalUrl: 'https://calendar.google.com/calendar/ical/suitecentrale44%40gmail.com/public/basic.ics',
@@ -157,7 +156,6 @@ const configurazioneCalendari = {
   }
 };
 
-// Memoria locale per salvare le prenotazioni ed evitare inutili richieste di rete
 const cachePrenotazioni = {};
 const statoMeseCalendario = {};
 
@@ -184,7 +182,27 @@ window.addEventListener('click', function(event) {
   }
 });
 
-// CARICAMENTO ED ESTRAZIONE PRIVATA DATE DA GOOGLE
+// Download resiliente con Fallback multi-proxy
+async function scaricaIcalConFallback(icalUrl) {
+  const proxies = [
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(icalUrl)}`,
+    `https://corsproxy.io/?${encodeURIComponent(icalUrl)}`
+  ];
+
+  for (const p of proxies) {
+    try {
+      const res = await fetch(p);
+      if (res.ok) {
+        const text = await res.text();
+        if (text && text.includes("BEGIN:VCALENDAR")) return text;
+      }
+    } catch (e) {
+      console.warn("Proxy fallito, provo il successivo...", p);
+    }
+  }
+  return null;
+}
+
 async function inizializzaCalendarioNative(nomeSuite) {
   const config = configurazioneCalendari[nomeSuite];
   const container = document.getElementById(config.elementId);
@@ -192,13 +210,11 @@ async function inizializzaCalendarioNative(nomeSuite) {
 
   if (!cachePrenotazioni[nomeSuite]) {
     container.innerHTML = '<div class="cal-loading">⚡ Caricamento disponibilità...</div>';
-    try {
-      // Proxy leggero per aggirare le restrizioni CORS
-      const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(config.icalUrl)}`);
-      const textICS = await res.text();
+    
+    const textICS = await scaricaIcalConFallback(config.icalUrl);
+    if (textICS) {
       cachePrenotazioni[nomeSuite] = estraiDateDaICS(textICS);
-    } catch (e) {
-      console.error("Errore caricamento iCal per " + nomeSuite, e);
+    } else {
       cachePrenotazioni[nomeSuite] = [];
     }
   }
@@ -206,7 +222,6 @@ async function inizializzaCalendarioNative(nomeSuite) {
   renderizzaGrigliaCalendario(nomeSuite);
 }
 
-// Estrattore pignolo: prende SOLO le date (DTSTART e DTEND). Ignora nomi, email e dati personali!
 function estraiDateDaICS(icsText) {
   const intervalli = [];
   const eventi = icsText.split("BEGIN:VEVENT");
