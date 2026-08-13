@@ -30,13 +30,11 @@ document.addEventListener('click', function(e) {
 
 // Pulizia e impostazione dei cookie
 function gestisciCookieTranslate(lang) {
-  // Pulisce i vecchi cookie di traduzione
   document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   if (window.location.hostname) {
     document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname + ";";
   }
 
-  // Imposta il nuovo cookie se la lingua è diversa dall'italiano
   if (lang && lang !== 'it') {
     document.cookie = "googtrans=/it/" + lang + "; path=/;";
   }
@@ -50,20 +48,17 @@ window.cambiaLingua = function(codiceLingua, flagClass) {
 
   gestisciCookieTranslate(codiceLingua);
 
-  // Aggiorna l'icona della bandiera nel pulsante
   const activeFlag = document.getElementById('activeFlag');
   if (activeFlag) activeFlag.className = 'flag-icon ' + flagClass;
 
   const langDropdown = document.getElementById('langDropdown');
   if (langDropdown) langDropdown.classList.remove('show');
 
-  // Proviamo prima il cambio dinamico senza refresh
   const selectGoogle = document.querySelector('.goog-te-combo');
   if (selectGoogle) {
     selectGoogle.value = (codiceLingua === 'it') ? '' : codiceLingua;
     selectGoogle.dispatchEvent(new Event('change'));
   } else {
-    // Se lo script Google non è ancora pronto nel DOM, ricarica in sicurezza
     window.location.reload();
   }
 };
@@ -90,7 +85,6 @@ window.nascondiSplash = function() {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Ripristina la bandiera attiva selezionata precedentemente
   const flagClassSalvata = localStorage.getItem('flag_class_selezionata');
   const activeFlag = document.getElementById('activeFlag');
   if (flagClassSalvata && activeFlag) {
@@ -184,79 +178,95 @@ window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
 };
 
 /* ==========================================
-   5. MOTORE GALLERIA AD ALTA VELOCITÀ (PARALLELO)
+   5. MOTORE GALLERIA DINAMICO E MULTI-FORMATO ULTRA-VELOCE
    ========================================== */
+
 const configurazioneGallerie = {
   'centrale': { cartella: 'image/suite-centrale/', titolo: 'Suite Centrale 44' },
   'corallo':  { cartella: 'image/suite-corallo/',  titolo: 'Suite Corallo' },
   'oceano':   { cartella: 'image/suite-oceano/',   titolo: 'Suite Oceano' }
 };
 
-const estensioniPossibili = ["jpg", "jpeg", "png", "JPG", "JPEG"];
-const MAX_FOTO = 25;
+// Formati supportati in ordine di frequenza
+const estensioniPossibili = ["jpg", "jpeg", "png", "webp", "JPG", "JPEG", "PNG", "WEBP"];
 
 let playlistFotoAttuale = [];
 let indiceFotoAttuale = 0;
+let sessioneGalleriaId = 0; // Identificatore unico per prevenire sovrapposizioni
 
 window.apriGalleria = async function(nomeSuite) {
   const config = configurazioneGallerie[nomeSuite];
   playlistFotoAttuale = [];
-  
+  sessioneGalleriaId++;
+  const sessioneCorrente = sessioneGalleriaId;
+
   document.getElementById('titolo-galleria').innerText = `Galleria Foto - ${config.titolo}`;
   const griglia = document.getElementById('galleria-griglia');
   griglia.innerHTML = '<div id="stato-ricerca" style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">⚡ Caricamento galleria...</div>';
-  
+
   const modal = document.getElementById('modal-galleria');
   modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden'; 
+  document.body.style.overflow = 'hidden';
 
-  for (let i = 1; i <= MAX_FOTO; i += 5) {
-    const blocco = [];
-    for (let j = i; j < i + 5 && j <= MAX_FOTO; j++) {
-      blocco.push(trovaFotoEsistente(config.cartella, j));
+  let numero = 1;
+  let trovataAlmenoUna = false;
+
+  // Scansione dinamica progressiva: si ferma quando le foto finiscono
+  while (true) {
+    if (sessioneGalleriaId !== sessioneCorrente) return;
+
+    const percorsoEsistente = await cercaFotoMultiFormato(config.cartella, numero);
+
+    if (sessioneGalleriaId !== sessioneCorrente) return;
+
+    if (percorsoEsistente) {
+      if (!trovataAlmenoUna) {
+        trovataAlmenoUna = true;
+        griglia.innerHTML = ''; // Pulisce il messaggio di caricamento al primo riscontro
+      }
+
+      const indexInLista = playlistFotoAttuale.length;
+      playlistFotoAttuale.push(percorsoEsistente);
+
+      const imgThumb = document.createElement('img');
+      imgThumb.src = percorsoEsistente;
+      imgThumb.loading = "lazy"; // Risparmio banda
+      imgThumb.alt = `${config.titolo} - Foto ${numero}`;
+      imgThumb.onclick = () => apriFotoEspansa(indexInLista);
+      griglia.appendChild(imgThumb);
+
+      numero++;
+    } else {
+      // Nessun formato trovato per questo numero: la cartella è terminata
+      break;
     }
-    const risultati = await Promise.all(blocco);
-    const trovate = risultati.filter(p => p !== null);
-    
-    if (trovate.length === 0 && playlistFotoAttuale.length > 0) break;
-    playlistFotoAttuale.push(...trovate);
   }
 
-  griglia.innerHTML = ''; 
-
-  if (playlistFotoAttuale.length === 0) {
+  if (!trovataAlmenoUna && sessioneGalleriaId === sessioneCorrente) {
     griglia.innerHTML = '<div style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">Nessuna foto trovata nella cartella.</div>';
-    return;
   }
-
-  playlistFotoAttuale.forEach((percorso, index) => {
-    const imgThumb = document.createElement('img');
-    imgThumb.src = percorso;
-    imgThumb.loading = "lazy";
-    imgThumb.onclick = () => apriFotoEspansa(index);
-    griglia.appendChild(imgThumb);
-  });
 };
 
-function trovaFotoEsistente(cartella, numero) {
+// Cerca l'immagine provando tutte le estensioni in parallelo
+function cercaFotoMultiFormato(cartella, numero) {
   return new Promise((resolve) => {
-    let trovata = false;
-    let tentativi = 0;
+    let completati = 0;
+    let risolto = false;
 
     estensioniPossibili.forEach((ext) => {
       const percorso = `${cartella}${numero}.${ext}`;
       const img = new Image();
 
       img.onload = () => {
-        if (!trovata) {
-          trovata = true;
+        if (!risolto) {
+          risolto = true;
           resolve(percorso);
         }
       };
 
       img.onerror = () => {
-        tentativi++;
-        if (tentativi === estensioniPossibili.length && !trovata) {
+        completati++;
+        if (completati === estensioniPossibili.length && !risolto) {
           resolve(null);
         }
       };
@@ -277,9 +287,10 @@ window.chiudiFotoEspansa = function() {
 };
 
 window.chiudiGalleria = function() {
+  sessioneGalleriaId++; // Annulla eventuali scansioni in corso
   document.getElementById('modal-galleria').style.display = 'none';
   chiudiFotoEspansa();
-  document.body.style.overflow = 'auto'; 
+  document.body.style.overflow = 'auto';
 };
 
 window.cambiaFotoGalleria = function(direzione) {
@@ -297,7 +308,7 @@ window.cambiaFotoGalleria = function(direzione) {
 function aggiornaVistaFoto() {
   const imgElement = document.getElementById('img-galleria');
   const contatore = document.getElementById('contatore-foto');
-  
+
   imgElement.src = playlistFotoAttuale[indiceFotoAttuale];
   contatore.innerText = `${indiceFotoAttuale + 1} / ${playlistFotoAttuale.length}`;
 }
@@ -305,7 +316,7 @@ function aggiornaVistaFoto() {
 document.addEventListener('keydown', function(event) {
   const espansa = document.getElementById('galleria-espansa').style.display === 'flex';
   const griglia = document.getElementById('modal-galleria').style.display === 'flex';
-  
+
   if (espansa) {
     if (event.key === 'ArrowLeft') cambiaFotoGalleria(-1);
     if (event.key === 'ArrowRight') cambiaFotoGalleria(1);
