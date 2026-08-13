@@ -109,7 +109,7 @@
           <div class="img-wrapper">
             <img src="image/Suite Centrale Copertina.jpg" alt="Suite Centrale 44">
             <div class="img-overlay">
-              <a href="galleria-centrale.html" target="_blank" rel="noopener noreferrer" class="btn-foto">📸 Guarda tutte le foto</a>
+              <a href="galleria-centrale.html" target=<button onclick="apriGalleria('centrale')" class="btn-foto" style="border:none; cursor:pointer; width:100%;">📸 Guarda tutte le foto</button>"_blank" rel="noopener noreferrer" class="btn-foto">📸 Guarda tutte le foto</a>
             </div>
           </div>
           <h3>Suite Centrale 44</h3>
@@ -154,7 +154,7 @@
           <div class="img-wrapper">
             <img src="image/Suite Corallo Copertina.jpg" alt="Suite Corallo">
             <div class="img-overlay">
-              <a href="galleria-corallo.html" target="_blank" rel="noopener noreferrer" class="btn-foto">📸 Guarda tutte le foto</a>
+              <button onclick="apriGalleria('corallo')" class="btn-foto" style="border:none; cursor:pointer; width:100%;">📸 Guarda tutte le foto</button>
             </div>
           </div>
           <h3>Suite Corallo</h3>
@@ -199,7 +199,7 @@
           <div class="img-wrapper">
             <img src="image/Suite Oceano Copertina.jpg" alt="Suite Oceano">
             <div class="img-overlay">
-              <a href="galleria-oceano.html" target="_blank" rel="noopener noreferrer" class="btn-foto">📸 Guarda tutte le foto</a>
+              <button onclick="apriGalleria('oceano')" class="btn-foto" style="border:none; cursor:pointer; width:100%;">📸 Guarda tutte le foto</button>
             </div>
           </div>
           <h3>Suite Oceano</h3>
@@ -361,5 +361,16 @@
     </svg>
   </a>
 
+  <!-- FINESTRA GALLERIA UNIFICATA -->
+  <div id="modal-galleria" class="modal-galleria">
+    <span class="modal-close" onclick="chiudiGalleria()">&times;</span>
+    <button class="modal-nav modal-prev" onclick="cambiaFotoGalleria(-1)">❮</button>
+    <div class="modal-img-container">
+      <img id="img-galleria" class="modal-img" src="" alt="Foto Struttura">
+      <div id="contatore-foto" class="contatore-foto"></div>
+    </div>
+    <button class="modal-nav modal-next" onclick="cambiaFotoGalleria(1)">❯</button>
+  </div>
+  
 </body>
 </html>
