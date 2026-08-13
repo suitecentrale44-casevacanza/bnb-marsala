@@ -1,5 +1,5 @@
 /* ==========================================
-   1. GESTIONE LINGUA OTTIMIZZATA
+   1. GESTIONE LINGUA STABILE E SENZA CRASH
    ========================================== */
 
 window.googleTranslateElementInit = function() {
@@ -30,55 +30,48 @@ document.addEventListener('click', function(e) {
 
 function impostaCookieGoogleTranslate(lang) {
   const domain = window.location.hostname;
-  // Cancella tutti i cookie di traduzione precedenti
+  
+  // Pulisce tutti i cookie di traduzione precedenti
   document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=" + domain + "; path=/;";
   document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=." + domain + "; path=/;";
 
+  // Se è una lingua straniera, imposta il cookie nativo
   if (lang && lang !== 'it') {
     document.cookie = "googtrans=/it/" + lang + "; path=/;";
     document.cookie = "googtrans=/it/" + lang + "; domain=" + domain + "; path=/;";
   }
 }
 
-// CAMBIO LINGUA CORRETTO
+// CAMBIO LINGUA BLINDATO
 window.cambiaLingua = function(codiceLingua, flagClass) {
+  // 1. Memorizza le preferenze
   localStorage.setItem('lingua_selezionata', codiceLingua);
   localStorage.setItem('flag_class_selezionata', flagClass);
+  
+  // 2. FONDAMENTALE: Dice al sito di SALTARE il logo al ricaricamento
+  localStorage.setItem('salta_splash', 'true');
 
-  const activeFlag = document.getElementById('activeFlag');
-  if (activeFlag) {
-    activeFlag.className = 'flag-icon ' + flagClass;
-  }
-
-  const langDropdown = document.getElementById('langDropdown');
-  if (langDropdown) langDropdown.classList.remove('show');
-
-  // Pulizia/Impostazione dei cookie
+  // 3. Imposta i cookie corretti
   impostaCookieGoogleTranslate(codiceLingua);
 
-  // SE SI TORNA IN ITALIANO: Ricarica pulita per ripristinare il testo originale
-  if (codiceLingua === 'it') {
-    window.location.reload();
-    return;
-  }
-
-  // PER LE ALTRE LINGUE: Cambio dinamico istantaneo
-  const selectGoogle = document.querySelector('.goog-te-combo');
-  if (selectGoogle) {
-    selectGoogle.value = codiceLingua;
-    selectGoogle.dispatchEvent(new Event('change'));
-  } else {
-    window.location.reload();
-  }
+  // 4. Ricarica la pagina in modo pulito (senza mostrare lo Splash Screen)
+  window.location.reload();
 };
 
 /* ==========================================
-   2. SPLASH SCREEN (DISATTIVAZIONE RAPIDA)
+   2. GESTIONE SPLASH SCREEN
    ========================================== */
 window.nascondiSplash = function() {
   const splash = document.getElementById('splash-screen');
   if (!splash) return;
+
+  // Se abbiamo impostato di saltare lo splash screen (es. cambio lingua), lo nasconde all'istante
+  if (localStorage.getItem('salta_splash') === 'true') {
+    localStorage.removeItem('salta_splash'); // Pulisce per le visite future
+    splash.style.setProperty('display', 'none', 'important');
+    return;
+  }
 
   if (!splash.classList.contains('fade-out')) {
     splash.classList.add('fade-out');
@@ -89,19 +82,20 @@ window.nascondiSplash = function() {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Ripristina la bandiera salvata dall'utente
+  // Controlla subito se dobbiamo saltare lo splash
+  if (localStorage.getItem('salta_splash') === 'true') {
+    window.nascondiSplash();
+  }
+
+  // Ripristina la bandiera attiva
   const flagClassSalvata = localStorage.getItem('flag_class_selezionata');
   const activeFlag = document.getElementById('activeFlag');
   if (flagClassSalvata && activeFlag) {
     activeFlag.className = 'flag-icon ' + flagClassSalvata;
   }
 
-  // Nasconde lo splash screen rapidamente (500ms)
-  setTimeout(window.nascondiSplash, 500);
-});
-
-window.addEventListener('load', function() {
-  setTimeout(window.nascondiSplash, 200);
+  // Se è la prima visita normale, nasconde lo splash dopo un breve istante
+  setTimeout(window.nascondiSplash, 600);
 });
 
 /* ==========================================
