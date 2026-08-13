@@ -98,6 +98,9 @@ document.addEventListener('DOMContentLoaded', function() {
   } else {
     setTimeout(window.nascondiSplash, 500);
   }
+
+  // Pre-caricamento immediato e silenzioso di tutti i calendari all'avvio
+  precaricaTuttiICalInSilenzio();
 });
 
 /* ==========================================
@@ -138,10 +141,9 @@ if (localStorage.getItem('consenso_cookie') === 'accettato') {
 }
 
 /* ==========================================
-   4. MODAL CALENDARI E INTEGRATE GOOGLE ICAL (MULTI-CALENDARIO)
+   4. CALENDARI NATIVI ULTRA-VELOCI (PRE-FETCHING & MULTI-PROXY)
    ========================================== */
 
-// Configurazione precisa con TUTTI i calendari (Principale + Importati Airbnb/Booking)
 const configurazioneCalendari = {
   'centrale': {
     elementId: 'cal-centrale',
@@ -169,6 +171,85 @@ const configurazioneCalendari = {
 const cachePrenotazioni = {};
 const statoMeseCalendario = {};
 
+// Gara di velocita tra 3 proxy diversi per ottenere la risposta piu rapida in assoluto
+async function scaricaIcalVeloce(icalUrl) {
+  const proxies = [
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(icalUrl)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(icalUrl)}`,
+    `https://corsproxy.io/?${encodeURIComponent(icalUrl)}`
+  ];
+
+  const tentativi = proxies.map(p => 
+    fetch(p)
+      .then(res => {
+        if (!res.ok) throw new Error("Risposta non valida");
+        return res.text();
+      })
+      .then(text => {
+        if (text && text.includes("BEGIN:VCALENDAR")) return text;
+        throw new Error("Formato ICS non valido");
+      })
+  );
+
+  try {
+    return await Promise.any(tentativi);
+  } catch (e) {
+    console.warn("Impossibile scaricare l'iCal:", icalUrl);
+    return null;
+  }
+}
+
+// Pre-caricamento in background all'apertura del sito
+async function precaricaTuttiICalInSilenzio() {
+  for (const key of Object.keys(configurazioneCalendari)) {
+    statoMeseCalendario[key] = new Date();
+    caricaEUnisciDateSuite(key);
+  }
+}
+
+async function caricaEUnisciDateSuite(nomeSuite) {
+  const config = configurazioneCalendari[nomeSuite];
+  if (!config) return [];
+
+  const promesse = config.icalUrls.map(url => scaricaIcalVeloce(url));
+  const risultati = await Promise.all(promesse);
+
+  let tutteLeDate = [];
+  risultati.forEach(textICS => {
+    if (textICS) {
+      tutteLeDate = tutteLeDate.concat(estraiDateDaICS(textICS));
+    }
+  });
+
+  cachePrenotazioni[nomeSuite] = tutteLeDate;
+  return tutteLeDate;
+}
+
+// Estrattore pignolo: cattura qualsiasi data YYYYMMDD indipendentemente da orari o fusi orari
+function estraiDateDaICS(icsText) {
+  const intervalli = [];
+  if (!icsText) return intervalli;
+
+  const eventi = icsText.split("BEGIN:VEVENT");
+
+  eventi.forEach(evt => {
+    const startMatch = evt.match(/DTSTART[^:]*:(\d{8})/);
+    const endMatch = evt.match(/DTEND[^:]*:(\d{8})/);
+
+    if (startMatch && endMatch) {
+      const s = startMatch[1];
+      const e = endMatch[1];
+
+      const da = `${s.substring(0,4)}-${s.substring(4,6)}-${s.substring(6,8)}`;
+      const a = `${e.substring(0,4)}-${e.substring(4,6)}-${e.substring(6,8)}`;
+
+      intervalli.push({ da, a });
+    }
+  });
+
+  return intervalli;
+}
+
 window.apriCalendario = async function(idDelPopup, nomeSuite) {
   const modal = document.getElementById(idDelPopup);
   if (modal) modal.style.display = "flex";
@@ -177,7 +258,14 @@ window.apriCalendario = async function(idDelPopup, nomeSuite) {
     if (!statoMeseCalendario[nomeSuite]) {
       statoMeseCalendario[nomeSuite] = new Date();
     }
-    await inizializzaCalendarioNative(nomeSuite);
+
+    if (!cachePrenotazioni[nomeSuite]) {
+      const container = document.getElementById(configurazioneCalendari[nomeSuite].elementId);
+      if (container) container.innerHTML = '<div class="cal-loading">⚡ Caricamento disponibilità...</div>';
+      await caricaEUnisciDateSuite(nomeSuite);
+    }
+
+    renderizzaGrigliaCalendario(nomeSuite);
   }
 };
 
@@ -191,73 +279,6 @@ window.addEventListener('click', function(event) {
     event.target.style.display = "none";
   }
 });
-
-// Download ultra-veloce con Fallback
-async function scaricaIcalConFallback(icalUrl) {
-  const proxies = [
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(icalUrl)}`,
-    `https://corsproxy.io/?${encodeURIComponent(icalUrl)}`
-  ];
-
-  for (const p of proxies) {
-    try {
-      const res = await fetch(p);
-      if (res.ok) {
-        const text = await res.text();
-        if (text && text.includes("BEGIN:VCALENDAR")) return text;
-      }
-    } catch (e) {
-      console.warn("Proxy fallito, provo il successivo...", p);
-    }
-  }
-  return null;
-}
-
-// Inizializza e unisce tutti i calendari della suite in parallelo
-async function inizializzaCalendarioNative(nomeSuite) {
-  const config = configurazioneCalendari[nomeSuite];
-  const container = document.getElementById(config.elementId);
-  if (!container) return;
-
-  // Se i dati sono già in memoria (cache), non fa alcuna richiesta di rete!
-  if (!cachePrenotazioni[nomeSuite]) {
-    container.innerHTML = '<div class="cal-loading">⚡ Caricamento disponibilità...</div>';
-    
-    // Scarica tutti i flussi iCal della suite contemporaneamente
-    const promesse = config.icalUrls.map(url => scaricaIcalConFallback(url));
-    const risultati = await Promise.all(promesse);
-
-    let tutteLeDate = [];
-    risultati.forEach(textICS => {
-      if (textICS) {
-        tutteLeDate = tutteLeDate.concat(estraiDateDaICS(textICS));
-      }
-    });
-
-    cachePrenotazioni[nomeSuite] = tutteLeDate;
-  }
-
-  renderizzaGrigliaCalendario(nomeSuite);
-}
-
-// Estrattore privato: legge solo le date numeriche (DTSTART e DTEND)
-function estraiDateDaICS(icsText) {
-  const intervalli = [];
-  const eventi = icsText.split("BEGIN:VEVENT");
-
-  eventi.forEach(evt => {
-    const startMatch = evt.match(/DTSTART(?:;VALUE=DATE)?:(\d{8})/);
-    const endMatch = evt.match(/DTEND(?:;VALUE=DATE)?:(\d{8})/);
-
-    if (startMatch && endMatch) {
-      const da = `${startMatch[1].substr(0,4)}-${startMatch[1].substr(4,2)}-${startMatch[1].substr(6,2)}`;
-      const a = `${endMatch[1].substr(0,4)}-${endMatch[1].substr(4,2)}-${endMatch[1].substr(6,2)}`;
-      intervalli.push({ da, a });
-    }
-  });
-
-  return intervalli;
-}
 
 function renderizzaGrigliaCalendario(nomeSuite) {
   const config = configurazioneCalendari[nomeSuite];
@@ -299,9 +320,12 @@ function renderizzaGrigliaCalendario(nomeSuite) {
     const gStr = String(g).padStart(2, '0');
     const dataStr = `${anno}-${meseStr}-${gStr}`;
 
-    const occupato = prenotazioni.some(r => dataStr >= r.da && dataStr < r.a);
-    const classeStato = occupato ? 'occupato' : 'disponibile';
+    const occupato = prenotazioni.some(r => {
+      if (r.da === r.a) return dataStr === r.da;
+      return dataStr >= r.da && dataStr < r.a;
+    });
 
+    const classeStato = occupato ? 'occupato' : 'disponibile';
     html += `<div class="cal-day ${classeStato}">${g}</div>`;
   }
 
@@ -323,6 +347,30 @@ window.cambiaMeseSuite = function(nomeSuite, dir) {
     renderizzaGrigliaCalendario(nomeSuite);
   }
 };
+
+window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
+  const checkin = document.getElementById(idCheckin).value;
+  const checkout = document.getElementById(idCheckout).value;
+
+  if (!checkin || !checkout) {
+    alert("Per favore, seleziona sia la data di Check-in che quella di Check-out prima di inviare!");
+    return;
+  }
+
+  if (new Date(checkout) <= new Date(checkin)) {
+    alert("La data di Check-out deve essere successiva a quella di Check-in!");
+    return;
+  }
+
+  const dataInFormattata = new Date(checkin).toLocaleDateString('it-IT');
+  const dataOutFormattata = new Date(checkout).toLocaleDateString('it-IT');
+
+  const messaggio = `Ciao! Ho visitato il vostro sito e vorrei informazioni sulla disponibilità per la ${nomeSuite} dal ${dataInFormattata} al ${dataOutFormattata}.`;
+  
+  const urlWhatsApp = `https://wa.me/393477640421?text=${encodeURIComponent(messaggio)}`;
+  window.open(urlWhatsApp, '_blank');
+};
+
 /* ==========================================
    5. MOTORE GALLERIA ULTRA-VELOCE (LOTTI PARALLELI)
    ========================================== */
