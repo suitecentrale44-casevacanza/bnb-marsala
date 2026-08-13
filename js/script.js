@@ -178,7 +178,7 @@ window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
 };
 
 /* ==========================================
-   5. MOTORE GALLERIA DINAMICO E MULTI-FORMATO ULTRA-VELOCE
+   5. MOTORE GALLERIA DINAMICO E AUTOMATICO
    ========================================== */
 
 const configurazioneGallerie = {
@@ -187,57 +187,64 @@ const configurazioneGallerie = {
   'oceano':   { cartella: 'image/suite-oceano/',   titolo: 'Suite Oceano' }
 };
 
-// Formati supportati in ordine di frequenza
-const estensioniPossibili = ["jpg", "jpeg", "png", "webp", "JPG", "JPEG", "PNG", "WEBP"];
+// Formati supportati (WebP per primo perché è il più leggero e veloce)
+const estensioniPossibili = ["webp", "jpg", "png", "jpeg", "WEBP", "JPG", "PNG", "JPEG"];
 
 let playlistFotoAttuale = [];
 let indiceFotoAttuale = 0;
-let sessioneGalleriaId = 0; // Identificatore unico per prevenire sovrapposizioni
+let sessioneGalleriaId = 0; // Previene sovrapposizioni se si aprono/chiudono modali velocemente
 
 window.apriGalleria = async function(nomeSuite) {
   const config = configurazioneGallerie[nomeSuite];
+  if (!config) return;
+
   playlistFotoAttuale = [];
   sessioneGalleriaId++;
   const sessioneCorrente = sessioneGalleriaId;
 
   document.getElementById('titolo-galleria').innerText = `Galleria Foto - ${config.titolo}`;
   const griglia = document.getElementById('galleria-griglia');
-  griglia.innerHTML = '<div id="stato-ricerca" style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">⚡ Caricamento galleria...</div>';
+  
+  // Messaggio temporaneo di caricamento
+  griglia.innerHTML = '<div id="stato-ricerca" style="grid-column: 1 / -1; color:white; text-align:center; padding: 20px;">⚡ Caricamento foto...</div>';
 
   const modal = document.getElementById('modal-galleria');
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 
-  let numero = 1;
+  let numero = 0; // LA NUMERAZIONE PARTE DA 0!
   let trovataAlmenoUna = false;
 
-  // Scansione dinamica progressiva: si ferma quando le foto finiscono
+  // Scansione progressiva: cerca 0.*, poi 1.*, poi 2.* finché non trova buchi
   while (true) {
     if (sessioneGalleriaId !== sessioneCorrente) return;
 
-    const percorsoEsistente = await cercaFotoMultiFormato(config.cartella, numero);
+    // Cerca in parallelo tra le estensioni per l'indice corrente
+    const percorsoEsistente = await cercaPrimoFormatoValido(config.cartella, numero);
 
     if (sessioneGalleriaId !== sessioneCorrente) return;
 
     if (percorsoEsistente) {
       if (!trovataAlmenoUna) {
         trovataAlmenoUna = true;
-        griglia.innerHTML = ''; // Pulisce il messaggio di caricamento al primo riscontro
+        griglia.innerHTML = ''; // Rimuove il testo "Caricamento" appena trova la prima foto
       }
 
       const indexInLista = playlistFotoAttuale.length;
       playlistFotoAttuale.push(percorsoEsistente);
 
+      // Crea e inserisce la miniatura immediatamente
       const imgThumb = document.createElement('img');
       imgThumb.src = percorsoEsistente;
-      imgThumb.loading = "lazy"; // Risparmio banda
+      imgThumb.loading = "lazy";
+      imgThumb.decoding = "async"; // Non blocca l'interfaccia utente
       imgThumb.alt = `${config.titolo} - Foto ${numero}`;
       imgThumb.onclick = () => apriFotoEspansa(indexInLista);
       griglia.appendChild(imgThumb);
 
-      numero++;
+      numero++; // Passa al numero successivo (0 -> 1 -> 2...)
     } else {
-      // Nessun formato trovato per questo numero: la cartella è terminata
+      // Nessuna foto trovata per questo numero: la galleria della suite è finita
       break;
     }
   }
@@ -247,33 +254,20 @@ window.apriGalleria = async function(nomeSuite) {
   }
 };
 
-// Cerca l'immagine provando tutte le estensioni in parallelo
-function cercaFotoMultiFormato(cartella, numero) {
-  return new Promise((resolve) => {
-    let completati = 0;
-    let risolto = false;
-
-    estensioniPossibili.forEach((ext) => {
-      const percorso = `${cartella}${numero}.${ext}`;
+// Cerca tutte le estensioni in parallelo e restituisce subito la prima valida
+function cercaPrimoFormatoValido(cartella, numero) {
+  const verifiche = estensioniPossibili.map(ext => {
+    return new Promise((resolve, reject) => {
       const img = new Image();
-
-      img.onload = () => {
-        if (!risolto) {
-          risolto = true;
-          resolve(percorso);
-        }
-      };
-
-      img.onerror = () => {
-        completati++;
-        if (completati === estensioniPossibili.length && !risolto) {
-          resolve(null);
-        }
-      };
-
+      const percorso = `${cartella}${numero}.${ext}`;
+      img.onload = () => resolve(percorso);
+      img.onerror = () => reject();
       img.src = percorso;
     });
   });
+
+  // Risolve al primo successo o restituisce null se nessuna estensione esiste
+  return Promise.any(verifiche).catch(() => null);
 }
 
 window.apriFotoEspansa = function(indice) {
@@ -287,7 +281,7 @@ window.chiudiFotoEspansa = function() {
 };
 
 window.chiudiGalleria = function() {
-  sessioneGalleriaId++; // Annulla eventuali scansioni in corso
+  sessioneGalleriaId++; // Ferma le scansioni in background
   document.getElementById('modal-galleria').style.display = 'none';
   chiudiFotoEspansa();
   document.body.style.overflow = 'auto';
@@ -295,6 +289,7 @@ window.chiudiGalleria = function() {
 
 window.cambiaFotoGalleria = function(direzione) {
   if (playlistFotoAttuale.length === 0) return;
+  
   indiceFotoAttuale += direzione;
 
   if (indiceFotoAttuale < 0) {
@@ -313,6 +308,7 @@ function aggiornaVistaFoto() {
   contatore.innerText = `${indiceFotoAttuale + 1} / ${playlistFotoAttuale.length}`;
 }
 
+// Navigazione da tastiera
 document.addEventListener('keydown', function(event) {
   const espansa = document.getElementById('galleria-espansa').style.display === 'flex';
   const griglia = document.getElementById('modal-galleria').style.display === 'flex';
