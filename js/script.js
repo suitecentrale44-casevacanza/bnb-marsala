@@ -1,5 +1,5 @@
 /* ==========================================
-   1. GESTIONE LINGUA UNIFICATA E BLINDATA
+   1. GESTIONE LINGUA STABILE E SICURA
    ========================================== */
 
 window.googleTranslateElementInit = function() {
@@ -10,7 +10,7 @@ window.googleTranslateElementInit = function() {
   }, 'google_translate_element');
 };
 
-// Toggle del menu bandiere
+// Toggle menu bandiere
 window.toggleLangDropdown = function(e) {
   if (e) e.stopPropagation();
   const langDropdown = document.getElementById('langDropdown');
@@ -28,35 +28,29 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// Pulizia universale dei cookie di traduzione compatibile con Safari e Chrome
-function impostaCookieGoogleTranslate(lang) {
-  const hostname = window.location.hostname;
-  const domini = ['', hostname, '.' + hostname];
-  
-  // Rimuove vecchi cookie su tutti i percorsi possibili
-  domini.forEach(d => {
-    const domainAttr = d ? '; domain=' + d : '';
-    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/' + domainAttr;
-  });
+// Pulizia e impostazione cookie di traduzione
+function gestisciCookieTranslate(lang) {
+  const domain = window.location.hostname;
+  document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=" + domain + "; path=/;";
 
-  // Imposta il nuovo cookie nativo in modo pulito
   if (lang && lang !== 'it') {
-    document.cookie = 'googtrans=/it/' + lang + '; path=/';
+    document.cookie = "googtrans=/it/" + lang + "; path=/;";
   }
 }
 
-// CAMBIO LINGUA STABILE
+// CAMBIO LINGUA BLINDATO
 window.cambiaLingua = function(codiceLingua, flagClass) {
   localStorage.setItem('lingua_selezionata', codiceLingua);
   localStorage.setItem('flag_class_selezionata', flagClass);
   localStorage.setItem('salta_splash', 'true');
 
-  impostaCookieGoogleTranslate(codiceLingua);
+  gestisciCookieTranslate(codiceLingua);
   window.location.reload();
 };
 
 /* ==========================================
-   2. GESTIONE SPLASH SCREEN ED EVENTI AVVIO
+   2. GESTIONE SPLASH SCREEN
    ========================================== */
 window.nascondiSplash = function() {
   const splash = document.getElementById('splash-screen');
@@ -72,28 +66,27 @@ window.nascondiSplash = function() {
     splash.classList.add('fade-out');
     setTimeout(() => {
       splash.style.setProperty('display', 'none', 'important');
-    }, 500);
+    }, 400);
   }
 };
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Ripristina la bandiera attiva
+  // Ripristina la bandiera attiva selezionata dall'utente
   const flagClassSalvata = localStorage.getItem('flag_class_selezionata');
   const activeFlag = document.getElementById('activeFlag');
   if (flagClassSalvata && activeFlag) {
     activeFlag.className = 'flag-icon ' + flagClassSalvata;
   }
 
-  // Se dobbiamo saltare lo splash screen (es. cambio lingua), lo chiude subito
   if (localStorage.getItem('salta_splash') === 'true') {
     window.nascondiSplash();
   } else {
-    setTimeout(window.nascondiSplash, 600);
+    setTimeout(window.nascondiSplash, 500);
   }
 });
 
 /* ==========================================
-   3. COOKIE BANNER E GOOGLE ANALYTICS
+   3. COOKIE BANNER E ANALYTICS
    ========================================== */
 const ANALYTICS_ID = 'G-C291PEHWM7';
 
@@ -172,7 +165,7 @@ window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
 };
 
 /* ==========================================
-   5. MOTORE GALLERIA RISPARMIO RISORSE (OPTIMIZED)
+   5. MOTORE GALLERIA AD ALTA VELOCITÀ
    ========================================== */
 const configurazioneGallerie = {
   'centrale': { cartella: 'image/suite-centrale/', titolo: 'Suite Centrale 44' },
@@ -181,7 +174,7 @@ const configurazioneGallerie = {
 };
 
 const estensioniPossibili = ["jpg", "jpeg", "png", "JPG", "JPEG"];
-const MAX_FOTO = 25; // Limite ottimizzato per non appesantire la rete
+const MAX_FOTO = 25;
 
 let playlistFotoAttuale = [];
 let indiceFotoAttuale = 0;
@@ -198,7 +191,6 @@ window.apriGalleria = async function(nomeSuite) {
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden'; 
 
-  // Cerca le foto a blocchi da 5 per evitare di saturare la banda di rete
   for (let i = 1; i <= MAX_FOTO; i += 5) {
     const blocco = [];
     for (let j = i; j < i + 5 && j <= MAX_FOTO; j++) {
@@ -207,7 +199,6 @@ window.apriGalleria = async function(nomeSuite) {
     const risultati = await Promise.all(blocco);
     const trovate = risultati.filter(p => p !== null);
     
-    // Se un intero blocco non trova immagini, significa che la cartella è finita
     if (trovate.length === 0 && playlistFotoAttuale.length > 0) break;
     playlistFotoAttuale.push(...trovate);
   }
