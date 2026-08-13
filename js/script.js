@@ -1,5 +1,5 @@
 /* ==========================================
-   1. GESTIONE LINGUA STABILE E SICURA
+   1. GESTIONE LINGUA ULTRA-STABILE (NO WHITE SCREEN)
    ========================================== */
 
 window.googleTranslateElementInit = function() {
@@ -10,7 +10,7 @@ window.googleTranslateElementInit = function() {
   }, 'google_translate_element');
 };
 
-// Toggle menu bandiere
+// Toggle del menu bandiere
 window.toggleLangDropdown = function(e) {
   if (e) e.stopPropagation();
   const langDropdown = document.getElementById('langDropdown');
@@ -28,29 +28,48 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// Pulizia e impostazione cookie di traduzione
+// Pulizia e impostazione dei cookie
 function gestisciCookieTranslate(lang) {
-  const domain = window.location.hostname;
+  // Pulisce i vecchi cookie di traduzione
   document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=" + domain + "; path=/;";
+  if (window.location.hostname) {
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname + ";";
+  }
 
+  // Imposta il nuovo cookie se la lingua è diversa dall'italiano
   if (lang && lang !== 'it') {
     document.cookie = "googtrans=/it/" + lang + "; path=/;";
   }
 }
 
-// CAMBIO LINGUA BLINDATO
+// CAMBIO LINGUA SICURO
 window.cambiaLingua = function(codiceLingua, flagClass) {
   localStorage.setItem('lingua_selezionata', codiceLingua);
   localStorage.setItem('flag_class_selezionata', flagClass);
   localStorage.setItem('salta_splash', 'true');
 
   gestisciCookieTranslate(codiceLingua);
-  window.location.reload();
+
+  // Aggiorna l'icona della bandiera nel pulsante
+  const activeFlag = document.getElementById('activeFlag');
+  if (activeFlag) activeFlag.className = 'flag-icon ' + flagClass;
+
+  const langDropdown = document.getElementById('langDropdown');
+  if (langDropdown) langDropdown.classList.remove('show');
+
+  // Proviamo prima il cambio dinamico senza refresh
+  const selectGoogle = document.querySelector('.goog-te-combo');
+  if (selectGoogle) {
+    selectGoogle.value = (codiceLingua === 'it') ? '' : codiceLingua;
+    selectGoogle.dispatchEvent(new Event('change'));
+  } else {
+    // Se lo script Google non è ancora pronto nel DOM, ricarica in sicurezza
+    window.location.reload();
+  }
 };
 
 /* ==========================================
-   2. GESTIONE SPLASH SCREEN
+   2. GESTIONE SPLASH SCREEN ED EVENTI AVVIO
    ========================================== */
 window.nascondiSplash = function() {
   const splash = document.getElementById('splash-screen');
@@ -71,7 +90,7 @@ window.nascondiSplash = function() {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Ripristina la bandiera attiva selezionata dall'utente
+  // Ripristina la bandiera attiva selezionata precedentemente
   const flagClassSalvata = localStorage.getItem('flag_class_selezionata');
   const activeFlag = document.getElementById('activeFlag');
   if (flagClassSalvata && activeFlag) {
@@ -165,7 +184,7 @@ window.inviaRichiestaWA = function(nomeSuite, idCheckin, idCheckout) {
 };
 
 /* ==========================================
-   5. MOTORE GALLERIA AD ALTA VELOCITÀ
+   5. MOTORE GALLERIA AD ALTA VELOCITÀ (PARALLELO)
    ========================================== */
 const configurazioneGallerie = {
   'centrale': { cartella: 'image/suite-centrale/', titolo: 'Suite Centrale 44' },
