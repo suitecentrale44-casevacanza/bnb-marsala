@@ -53,21 +53,31 @@
 
   <div id="google_translate_element" style="display:none;"></div>
 
-  <!-- Menu di Navigazione -->
+<!-- Menu di Navigazione Compatto con Tendina -->
   <nav class="navbar">
     <div class="navbar-container">
       <a href="#" class="nav-brand">
         <img src="image/Logo_Suite.jpg" alt="Logo Suite Centrale 44" class="nav-logo">
       </a>
-      <ul class="nav-links">
-        <li><a href="#strutture">🏠 Strutture</a></li>
-        <li><a href="#offerte">🎁 Offerte</a></li>
-        <li><a href="#servizi">⭐ Servizi</a></li>
-        <li><a href="#riconoscimenti">🏆 Riconoscimenti ufficiali</a></li>
-        <li><a href="#posizione">📍 Posizione</a></li>
-        <li><a href="#contatti">📱 Contatti</a></li>
-        <li><a href="https://share.google/YokKWe5qbWBurajf4" target="_blank" rel="noopener noreferrer">✍️ Lascia una recensione</a></li>
-      </ul>
+
+      <!-- Pulsante Menu a Tendina (Hamburger Modesto) -->
+      <button type="button" class="nav-toggle-btn" id="navToggleBtn" onclick="toggleMainMenu(event)" aria-label="Apri menu di navigazione">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
+
+      <!-- Contenitore Dropdown -->
+      <div class="nav-menu-wrapper" id="navMenuWrapper">
+        <ul class="nav-links">
+          <li><a href="#strutture" onclick="chiudiMainMenu()">Strutture</a></li>
+          <li><a href="#offerte" onclick="chiudiMainMenu()">Offerte</a></li>
+          <li><a href="#servizi" onclick="chiudiMainMenu()">Servizi</a></li>
+          <li><a href="#riconoscimenti" onclick="chiudiMainMenu()">Riconoscimenti Ufficiali</a></li>
+          <li><a href="#posizione" onclick="chiudiMainMenu()">Posizione e Contatti</a></li>
+          <li><a href="https://share.google/YokKWe5qbWBurajf4" target="_blank" rel="noopener noreferrer" onclick="chiudiMainMenu()">Lascia una recensione</a></li>
+        </ul>
+      </div>
 
       <!-- Selettore Lingua -->
       <div class="lang-selector notranslate" translate="no">
