@@ -54,23 +54,21 @@
   <div id="google_translate_element" style="display:none;"></div>
 
 <!-- Menu di Navigazione Compatto -->
+  <!-- Menu di Navigazione con Controlli a Destra -->
   <nav class="navbar">
     <div class="navbar-container">
-      <!-- Brand / Logo a Sinistra -->
       <a href="#" class="nav-brand">
         <img src="image/Logo_Suite.jpg" alt="Logo Suite Centrale 44" class="nav-logo">
       </a>
 
-      <!-- Gruppo Controlli a Destra (Menu + Lingua) -->
+      <!-- Gruppo Controlli A Destra: Menu + Lingua -->
       <div class="nav-controls-right">
-        <!-- Pulsante Menu a Tendina (Hamburger) -->
         <button type="button" class="nav-toggle-btn" id="navToggleBtn" onclick="toggleMainMenu(event)" aria-label="Apri menu">
           <span class="hamburger-bar"></span>
           <span class="hamburger-bar"></span>
           <span class="hamburger-bar"></span>
         </button>
 
-        <!-- Selettore Lingua -->
         <div class="lang-selector notranslate" translate="no">
           <button type="button" class="lang-btn-rect" id="langBtn" onclick="toggleLangDropdown(event)" aria-label="Seleziona Lingua">
             <span id="activeFlag" class="flag-icon flag-it"></span>
@@ -87,7 +85,7 @@
         </div>
       </div>
 
-      <!-- Contenitore Dropdown Menu Principale -->
+      <!-- Menu a Tendina Dropdown -->
       <div class="nav-menu-wrapper" id="navMenuWrapper">
         <ul class="nav-links">
           <li><a href="#strutture" onclick="chiudiMainMenu()">Strutture</a></li>
@@ -101,29 +99,15 @@
     </div>
   </nav>
 
-  <!-- Header Compatto e Smart -->
-  <header class="header-compact">
-    <div class="header-content">
-      <img src="image/Logo_Suite.jpg" alt="Suite Centrale 44 Logo" class="header-logo-compact">
-      <div class="header-text">
-        <h1>Benvenuti da Suite Centrale 44</h1>
-        <p class="subtitle">Case vacanza nel cuore di Marsala</p>
-      </div>
-    </div>
-    <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20sulle%20disponibilit%C3%A0%20delle%20case%20vacanze" class="btn-wa-header" target="_blank" rel="noopener noreferrer">
-      📱 Contattaci su WhatsApp
-    </a>
-  </header>
-
+  <!-- Header Con Scritte Originali e Logo Dimensionato -->
   <header>
     <img src="image/Logo_Suite.jpg" alt="Suite Centrale 44 Logo" class="header-logo">
     <h1>Benvenuti da Suite Centrale 44</h1>
-    <p>Case vacanza a Marsala</p>
-    <p>La tua casa lontano da casa. Relax, comfort e accoglienza nel cuore della città</p>
+    <p class="header-sub">Case vacanza a Marsala</p>
+    <p class="header-desc">La tua casa lontano da casa. Relax, comfort e accoglienza nel cuore della città</p>
     <br>
     <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20sulle%20disponibilit%C3%A0%20delle%20case%20vacanze" class="btn-wa" target="_blank" rel="noopener noreferrer">📱 Contattaci su WhatsApp</a>
   </header>
-
   <main class="container">
     <!-- Sezione Strutture -->
     <section id="strutture" class="section">
