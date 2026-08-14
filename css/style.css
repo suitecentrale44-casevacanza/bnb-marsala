@@ -100,18 +100,18 @@ h3 {
 .nav-logo {
   height: 38px;
   width: auto;
+  max-width: 120px;
   border-radius: 4px;
   display: block;
+  object-fit: contain;
 }
 
-/* Gruppo controlli posizionato a destra */
 .nav-controls-right {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-/* Pulsante Hamburger per Menu */
 .nav-toggle-btn {
   display: flex;
   flex-direction: column;
@@ -137,7 +137,6 @@ h3 {
   border-radius: 2px;
 }
 
-/* Menu a Tendina Dropdown */
 .nav-menu-wrapper {
   display: none;
   position: absolute;
@@ -175,7 +174,6 @@ h3 {
   font-weight: 600;
   font-size: 0.95rem;
   transition: color 0.2s ease;
-  letter-spacing: 0.3px;
   padding: 4px 8px;
 }
 
@@ -183,7 +181,6 @@ h3 {
   color: var(--blu-mare);
 }
 
-/* Selettore Lingua */
 .lang-selector {
   position: relative;
   display: inline-block;
@@ -262,88 +259,53 @@ h3 {
 }
 
 /* ==========================================
-   3. HEADER COMPATTO E RESPONSIVE
+   3. HEADER RIPRISTINATO E PROPORZIONATO
    ========================================== */
-.header-compact {
+header {
   background: linear-gradient(135deg, var(--blu-mare) 0%, var(--azzurro-cielo) 100%);
   color: #ffffff;
   text-align: center;
-  padding: 1.2rem 1rem;
-  border-bottom: 4px solid var(--giallo-limone);
+  padding: 2rem 1rem;
+  border-bottom: 5px solid var(--giallo-limone);
 }
 
-.header-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  max-width: 800px;
-  margin: 0 auto 0.8rem auto;
-}
-
-.header-logo-compact {
-  width: 70px;
-  height: 70px;
+.header-logo {
+  width: 90px !important;
+  height: 90px !important;
+  max-width: 90px !important;
+  max-height: 90px !important;
   border-radius: 50%;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  margin: 0 auto 1rem auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   border: 2px solid rgba(255, 255, 255, 0.3);
   object-fit: cover;
+  display: block;
 }
 
-.header-text h1 {
-  font-size: 1.35rem;
-  margin-bottom: 0.2rem;
-  line-height: 1.2;
+header h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.4rem;
   color: #ffffff;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+header .header-sub {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
   text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
 }
 
-.header-text .subtitle {
-  font-size: 0.9rem;
+header .header-desc {
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
   opacity: 0.95;
-  margin: 0;
-  font-weight: 400;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.btn-wa-header {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  background-color: #25d366;
-  color: #ffffff !important;
-  padding: 0.45rem 1.1rem;
-  border-radius: 20px;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 0.85rem;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-  transition: transform 0.2s ease, background-color 0.2s ease;
-}
 
-.btn-wa-header:hover {
-  background-color: #1eb954;
-  transform: translateY(-2px);
-}
-
-/* Layout Desktop per l'Header */
-@media (min-width: 600px) {
-  .header-content {
-    flex-direction: row;
-    text-align: left;
-  }
-  .header-logo-compact {
-    width: 80px;
-    height: 80px;
-  }
-  .header-text h1 {
-    font-size: 1.7rem;
-  }
-  .header-text .subtitle {
-    font-size: 1rem;
-  }
-}
 /* ==========================================
    4. SCHEDE E GRIGLIE GENERALI
    ========================================== */
