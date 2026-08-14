@@ -1015,3 +1015,63 @@ html, body {
   color: #14532d !important;
   font-weight: 600;
 }
+/* ==========================================
+   SEZIONE RECENSIONI GOOGLE (ULTRA-LEGGERA)
+   ========================================== */
+.recensione-section {
+  text-align: center;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-left: 5px solid var(--giallo-limone);
+  padding: 2.5rem 1.5rem;
+}
+
+.recensione-box {
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.recensione-box p {
+  color: var(--blu-notte-testo);
+  font-size: 1.05rem;
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+}
+
+.stelle-valutazione {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  letter-spacing: 3px;
+}
+
+.btn-recensione-google {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: var(--blu-mare);
+  color: #ffffff !important;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 12px 28px;
+  border-radius: 30px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px var(--ombra-leggera);
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-recensione-google:hover {
+  background-color: #005f8f;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px var(--ombra-intensa);
+}
+
+@media (max-width: 600px) {
+  .recensione-section {
+    padding: 1.5rem 1rem;
+  }
+  .btn-recensione-google {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+  }
+}
