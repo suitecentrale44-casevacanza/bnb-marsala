@@ -70,7 +70,7 @@ h3 {
 }
 
 /* ==========================================
-   2. NAVBAR, MENU A TENDINA E SELETTORE LINGUA
+   2. NAVBAR, CONTROLLI A DESTRA E LINGUA
    ========================================== */
 .navbar {
   position: sticky;
@@ -98,19 +98,26 @@ h3 {
 }
 
 .nav-logo {
-  height: 40px;
+  height: 38px;
   width: auto;
   border-radius: 4px;
   display: block;
 }
 
-/* Pulsante Hamburger Modesto per Menu */
+/* Gruppo controlli posizionato a destra */
+.nav-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Pulsante Hamburger per Menu */
 .nav-toggle-btn {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 30px;
-  height: 22px;
+  width: 28px;
+  height: 20px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -130,7 +137,7 @@ h3 {
   border-radius: 2px;
 }
 
-/* Menu a Tendina Principale (Dropdown) */
+/* Menu a Tendina Dropdown */
 .nav-menu-wrapper {
   display: none;
   position: absolute;
@@ -157,7 +164,7 @@ h3 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.8rem;
   margin: 0;
   padding: 0;
 }
@@ -176,17 +183,15 @@ h3 {
   color: var(--blu-mare);
 }
 
-/* ==========================================
-   STILI SELETTORE LINGUA (RIPRISTINATI)
-   ========================================== */
+/* Selettore Lingua */
 .lang-selector {
   position: relative;
   display: inline-block;
 }
 
 .lang-btn-rect {
-  width: 40px;
-  height: 28px;
+  width: 38px;
+  height: 26px;
   border-radius: 6px;
   border: 1px solid #cbd5e1;
   background: transparent !important;
@@ -197,27 +202,24 @@ h3 {
   overflow: hidden;
   padding: 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 .lang-btn-rect:hover {
-  border-color: #0284c7;
   transform: scale(1.05);
 }
 
 .flag-icon {
-  width: 28px;
-  height: 20px;
+  width: 26px;
+  height: 18px;
   display: block;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   border-radius: 3px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   pointer-events: none;
 }
 
-/* Bandiere ad alta definizione */
 .flag-it { background-image: url('https://flagcdn.com/w40/it.png'); }
 .flag-gb { background-image: url('https://flagcdn.com/w40/gb.png'); }
 .flag-de { background-image: url('https://flagcdn.com/w40/de.png'); }
@@ -229,7 +231,7 @@ h3 {
   display: none;
   position: absolute;
   right: 0;
-  top: 36px;
+  top: 34px;
   background-color: #ffffff;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
@@ -253,52 +255,95 @@ h3 {
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  transition: background-color 0.2s ease;
 }
 
 .lang-dropdown button:hover {
   background-color: #f1f5f9;
 }
 
-.goog-te-banner-frame,
-.skiptranslate,
-#goog-gt-tt {
-  display: none !important;
-}
-
 /* ==========================================
-   3. HEADER
+   3. HEADER COMPATTO E RESPONSIVE
    ========================================== */
-header {
+.header-compact {
   background: linear-gradient(135deg, var(--blu-mare) 0%, var(--azzurro-cielo) 100%);
   color: #ffffff;
   text-align: center;
-  padding: 3rem 1rem;
-  border-bottom: 5px solid var(--giallo-limone);
+  padding: 1.2rem 1rem;
+  border-bottom: 4px solid var(--giallo-limone);
 }
 
-.header-logo {
-  max-width: 130px;
-  height: auto;
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  max-width: 800px;
+  margin: 0 auto 0.8rem auto;
+}
+
+.header-logo-compact {
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
-  margin-bottom: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  object-fit: cover;
 }
 
-header h1 {
-  font-size: 2.2rem;
-  margin-bottom: 0.5rem;
+.header-text h1 {
+  font-size: 1.35rem;
+  margin-bottom: 0.2rem;
+  line-height: 1.2;
   color: #ffffff;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-}
-
-header p {
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
   text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
 }
 
+.header-text .subtitle {
+  font-size: 0.9rem;
+  opacity: 0.95;
+  margin: 0;
+  font-weight: 400;
+}
+
+.btn-wa-header {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: #25d366;
+  color: #ffffff !important;
+  padding: 0.45rem 1.1rem;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-wa-header:hover {
+  background-color: #1eb954;
+  transform: translateY(-2px);
+}
+
+/* Layout Desktop per l'Header */
+@media (min-width: 600px) {
+  .header-content {
+    flex-direction: row;
+    text-align: left;
+  }
+  .header-logo-compact {
+    width: 80px;
+    height: 80px;
+  }
+  .header-text h1 {
+    font-size: 1.7rem;
+  }
+  .header-text .subtitle {
+    font-size: 1rem;
+  }
+}
 /* ==========================================
    4. SCHEDE E GRIGLIE GENERALI
    ========================================== */
