@@ -1,4 +1,31 @@
 /* ==========================================
+   0. GESTIONE MENU A TENDINA PRINCIPALE
+   ========================================== */
+window.toggleMainMenu = function(e) {
+  if (e) e.stopPropagation();
+  const menuWrapper = document.getElementById('navMenuWrapper');
+  if (menuWrapper) {
+    menuWrapper.classList.toggle('show');
+  }
+};
+
+window.chiudiMainMenu = function() {
+  const menuWrapper = document.getElementById('navMenuWrapper');
+  if (menuWrapper) {
+    menuWrapper.classList.remove('show');
+  }
+};
+
+// Chiude il menu principale se si clicca in un punto qualsiasi della pagina
+document.addEventListener('click', function(e) {
+  const menuWrapper = document.getElementById('navMenuWrapper');
+  const toggleBtn = document.getElementById('navToggleBtn');
+  if (menuWrapper && toggleBtn && !menuWrapper.contains(e.target) && !toggleBtn.contains(e.target)) {
+    menuWrapper.classList.remove('show');
+  }
+});
+
+/* ==========================================
    1. GESTIONE LINGUA ULTRA-STABILE E VELOCE
    ========================================== */
 
