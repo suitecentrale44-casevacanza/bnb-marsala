@@ -70,7 +70,7 @@ h3 {
 }
 
 /* ==========================================
-   2. NAVBAR E MENU A TENDINA COMPATTO
+   2. NAVBAR, MENU A TENDINA E SELETTORE LINGUA
    ========================================== */
 .navbar {
   position: sticky;
@@ -104,7 +104,7 @@ h3 {
   display: block;
 }
 
-/* Pulsante Hamburger Modesto */
+/* Pulsante Hamburger Modesto per Menu */
 .nav-toggle-btn {
   display: flex;
   flex-direction: column;
@@ -130,7 +130,7 @@ h3 {
   border-radius: 2px;
 }
 
-/* Menu a Tendina (Dropdown) */
+/* Menu a Tendina Principale (Dropdown) */
 .nav-menu-wrapper {
   display: none;
   position: absolute;
@@ -175,6 +175,97 @@ h3 {
 .nav-links a:hover {
   color: var(--blu-mare);
 }
+
+/* ==========================================
+   STILI SELETTORE LINGUA (RIPRISTINATI)
+   ========================================== */
+.lang-selector {
+  position: relative;
+  display: inline-block;
+}
+
+.lang-btn-rect {
+  width: 40px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: transparent !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.lang-btn-rect:hover {
+  border-color: #0284c7;
+  transform: scale(1.05);
+}
+
+.flag-icon {
+  width: 28px;
+  height: 20px;
+  display: block;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  pointer-events: none;
+}
+
+/* Bandiere ad alta definizione */
+.flag-it { background-image: url('https://flagcdn.com/w40/it.png'); }
+.flag-gb { background-image: url('https://flagcdn.com/w40/gb.png'); }
+.flag-de { background-image: url('https://flagcdn.com/w40/de.png'); }
+.flag-fr { background-image: url('https://flagcdn.com/w40/fr.png'); }
+.flag-es { background-image: url('https://flagcdn.com/w40/es.png'); }
+.flag-nl { background-image: url('https://flagcdn.com/w40/nl.png'); }
+
+.lang-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 36px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  z-index: 99999;
+  padding: 6px;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lang-dropdown.show {
+  display: flex !important;
+}
+
+.lang-dropdown button {
+  padding: 4px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.lang-dropdown button:hover {
+  background-color: #f1f5f9;
+}
+
+.goog-te-banner-frame,
+.skiptranslate,
+#goog-gt-tt {
+  display: none !important;
+}
+
 /* ==========================================
    3. HEADER
    ========================================== */
