@@ -110,8 +110,14 @@
     <!-- Sezione Strutture -->
     <section id="strutture" class="section">
       <h2>🏠 Le Nostre Strutture</h2>
-      <div class="grid-3-case">
+      
+      <!-- CONTENITORE CAROUSEL CON FRECCE -->
+      <div class="carousel-container">
+        <!-- Freccia Sinistra -->
+        <button class="carousel-arrow left-arrow hidden" id="btn-prev-case" aria-label="Scorri a sinistra" onclick="scorriCarousel(-1)">❮</button>
         
+        <div class="grid-3-case" id="grid-strutture">
+          
         <!-- CARD SUITE CENTRALE -->
         <article class="card-casa">
           <div class="img-wrapper">
@@ -220,6 +226,10 @@
           </div>
         </div>      
        
+     </div>
+        
+        <!-- Freccia Destra -->
+        <button class="carousel-arrow right-arrow" id="btn-next-case" aria-label="Scorri a destra" onclick="scorriCarousel(1)">❯</button>
       </div>
     </section>
 
