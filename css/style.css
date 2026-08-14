@@ -145,16 +145,20 @@ h3 {
   border-radius: 2px;
 }
 
+/* Menu a Tendina Dropdown (Ottimizzato e compatto) */
 .nav-menu-wrapper {
   display: none;
   position: absolute;
   top: 100%;
-  left: 0;
-  width: 100%;
+  right: 1rem; /* Allinea il menu alla destra dello schermo, sotto il bottone */
+  left: auto; /* Rimuove l'estensione a tutto schermo */
+  width: max-content; /* Il menu prende ESATTAMENTE la larghezza del testo più lungo */
   background-color: #ffffff;
   box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-  border-bottom: 3px solid var(--blu-mare);
-  padding: 1rem 0;
+  border: 1px solid var(--grigio-bordo); /* Piccolo bordino elegante */
+  border-top: 3px solid var(--blu-mare); /* Richiamo cromatico della barra */
+  border-radius: 8px; /* Angoli arrotondati per un look "App" */
+  padding: 1rem 1.2rem;
   animation: comparsaMenu 0.2s ease-out;
 }
 
@@ -170,8 +174,8 @@ h3 {
 .nav-links {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.8rem;
+  align-items: flex-start; /* Allinea i testi a sinistra (migliore leggibilità) */
+  gap: 1rem;
   margin: 0;
   padding: 0;
 }
@@ -181,14 +185,16 @@ h3 {
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, transform 0.2s ease;
   padding: 4px 8px;
+  width: 100%; /* Rende cliccabile tutta la riga, non solo il testo */
+  display: block;
 }
 
 .nav-links a:hover {
   color: var(--blu-mare);
+  transform: translateX(3px); /* Piccolo effetto di slittamento in avanti al passaggio del dito/mouse */
 }
-
 .lang-selector {
   position: relative;
   display: inline-block;
