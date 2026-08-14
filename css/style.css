@@ -70,7 +70,7 @@ h3 {
 }
 
 /* ==========================================
-   2. NAVBAR E SELETTORE LINGUA
+   2. NAVBAR E MENU A TENDINA COMPATTO
    ========================================== */
 .navbar {
   position: sticky;
@@ -88,6 +88,7 @@ h3 {
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 1rem;
+  position: relative;
 }
 
 .nav-brand {
@@ -103,11 +104,62 @@ h3 {
   display: block;
 }
 
+/* Pulsante Hamburger Modesto */
+.nav-toggle-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 22px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1000;
+  transition: transform 0.2s ease;
+}
+
+.nav-toggle-btn:hover {
+  transform: scale(1.05);
+}
+
+.hamburger-bar {
+  width: 100%;
+  height: 3px;
+  background-color: var(--blu-notte-testo);
+  border-radius: 2px;
+}
+
+/* Menu a Tendina (Dropdown) */
+.nav-menu-wrapper {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #ffffff;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  border-bottom: 3px solid var(--blu-mare);
+  padding: 1rem 0;
+  animation: comparsaMenu 0.2s ease-out;
+}
+
+.nav-menu-wrapper.show {
+  display: block !important;
+}
+
+@keyframes comparsaMenu {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .nav-links {
   display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: center;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-links a {
@@ -116,98 +168,13 @@ h3 {
   font-weight: 600;
   font-size: 0.95rem;
   transition: color 0.2s ease;
+  letter-spacing: 0.3px;
+  padding: 4px 8px;
 }
 
 .nav-links a:hover {
   color: var(--blu-mare);
 }
-
-.lang-selector {
-  position: relative;
-  display: inline-block;
-}
-
-.lang-btn-rect {
-  width: 40px;
-  height: 28px;
-  border-radius: 6px;
-  border: 1px solid #cbd5e1;
-  background: transparent !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  overflow: hidden;
-  padding: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, border-color 0.2s ease;
-}
-
-.lang-btn-rect:hover {
-  border-color: #0284c7;
-  transform: scale(1.05);
-}
-
-.flag-icon {
-  width: 28px;
-  height: 20px;
-  display: block;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  border-radius: 3px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  pointer-events: none;
-}
-
-.flag-it { background-image: url('https://flagcdn.com/w40/it.png'); }
-.flag-gb { background-image: url('https://flagcdn.com/w40/gb.png'); }
-.flag-de { background-image: url('https://flagcdn.com/w40/de.png'); }
-.flag-fr { background-image: url('https://flagcdn.com/w40/fr.png'); }
-.flag-es { background-image: url('https://flagcdn.com/w40/es.png'); }
-.flag-nl { background-image: url('https://flagcdn.com/w40/nl.png'); }
-
-.lang-dropdown {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: 36px;
-  background-color: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-  z-index: 99999;
-  padding: 6px;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.lang-dropdown.show {
-  display: flex !important;
-}
-
-.lang-dropdown button {
-  padding: 4px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
-
-.lang-dropdown button:hover {
-  background-color: #f1f5f9;
-}
-
-.goog-te-banner-frame,
-.skiptranslate,
-#goog-gt-tt {
-  display: none !important;
-}
-
 /* ==========================================
    3. HEADER
    ========================================== */
