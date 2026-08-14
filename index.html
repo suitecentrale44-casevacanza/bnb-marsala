@@ -53,8 +53,7 @@
 
   <div id="google_translate_element" style="display:none;"></div>
 
-<!-- Menu di Navigazione Compatto -->
-  <!-- Menu di Navigazione con Controlli a Destra -->
+  <!-- Menu di Navigazione Compatto con Controlli a Destra -->
   <nav class="navbar">
     <div class="navbar-container">
       <a href="#" class="nav-brand">
@@ -106,6 +105,7 @@
     <p class="header-sub">Case vacanza a Marsala</p>
     <p class="header-desc">La tua casa lontano da casa. Relax, comfort e accoglienza nel cuore della città</p>
   </header>
+
   <main class="container">
     <!-- Sezione Strutture -->
     <section id="strutture" class="section">
@@ -116,117 +116,64 @@
         <!-- Freccia Sinistra -->
         <button class="carousel-arrow left-arrow hidden" id="btn-prev-case" aria-label="Scorri a sinistra" onclick="scorriCarousel(-1)">❮</button>
         
+        <!-- GRIGLIA PULITA (Senza Popup all'interno) -->
         <div class="grid-3-case" id="grid-strutture">
           
-        <!-- CARD SUITE CENTRALE -->
-        <article class="card-casa">
-          <div class="img-wrapper">
-            <img src="image/Suite Centrale Copertina.jpg" alt="Suite Centrale 44">
-            <div class="img-overlay">
-              <button onclick="apriGalleria('centrale')" class="btn-foto" style="border:none; cursor:pointer; width:100%;">📸 Guarda tutte le foto</button>
+          <!-- CARD SUITE CENTRALE -->
+          <article class="card-casa">
+            <div class="img-wrapper">
+              <img src="image/Suite Centrale Copertina.jpg" alt="Suite Centrale 44">
+              <div class="img-overlay">
+                <button onclick="apriGalleria('centrale')" class="btn-foto" style="border:none; cursor:pointer; width:100%;">📸 Guarda tutte le foto</button>
+              </div>
             </div>
-          </div>
-          <h3>Suite Centrale 44</h3>
-          <p>Centro Storico • Da 1 a 4 Posti Letto • Wi-Fi, Balcone & AC</p>
-          <div class="pulsanti-prenotazione">
-            <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20su%20Suite%20Centrale%2044" class="btn-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-            <a href="https://www.airbnb.it/rooms/50326794" class="btn-airbnb-official" target="_blank" rel="noopener noreferrer">Airbnb</a>
-            <a href="https://www.booking.com/hotel/it/suite-centrale-44.it.html" class="btn-booking-official" target="_blank" rel="noopener noreferrer">Booking</a>
-            <button onclick="apriCalendario('popup-centrale', 'centrale')" class="btn-calendario">📅 Disponibilità</button>
-          </div>
-        </article>
-
-        <!-- Popup Suite Centrale -->
-        <div id="popup-centrale" class="modal-calendario">
-          <div class="modal-contenuto">
-            <span class="chiudi-popup" onclick="chiudiCalendario('popup-centrale')">&times;</span>
-            <h3 style="margin-bottom: 15px; color: var(--blu-mare); text-align: center;">Disponibilità Suite Centrale</h3>
-            
-            <!-- Contenitore Calendario Nativo -->
-            <div id="cal-centrale" class="calendario-wrapper"></div>
-        
-            <div class="box-richiesta-wa">
-              <p id="info-selezione-centrale" class="titolo-richiesta">👉 Clicca sui giorni liberi nel calendario per scegliere Check-in e Check-out</p>
-              <button onclick="inviaRichiestaWA('centrale', 'Suite Centrale')" class="btn-invia-wa">
-                💬 Invia richiesta su WhatsApp
-              </button>
+            <h3>Suite Centrale 44</h3>
+            <p>Centro Storico • Da 1 a 4 Posti Letto • Wi-Fi, Balcone & AC</p>
+            <div class="pulsanti-prenotazione">
+              <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20su%20Suite%20Centrale%2044" class="btn-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+              <a href="https://www.airbnb.it/rooms/50326794" class="btn-airbnb-official" target="_blank" rel="noopener noreferrer">Airbnb</a>
+              <a href="https://www.booking.com/hotel/it/suite-centrale-44.it.html" class="btn-booking-official" target="_blank" rel="noopener noreferrer">Booking</a>
+              <button onclick="apriCalendario('popup-centrale', 'centrale')" class="btn-calendario">📅 Disponibilità</button>
             </div>
-          </div>
-        </div>
-        
-        <!-- CARD CORALLO -->
-        <article class="card-casa">
-          <div class="img-wrapper">
-            <img src="image/Suite Corallo Copertina.jpg" alt="Suite Corallo">
-            <div class="img-overlay">
-              <button onclick="apriGalleria('corallo')" class="btn-foto" style="border:none; cursor:pointer; width:100%;">📸 Guarda tutte le foto</button>
-            </div>
-          </div>
-          <h3>Suite Corallo</h3>
-          <p>Centro Storico • Da 1 a 3 Posti Letto • Wi-Fi & AC</p>
-          <div class="pulsanti-prenotazione">
-            <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20su%20Suite%20Corallo" class="btn-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-            <a href="https://www.airbnb.it/rooms/657792096938010342" class="btn-airbnb-official" target="_blank" rel="noopener noreferrer">Airbnb</a>
-            <a href="https://www.booking.com/hotel/it/suite-centrale-44-corallo.it.html" class="btn-booking-official" target="_blank" rel="noopener noreferrer">Booking</a>
-            <button onclick="apriCalendario('popup-corallo', 'corallo')" class="btn-calendario">📅 Disponibilità</button>
-          </div>
-        </article>
-
-        <!-- Popup Suite Corallo -->
-        <div id="popup-corallo" class="modal-calendario">
-          <div class="modal-contenuto">
-            <span class="chiudi-popup" onclick="chiudiCalendario('popup-corallo')">&times;</span>
-            <h3 style="margin-bottom: 15px; color: var(--blu-mare); text-align: center;">Disponibilità Suite Corallo</h3>
-            
-            <!-- Contenitore Calendario Nativo -->
-            <div id="cal-corallo" class="calendario-wrapper"></div>
-        
-            <div class="box-richiesta-wa">
-              <p id="info-selezione-corallo" class="titolo-richiesta">👉 Clicca sui giorni liberi nel calendario per scegliere Check-in e Check-out</p>
-              <button onclick="inviaRichiestaWA('corallo', 'Suite Corallo')" class="btn-invia-wa">
-                💬 Invia richiesta su WhatsApp
-              </button>
-            </div>
-          </div>
-        </div>        
+          </article>
           
-        <!-- CARD OCEANO -->
-        <article class="card-casa">
-          <div class="img-wrapper">
-            <img src="image/Suite Oceano Copertina.jpg" alt="Suite Oceano">
-            <div class="img-overlay">
-              <button onclick="apriGalleria('oceano')" class="btn-foto" style="border:none; cursor:pointer; width:100%;">📸 Guarda tutte le foto</button>
+          <!-- CARD CORALLO -->
+          <article class="card-casa">
+            <div class="img-wrapper">
+              <img src="image/Suite Corallo Copertina.jpg" alt="Suite Corallo">
+              <div class="img-overlay">
+                <button onclick="apriGalleria('corallo')" class="btn-foto" style="border:none; cursor:pointer; width:100%;">📸 Guarda tutte le foto</button>
+              </div>
             </div>
-          </div>
-          <h3>Suite Oceano</h3>
-          <p>Centro Storico • Da 1 a 4 Posti Letto • Wi-Fi, Balcone & AC</p>
-          <div class="pulsanti-prenotazione">
-            <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20su%20Suite%20Oceano" class="btn-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-            <a href="https://www.airbnb.it/rooms/653331639445866242" class="btn-airbnb-official" target="_blank" rel="noopener noreferrer">Airbnb</a>
-            <a href="https://www.booking.com/hotel/it/suite-centrale-44-con-balcone.it.html" class="btn-booking-official" target="_blank" rel="noopener noreferrer">Booking</a>
-            <button onclick="apriCalendario('popup-oceano', 'oceano')" class="btn-calendario">📅 Disponibilità</button>
-          </div>
-        </article>
+            <h3>Suite Corallo</h3>
+            <p>Centro Storico • Da 1 a 3 Posti Letto • Wi-Fi & AC</p>
+            <div class="pulsanti-prenotazione">
+              <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20su%20Suite%20Corallo" class="btn-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+              <a href="https://www.airbnb.it/rooms/657792096938010342" class="btn-airbnb-official" target="_blank" rel="noopener noreferrer">Airbnb</a>
+              <a href="https://www.booking.com/hotel/it/suite-centrale-44-corallo.it.html" class="btn-booking-official" target="_blank" rel="noopener noreferrer">Booking</a>
+              <button onclick="apriCalendario('popup-corallo', 'corallo')" class="btn-calendario">📅 Disponibilità</button>
+            </div>
+          </article>
+          
+          <!-- CARD OCEANO -->
+          <article class="card-casa">
+            <div class="img-wrapper">
+              <img src="image/Suite Oceano Copertina.jpg" alt="Suite Oceano">
+              <div class="img-overlay">
+                <button onclick="apriGalleria('oceano')" class="btn-foto" style="border:none; cursor:pointer; width:100%;">📸 Guarda tutte le foto</button>
+              </div>
+            </div>
+            <h3>Suite Oceano</h3>
+            <p>Centro Storico • Da 1 a 4 Posti Letto • Wi-Fi, Balcone & AC</p>
+            <div class="pulsanti-prenotazione">
+              <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20su%20Suite%20Oceano" class="btn-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+              <a href="https://www.airbnb.it/rooms/653331639445866242" class="btn-airbnb-official" target="_blank" rel="noopener noreferrer">Airbnb</a>
+              <a href="https://www.booking.com/hotel/it/suite-centrale-44-con-balcone.it.html" class="btn-booking-official" target="_blank" rel="noopener noreferrer">Booking</a>
+              <button onclick="apriCalendario('popup-oceano', 'oceano')" class="btn-calendario">📅 Disponibilità</button>
+            </div>
+          </article>
 
-        <!-- Popup Suite Oceano -->
-        <div id="popup-oceano" class="modal-calendario">
-          <div class="modal-contenuto">
-            <span class="chiudi-popup" onclick="chiudiCalendario('popup-oceano')">&times;</span>
-            <h3 style="margin-bottom: 15px; color: var(--blu-mare); text-align: center;">Disponibilità Suite Oceano</h3>
-            
-            <!-- Contenitore Calendario Nativo -->
-            <div id="cal-oceano" class="calendario-wrapper"></div>
-        
-            <div class="box-richiesta-wa">
-              <p id="info-selezione-oceano" class="titolo-richiesta">👉 Clicca sui giorni liberi nel calendario per scegliere Check-in e Check-out</p>
-              <button onclick="inviaRichiestaWA('oceano', 'Suite Oceano')" class="btn-invia-wa">
-                💬 Invia richiesta su WhatsApp
-              </button>
-            </div>
-          </div>
-        </div>      
-       
-     </div>
+        </div>
         
         <!-- Freccia Destra -->
         <button class="carousel-arrow right-arrow" id="btn-next-case" aria-label="Scorri a destra" onclick="scorriCarousel(1)">❯</button>
@@ -304,22 +251,22 @@
     </section>
 
     <!-- Sezione Lascia una Recensione -->
-<section id="recensioni" class="section recensione-section">
-  <div class="recensione-box">
-    <h2>⭐ La Tua Opinione Conta per Noi!</h2>
-    <p>Sei stato nostro ospite da <strong>Suite Centrale 44</strong>? La tua esperienza aiuta noi a migliorare continuamente e permette ad altri viaggiatori di scoprire la bellezza di Marsala.</p>
-    
-    <div class="stelle-valutazione">⭐⭐⭐⭐⭐</div>
-    
-    <a href="https://share.google/YokKWe5qbWBurajf4" 
-       class="btn-recensione-google" 
-       target="_blank" 
-       rel="noopener noreferrer" 
-       aria-label="Lascia una recensione su Google per Suite Centrale 44">
-      ✍️ Lascia una recensione su Google
-    </a>
-  </div>
-</section>
+    <section id="recensioni" class="section recensione-section">
+      <div class="recensione-box">
+        <h2>⭐ La Tua Opinione Conta per Noi!</h2>
+        <p>Sei stato nostro ospite da <strong>Suite Centrale 44</strong>? La tua esperienza aiuta noi a migliorare continuamente e permette ad altri viaggiatori di scoprire la bellezza di Marsala.</p>
+        
+        <div class="stelle-valutazione">⭐⭐⭐⭐⭐</div>
+        
+        <a href="https://share.google/YokKWe5qbWBurajf4" 
+           class="btn-recensione-google" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           aria-label="Lascia una recensione su Google per Suite Centrale 44">
+          ✍️ Lascia una recensione su Google
+        </a>
+      </div>
+    </section>
     
     <!-- Sezione Posizione e Contatti -->
     <section id="posizione" class="section">
@@ -353,7 +300,7 @@
     </section>
   </main>
 
-    <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20sulle%20disponibilit%C3%A0%20delle%20case%20vacanze" 
+  <a href="https://wa.me/393477640421?text=Ciao!%20Vorrei%20informazioni%20sulle%20disponibilit%C3%A0%20delle%20case%20vacanze" 
      class="whatsapp-float" 
      target="_blank" 
      rel="noopener noreferrer"
@@ -368,7 +315,53 @@
     <p>CIR: 19081011C218331 | CIN: IT081011C2EFH98HIF</p>
   </footer>
 
+  <!-- SCRIPT LINGUA GOOGLE -->
   <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+
+  <!-- ==========================================
+       TUTTE LE FINESTRE A COMPARSA (MODALS)
+       Posizionate fuori dal flusso scorrevole per 0ms di lag!
+       ========================================== -->
+
+  <!-- Popup Suite Centrale -->
+  <div id="popup-centrale" class="modal-calendario">
+    <div class="modal-contenuto">
+      <span class="chiudi-popup" onclick="chiudiCalendario('popup-centrale')">&times;</span>
+      <h3 style="margin-bottom: 15px; color: var(--blu-mare); text-align: center;">Disponibilità Suite Centrale</h3>
+      <div id="cal-centrale" class="calendario-wrapper"></div>
+      <div class="box-richiesta-wa">
+        <p id="info-selezione-centrale" class="titolo-richiesta">👉 Clicca sui giorni liberi nel calendario per scegliere Check-in e Check-out</p>
+        <button onclick="inviaRichiestaWA('centrale', 'Suite Centrale')" class="btn-invia-wa">💬 Invia richiesta su WhatsApp</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup Suite Corallo -->
+  <div id="popup-corallo" class="modal-calendario">
+    <div class="modal-contenuto">
+      <span class="chiudi-popup" onclick="chiudiCalendario('popup-corallo')">&times;</span>
+      <h3 style="margin-bottom: 15px; color: var(--blu-mare); text-align: center;">Disponibilità Suite Corallo</h3>
+      <div id="cal-corallo" class="calendario-wrapper"></div>
+      <div class="box-richiesta-wa">
+        <p id="info-selezione-corallo" class="titolo-richiesta">👉 Clicca sui giorni liberi nel calendario per scegliere Check-in e Check-out</p>
+        <button onclick="inviaRichiestaWA('corallo', 'Suite Corallo')" class="btn-invia-wa">💬 Invia richiesta su WhatsApp</button>
+      </div>
+    </div>
+  </div>        
+
+  <!-- Popup Suite Oceano -->
+  <div id="popup-oceano" class="modal-calendario">
+    <div class="modal-contenuto">
+      <span class="chiudi-popup" onclick="chiudiCalendario('popup-oceano')">&times;</span>
+      <h3 style="margin-bottom: 15px; color: var(--blu-mare); text-align: center;">Disponibilità Suite Oceano</h3>
+      <div id="cal-oceano" class="calendario-wrapper"></div>
+      <div class="box-richiesta-wa">
+        <p id="info-selezione-oceano" class="titolo-richiesta">👉 Clicca sui giorni liberi nel calendario per scegliere Check-in e Check-out</p>
+        <button onclick="inviaRichiestaWA('oceano', 'Suite Oceano')" class="btn-invia-wa">💬 Invia richiesta su WhatsApp</button>
+      </div>
+    </div>
+  </div>      
 
   <!-- FINESTRA GALLERIA UNIFICATA -->
   <div id="modal-galleria" class="modal-galleria">
