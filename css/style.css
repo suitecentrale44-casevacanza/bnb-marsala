@@ -785,65 +785,6 @@ footer p {
 }
 
 /* ==========================================
-   STILI CAROUSEL E FRECCE SMARTPHONE
-   ========================================== */
-.carousel-container {
-  position: relative;
-  width: 100%;
-}
-
-.carousel-arrow {
-  display: none; /* Nascoste su PC per impostazione predefinita */
-  position: absolute;
-  top: 45%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  background-color: rgba(255, 255, 255, 0.95);
-  border: 1px solid var(--grigio-bordo);
-  border-radius: 50%;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  color: var(--blu-mare);
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
-  z-index: 10;
-  transition: opacity 0.3s ease, transform 0.2s ease, visibility 0.3s ease;
-  backdrop-filter: blur(4px);
-}
-
-.carousel-arrow:hover {
-  transform: translateY(-50%) scale(1.1);
-  color: var(--giallo-limone);
-  background-color: #ffffff;
-}
-
-.left-arrow {
-  left: -5px;
-}
-
-.right-arrow {
-  right: -5px;
-}
-
-/* Classe per nascondere dinamicamente le frecce quando finisce lo scroll */
-.carousel-arrow.hidden {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-/* Mostra le frecce solo quando scatta lo scorrimento laterale su smartphone/tablet */
-@media (max-width: 950px) {
-  .carousel-arrow {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-}
-
-
-/* ==========================================
    11. GALLERIA FOTO (GRIGLIA + INGRANDIMENTO)
    ========================================== */
 .modal-galleria {
@@ -1195,5 +1136,60 @@ footer p {
     width: 100%;
     padding: 12px 16px;
     font-size: 0.95rem;
+  }
+}
+/* ==========================================
+   15. STILI CAROUSEL E FRECCE SMARTPHONE (0ms)
+   ========================================== */
+.carousel-container {
+  position: relative !important;
+  width: 100%;
+}
+
+.carousel-arrow {
+  display: none; /* Su PC restano nascoste perché non servono */
+  position: absolute !important; /* Galleggiano sopra il contenuto */
+  top: 40% !important; /* Centrate verticalmente all'altezza delle foto */
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--grigio-bordo);
+  border-radius: 50%;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  color: var(--blu-mare);
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 99 !important; /* Obbliga le frecce a stare SOPRA le case */
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.2s ease;
+}
+
+/* Effetto alla pressione */
+.carousel-arrow:active {
+  transform: translateY(-50%) scale(0.9);
+}
+
+.left-arrow {
+  left: 5px !important; /* Incollate al margine sinistro */
+}
+
+.right-arrow {
+  right: 5px !important; /* Incollate al margine destro */
+}
+
+/* Nasconde dinamicamente le frecce quando finisce lo scroll */
+.carousel-arrow.hidden {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Le attiva SOLO sugli smartphone e tablet */
+@media (max-width: 950px) {
+  .carousel-arrow {
+    display: flex !important; /* Le rende visibili */
+    align-items: center;
+    justify-content: center;
   }
 }
