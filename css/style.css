@@ -15,7 +15,7 @@
 }
 
 /* ==========================================
-   1. RESET E STILI DI BASE
+   1. RESET E STILI DI BASE (FONT PROFESSIONALE 0ms)
    ========================================== */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -26,14 +26,22 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 70px;
+  transition: opacity 0.2s ease-in-out;
 }
 
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Font di sistema: elegante, leggibile e ultra-veloce */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: var(--blu-notte-testo);
   line-height: 1.6;
   background-color: var(--bianco-salina);
   top: 0px !important;
+  position: static !important;
+}
+
+html, body {
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 ul {
@@ -305,7 +313,6 @@ header .header-desc {
   margin-right: auto;
 }
 
-
 /* ==========================================
    4. SCHEDE E GRIGLIE GENERALI
    ========================================== */
@@ -372,13 +379,14 @@ header .header-desc {
 }
 
 /* ==========================================
-   5. STRUTTURE (CARD CASE VACANZA)
+   5. STRUTTURE E SCORRIMENTO (CAROUSEL SMARTPHONE)
    ========================================== */
 .grid-3-case {
   display: grid;
   gap: 1.5rem;
   margin-top: 1rem;
-  grid-template-columns: 1fr;
+  /* Su PC Desktop si mostrano tutte e 3 in orizzontale */
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .card-casa {
@@ -679,41 +687,6 @@ footer p {
   margin-bottom: 12px;
 }
 
-.selettori-date {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 15px;
-  flex-wrap: wrap;
-}
-
-.campo-data {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-}
-
-.campo-data label {
-  font-size: 0.8rem;
-  color: var(--grigio-testo-muto);
-  margin-bottom: 4px;
-  font-weight: bold;
-}
-
-.campo-data input {
-  padding: 8px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  font-family: inherit;
-  color: var(--blu-notte-testo);
-  outline: none;
-  transition: border-color 0.2s ease;
-}
-
-.campo-data input:focus {
-  border-color: #25d366;
-}
-
 .btn-invia-wa {
   background-color: #25d366;
   color: #ffffff;
@@ -733,20 +706,52 @@ footer p {
 }
 
 /* ==========================================
-   10. RESPONSIVITÀ
+   10. RESPONSIVITÀ E SCORRIMENTO (CAROUSEL)
    ========================================== */
-@media (min-width: 768px) {
+
+/* Quando lo schermo scende sotto i 950px (Tablet/Smartphone) */
+@media (max-width: 950px) {
   .grid-3-case {
-    grid-template-columns: repeat(2, 1fr);
+    /* Le case non vanno a capo, ma si allineano in orizzontale (85% larghezza) */
+    grid-template-columns: repeat(3, 85vw);
+    
+    /* Attiva lo scroll laterale e nasconde quello verticale */
+    overflow-x: auto;
+    overflow-y: hidden;
+    
+    /* Effetto calamita fluido! */
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    
+    /* Barra di scorrimento stilizzata */
+    scrollbar-width: thin;
+    scrollbar-color: var(--blu-mare) #e2e8f0;
+    
+    /* Padding per non tagliare le ombre */
+    padding-bottom: 25px;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  
+  .grid-3-case .card-casa {
+    scroll-snap-align: center; /* Calamita ogni casa al centro dello schermo */
+  }
+
+  /* Stili custom della scrollbar laterale su Chrome/Safari/Edge */
+  .grid-3-case::-webkit-scrollbar {
+    height: 6px;
+  }
+  .grid-3-case::-webkit-scrollbar-track {
+    background: #e2e8f0;
+    border-radius: 10px;
+  }
+  .grid-3-case::-webkit-scrollbar-thumb {
+    background-color: var(--blu-mare);
+    border-radius: 10px;
   }
 }
 
-@media (min-width: 1024px) {
-  .grid-3-case {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
+/* Schermi molto piccoli (Smartphone verticali) */
 @media (max-width: 600px) {
   .navbar-container {
     flex-direction: column;
@@ -914,10 +919,6 @@ footer p {
   .modal-close-espansa { top: 15px; right: 20px; }
 }
 
-html {
-  transition: opacity 0.2s ease-in-out;
-}
-
 /* ==========================================
    PROTEZIONE LAYOUT GOOGLE TRANSLATE
    ========================================== */
@@ -927,16 +928,6 @@ html {
 .goog-te-spinner-pos,
 .skiptranslate:not(.lang-selector) {
   display: none !important;
-}
-
-body {
-  top: 0px !important;
-  position: static !important;
-}
-
-html, body {
-  opacity: 1 !important;
-  visibility: visible !important;
 }
 
 /* ==========================================
@@ -1080,8 +1071,9 @@ html, body {
   color: #14532d !important;
   font-weight: 600;
 }
+
 /* ==========================================
-   SEZIONE RECENSIONI GOOGLE (ULTRA-LEGGERA)
+   14. SEZIONE RECENSIONI GOOGLE (ULTRA-LEGGERA)
    ========================================== */
 .recensione-section {
   text-align: center;
