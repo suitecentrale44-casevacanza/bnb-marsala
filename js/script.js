@@ -1,32 +1,5 @@
 /* ==========================================
-   0. GESTIONE MENU A TENDINA PRINCIPALE
-   ========================================== */
-window.toggleMainMenu = function(e) {
-  if (e) e.stopPropagation();
-  const menuWrapper = document.getElementById('navMenuWrapper');
-  if (menuWrapper) {
-    menuWrapper.classList.toggle('show');
-  }
-};
-
-window.chiudiMainMenu = function() {
-  const menuWrapper = document.getElementById('navMenuWrapper');
-  if (menuWrapper) {
-    menuWrapper.classList.remove('show');
-  }
-};
-
-// Chiude il menu principale se si clicca in un punto qualsiasi della pagina
-document.addEventListener('click', function(e) {
-  const menuWrapper = document.getElementById('navMenuWrapper');
-  const toggleBtn = document.getElementById('navToggleBtn');
-  if (menuWrapper && toggleBtn && !menuWrapper.contains(e.target) && !toggleBtn.contains(e.target)) {
-    menuWrapper.classList.remove('show');
-  }
-});
-
-/* ==========================================
-   1. GESTIONE LINGUA ULTRA-STABILE E VELOCE
+   1. GESTIONE LINGUA E MENU NAVIGAZIONE
    ========================================== */
 
 window.googleTranslateElementInit = function() {
@@ -45,11 +18,32 @@ window.toggleLangDropdown = function(e) {
   }
 };
 
+window.toggleMainMenu = function(e) {
+  if (e) e.stopPropagation();
+  const menuWrapper = document.getElementById('navMenuWrapper');
+  if (menuWrapper) {
+    menuWrapper.classList.toggle('show');
+  }
+};
+
+window.chiudiMainMenu = function() {
+  const menuWrapper = document.getElementById('navMenuWrapper');
+  if (menuWrapper) {
+    menuWrapper.classList.remove('show');
+  }
+};
+
 document.addEventListener('click', function(e) {
   const langBtn = document.getElementById('langBtn');
   const langDropdown = document.getElementById('langDropdown');
   if (langDropdown && langBtn && !langDropdown.contains(e.target) && !langBtn.contains(e.target)) {
     langDropdown.classList.remove('show');
+  }
+
+  const menuWrapper = document.getElementById('navMenuWrapper');
+  const toggleBtn = document.getElementById('navToggleBtn');
+  if (menuWrapper && toggleBtn && !menuWrapper.contains(e.target) && !toggleBtn.contains(e.target)) {
+    menuWrapper.classList.remove('show');
   }
 });
 
@@ -126,7 +120,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(window.nascondiSplash, 500);
   }
 
-  // Pre-caricamento immediato in background
   precaricaTuttiICalInSilenzio();
 });
 
@@ -168,8 +161,34 @@ if (localStorage.getItem('consenso_cookie') === 'accettato') {
 }
 
 /* ==========================================
-   FUNZIONE DI SUPPORTO: CALCOLA GIORNO SUCCESSIVO
+   4. CALENDARI NATIVI SINGOLI CON SELEZIONE INTELLIGENTE
    ========================================== */
+
+const configurazioneCalendari = {
+  'centrale': {
+    elementId: 'cal-centrale',
+    icalUrls: [
+      'https://calendar.google.com/calendar/ical/usn7es2f9plpcssjkrlc6mpmg4u5i0i4@import.calendar.google.com/public/basic.ics'
+    ]
+  },
+  'corallo': {
+    elementId: 'cal-corallo',
+    icalUrls: [
+      'https://calendar.google.com/calendar/ical/houpucjjv0mu4cr02bk5n8cd9v6ele8o@import.calendar.google.com/public/basic.ics'
+    ]
+  },
+  'oceano': {
+    elementId: 'cal-oceano',
+    icalUrls: [
+      'https://calendar.google.com/calendar/ical/lmtdlre4n8fj9qhk8ksqf9lsi91qbhho@import.calendar.google.com/public/basic.ics'
+    ]
+  }
+};
+
+const cachePrenotazioni = {};
+const statoMeseCalendario = {};
+const selezioneDate = {};
+
 function calcolaGiornoSuccessivo(dataStr) {
   const d = new Date(dataStr + 'T00:00:00');
   d.setDate(d.getDate() + 1);
@@ -179,9 +198,122 @@ function calcolaGiornoSuccessivo(dataStr) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-/* ==========================================
-   GESTIONE SELEZIONE DATE (CON SUPPORTO 1 NOTTE)
-   ========================================== */
+async function scaricaIcalConTimeout(urlProxy, timeoutMs = 2000) {
+  const controller = new AbortController();
+  const idTimer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await fetch(urlProxy, { signal: controller.signal });
+    clearTimeout(idTimer);
+    if (!res.ok) throw new Error("HTTP Errore");
+    const text = await res.text();
+    if (text && text.includes("BEGIN:VCALENDAR")) return text;
+    throw new Error("Formato non valido");
+  } catch (err) {
+    clearTimeout(idTimer);
+    throw err;
+  }
+}
+
+async function scaricaIcalVeloce(icalUrl) {
+  const urlPulito = decodeURIComponent(icalUrl);
+  const proxies = [
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(urlPulito)}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(urlPulito)}`,
+    `https://corsproxy.io/?${encodeURIComponent(urlPulito)}`
+  ];
+
+  for (const proxy of proxies) {
+    try {
+      const testo = await scaricaIcalConTimeout(proxy, 2000);
+      if (testo) return testo;
+    } catch (e) {
+      continue;
+    }
+  }
+  return null;
+}
+
+async function caricaEUnisciDateSuite(nomeSuite) {
+  const config = configurazioneCalendari[nomeSuite];
+  if (!config) return [];
+
+  const promesse = config.icalUrls.map(url => scaricaIcalVeloce(url));
+  const risultati = await Promise.all(promesse);
+
+  let tutteLeDate = [];
+  risultati.forEach(textICS => {
+    if (textICS) {
+      tutteLeDate = tutteLeDate.concat(estraiDateDaICS(textICS));
+    }
+  });
+
+  cachePrenotazioni[nomeSuite] = tutteLeDate;
+  return tutteLeDate;
+}
+
+async function precaricaTuttiICalInSilenzio() {
+  for (const key of Object.keys(configurazioneCalendari)) {
+    statoMeseCalendario[key] = new Date();
+    caricaEUnisciDateSuite(key);
+  }
+}
+
+function estraiDateDaICS(icsText) {
+  const intervalli = [];
+  if (!icsText) return intervalli;
+
+  const eventi = icsText.split("BEGIN:VEVENT");
+
+  eventi.forEach(evt => {
+    const startMatch = evt.match(/DTSTART[^:]*:(\d{8})/);
+    const endMatch = evt.match(/DTEND[^:]*:(\d{8})/);
+
+    if (startMatch && endMatch) {
+      const s = startMatch[1];
+      const e = endMatch[1];
+      const da = `${s.substring(0,4)}-${s.substring(4,6)}-${s.substring(6,8)}`;
+      const a = `${e.substring(0,4)}-${e.substring(4,6)}-${e.substring(6,8)}`;
+      intervalli.push({ da, a });
+    }
+  });
+
+  return intervalli;
+}
+
+window.apriCalendario = async function(idDelPopup, nomeSuite) {
+  const modal = document.getElementById(idDelPopup);
+  if (modal) modal.style.display = "flex";
+
+  if (nomeSuite && configurazioneCalendari[nomeSuite]) {
+    if (!statoMeseCalendario[nomeSuite]) {
+      statoMeseCalendario[nomeSuite] = new Date();
+    }
+    if (!selezioneDate[nomeSuite]) {
+      selezioneDate[nomeSuite] = { checkin: null, checkout: null };
+    }
+
+    renderizzaGrigliaCalendario(nomeSuite);
+
+    if (!cachePrenotazioni[nomeSuite] || cachePrenotazioni[nomeSuite].length === 0) {
+      caricaEUnisciDateSuite(nomeSuite).then(() => {
+        renderizzaGrigliaCalendario(nomeSuite);
+      });
+    }
+  }
+};
+
+window.chiudiCalendario = function(idDelPopup) {
+  const modal = document.getElementById(idDelPopup);
+  if (modal) modal.style.display = "none";
+};
+
+window.addEventListener('click', function(event) {
+  if (event.target && event.target.classList && event.target.classList.contains('modal-calendario')) {
+    event.target.style.display = "none";
+  }
+});
+
 window.selezionaDataGiorno = function(nomeSuite, dataStr) {
   const sel = selezioneDate[nomeSuite] || { checkin: null, checkout: null };
   const prenotazioni = cachePrenotazioni[nomeSuite] || [];
@@ -189,15 +321,12 @@ window.selezionaDataGiorno = function(nomeSuite, dataStr) {
 
   const domaniStr = calcolaGiornoSuccessivo(dataStr);
 
-  // Verifica se il giorno successivo è già occupato (oppure se è la data odierna/passata)
   const domaniOccupato = prenotazioni.some(r => {
     if (r.da === r.a) return domaniStr === r.da;
     return domaniStr >= r.da && domaniStr < r.a;
   });
 
-  // ----------------------------------------------------
-  // CASO A: DESELEZIONE (Reset se si riclicca la selezione)
-  // ----------------------------------------------------
+  // Deselezione completa o parziale
   if (sel.checkin === dataStr && sel.checkout === domaniStr && domaniOccupato) {
     sel.checkin = null;
     sel.checkout = null;
@@ -215,7 +344,6 @@ window.selezionaDataGiorno = function(nomeSuite, dataStr) {
     }
   }
   else if (sel.checkin === dataStr && !sel.checkout) {
-    // Doppio clic sullo stesso giorno: imposta automaticamente 1 notte (Check-out al giorno dopo)
     sel.checkout = domaniStr;
     if (infoElem) {
       const pIn = sel.checkin.split('-');
@@ -232,14 +360,10 @@ window.selezionaDataGiorno = function(nomeSuite, dataStr) {
       infoElem.style.color = 'var(--blu-notte-testo)';
     }
   }
-
-  // ----------------------------------------------------
-  // CASO B: NUOVA SELEZIONE
-  // ----------------------------------------------------
+  // Selezione Nuova
   else if (!sel.checkin || (sel.checkin && sel.checkout)) {
     sel.checkin = dataStr;
 
-    // SE IL GIORNO DOPO È OCCUPATO: È un "buco" di 1 notte! Imposta subito Check-out al giorno dopo
     if (domaniOccupato) {
       sel.checkout = domaniStr;
       if (infoElem) {
@@ -257,10 +381,6 @@ window.selezionaDataGiorno = function(nomeSuite, dataStr) {
       }
     }
   } 
-  
-  // ----------------------------------------------------
-  // CASO C: SELEZIONE DEL CHECK-OUT
-  // ----------------------------------------------------
   else if (sel.checkin && !sel.checkout) {
     if (dataStr <= sel.checkin) {
       sel.checkin = dataStr;
@@ -312,9 +432,93 @@ window.selezionaDataGiorno = function(nomeSuite, dataStr) {
   renderizzaGrigliaCalendario(nomeSuite);
 };
 
-/* ==========================================
-   INVIO RICHIESTA WHATSAPP CON FALLBACK 1 NOTTE
-   ========================================== */
+function renderizzaGrigliaCalendario(nomeSuite) {
+  const config = configurazioneCalendari[nomeSuite];
+  const container = document.getElementById(config.elementId);
+  if (!container) return;
+
+  const dataRif = statoMeseCalendario[nomeSuite];
+  const anno = dataRif.getFullYear();
+  const mese = dataRif.getMonth();
+
+  const nomiMesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", 
+                    "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+
+  let html = `
+    <div class="cal-native-container">
+      <div class="cal-header">
+        <button type="button" onclick="cambiaMeseSuite('${nomeSuite}', -1)">❮</button>
+        <h4>${nomiMesi[mese]} ${anno}</h4>
+        <button type="button" onclick="cambiaMeseSuite('${nomeSuite}', 1)">❯</button>
+      </div>
+      <div class="cal-weekdays">
+        <span>Lun</span><span>Mar</span><span>Mer</span><span>Gio</span><span>Ven</span><span>Sab</span><span>Dom</span>
+      </div>
+      <div class="cal-days-grid">
+  `;
+
+  const primoGiornoMese = new Date(anno, mese, 1).getDay();
+  const giorniNelMese = new Date(anno, mese + 1, 0).getDate();
+  const offsetInizio = (primoGiornoMese === 0) ? 6 : primoGiornoMese - 1;
+
+  for (let i = 0; i < offsetInizio; i++) {
+    html += `<div class="cal-day empty"></div>`;
+  }
+
+  const prenotazioni = cachePrenotazioni[nomeSuite] || [];
+  const sel = selezioneDate[nomeSuite] || { checkin: null, checkout: null };
+
+  const oggi = new Date();
+  oggi.setHours(0, 0, 0, 0);
+
+  for (let g = 1; g <= giorniNelMese; g++) {
+    const meseStr = String(mese + 1).padStart(2, '0');
+    const gStr = String(g).padStart(2, '0');
+    const dataStr = `${anno}-${meseStr}-${gStr}`;
+
+    const dataCella = new Date(anno, mese, g);
+    dataCella.setHours(0, 0, 0, 0);
+
+    const ePassata = dataCella < oggi;
+
+    const occupato = ePassata || prenotazioni.some(r => {
+      if (r.da === r.a) return dataStr === r.da;
+      return dataStr >= r.da && dataStr < r.a;
+    });
+
+    let classeStato = occupato ? 'occupato' : 'disponibile';
+    let onClickAttr = occupato ? '' : `onclick="selezionaDataGiorno('${nomeSuite}', '${dataStr}')"`;
+
+    if (dataStr === sel.checkin) {
+      classeStato += ' selezionato-checkin';
+    } else if (dataStr === sel.checkout) {
+      classeStato += ' selezionato-checkout';
+    } else if (sel.checkin && sel.checkout && dataStr > sel.checkin && dataStr < sel.checkout) {
+      classeStato += ' in-range';
+    }
+
+    html += `<div class="cal-day ${classeStato}" ${onClickAttr}>${g}</div>`;
+  }
+
+  html += `
+      </div>
+      <div class="cal-legend">
+        <span><i class="dot lib"></i> Libero</span>
+        <span><i class="dot occ"></i> Occupato</span>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
+window.cambiaMeseSuite = function(nomeSuite, dir) {
+  if (statoMeseCalendario[nomeSuite]) {
+    statoMeseCalendario[nomeSuite].setMonth(statoMeseCalendario[nomeSuite].getMonth() + dir);
+    renderizzaGrigliaCalendario(nomeSuite);
+  }
+};
+
 window.inviaRichiestaWA = function(nomeSuiteKey, nomeSuiteTitolo) {
   let sel = selezioneDate[nomeSuiteKey];
 
@@ -323,7 +527,6 @@ window.inviaRichiestaWA = function(nomeSuiteKey, nomeSuiteTitolo) {
     return;
   }
 
-  // Se l'utente ha selezionato solo il Check-in, imposta automaticamente il Check-out al giorno dopo (1 notte)
   if (sel.checkin && !sel.checkout) {
     sel.checkout = calcolaGiornoSuccessivo(sel.checkin);
   }
@@ -338,7 +541,6 @@ window.inviaRichiestaWA = function(nomeSuiteKey, nomeSuiteTitolo) {
   const urlWhatsApp = `https://wa.me/393477640421?text=${encodeURIComponent(messaggio)}`;
   window.open(urlWhatsApp, '_blank');
 };
-
 
 /* ==========================================
    5. MOTORE GALLERIA ULTRA-VELOCE (LOTTI PARALLELI)
