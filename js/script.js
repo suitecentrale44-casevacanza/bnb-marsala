@@ -698,3 +698,55 @@ document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') chiudiGalleria();
   }
 });
+
+/* ==========================================
+   15. CONTROLLER FRECCE CAROUSEL (0ms Latency)
+   ========================================== */
+document.addEventListener('DOMContentLoaded', function() {
+  const grid = document.getElementById('grid-strutture');
+  const btnPrev = document.getElementById('btn-prev-case');
+  const btnNext = document.getElementById('btn-next-case');
+
+  // Se per caso gli elementi non esistono, ferma il codice per non creare errori
+  if (!grid || !btnPrev || !btnNext) return;
+
+  function aggiornaFrecce() {
+    // 1. Se la larghezza dello scroll è uguale alla larghezza visibile (es. su PC Desktop) -> Nascondi entrambe
+    if (grid.scrollWidth <= grid.clientWidth) {
+      btnPrev.classList.add('hidden');
+      btnNext.classList.add('hidden');
+      return;
+    }
+
+    // 2. Controllo freccia SINISTRA (Sei all'inizio?)
+    if (grid.scrollLeft <= 5) {
+      btnPrev.classList.add('hidden');
+    } else {
+      btnPrev.classList.remove('hidden');
+    }
+
+    // 3. Controllo freccia DESTRA (Sei alla fine?)
+    // Uso tolleranza di 5px per arrotondamenti decimali degli schermi
+    if (grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 5) {
+      btnNext.classList.add('hidden');
+    } else {
+      btnNext.classList.remove('hidden');
+    }
+  }
+
+  // Ascolta lo scorrimento dell'utente con "passive: true" per prestazioni eccellenti (non scatta)
+  grid.addEventListener('scroll', aggiornaFrecce, { passive: true });
+  
+  // Ricalcola se l'utente ruota il telefono
+  window.addEventListener('resize', aggiornaFrecce);
+  
+  // Calcolo iniziale (con piccolo ritardo per aspettare che la grafica si disegni)
+  setTimeout(aggiornaFrecce, 100);
+
+  // Funzione chiamata quando l'utente preme i bottoni freccia
+  window.scorriCarousel = function(direzione) {
+    // Calcola di quanto scorrere (larga quasi quanto lo schermo visibile)
+    const quantitaScroll = (grid.clientWidth * 0.85) * direzione;
+    grid.scrollBy({ left: quantitaScroll, behavior: 'smooth' });
+  };
+});
