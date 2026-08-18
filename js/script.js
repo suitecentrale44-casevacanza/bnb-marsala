@@ -700,53 +700,57 @@ document.addEventListener('keydown', function(event) {
 });
 
 /* ==========================================
-   15. CONTROLLER FRECCE CAROUSEL (0ms Latency)
+   15. CONTROLLER FRECCE CAROUSEL (0ms Latency & Snap Perfetto)
    ========================================== */
 document.addEventListener('DOMContentLoaded', function() {
   const grid = document.getElementById('grid-strutture');
   const btnPrev = document.getElementById('btn-prev-case');
   const btnNext = document.getElementById('btn-next-case');
 
-  // Se per caso gli elementi non esistono, ferma il codice per non creare errori
+  // Se siamo in una pagina senza carousel, si ferma senza creare errori
   if (!grid || !btnPrev || !btnNext) return;
 
   function aggiornaFrecce() {
-    // 1. Se la larghezza dello scroll è uguale alla larghezza visibile (es. su PC Desktop) -> Nascondi entrambe
-    if (grid.scrollWidth <= grid.clientWidth) {
+    // 1. Se le card entrano tutte nello schermo (es. su PC), nascondi entrambe le frecce
+    if (grid.scrollWidth <= grid.clientWidth + 10) {
       btnPrev.classList.add('hidden');
       btnNext.classList.add('hidden');
       return;
     }
 
-    // 2. Controllo freccia SINISTRA (Sei all'inizio?)
-    if (grid.scrollLeft <= 5) {
+    // 2. Controllo SINISTRA: Siamo all'inizio?
+    // Usiamo 20px di margine di sicurezza per i calcoli decimali dei telefoni
+    if (grid.scrollLeft <= 20) {
       btnPrev.classList.add('hidden');
     } else {
       btnPrev.classList.remove('hidden');
     }
 
-    // 3. Controllo freccia DESTRA (Sei alla fine?)
-    // Uso tolleranza di 5px per arrotondamenti decimali degli schermi
-    if (grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 5) {
+    // 3. Controllo DESTRA: Siamo alla fine?
+    if (grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 20) {
       btnNext.classList.add('hidden');
     } else {
       btnNext.classList.remove('hidden');
     }
   }
 
-  // Ascolta lo scorrimento dell'utente con "passive: true" per prestazioni eccellenti (non scatta)
+  // Ascoltatore nativo e "passivo" per non bloccare mai la grafica durante il tocco
   grid.addEventListener('scroll', aggiornaFrecce, { passive: true });
-  
-  // Ricalcola se l'utente ruota il telefono
   window.addEventListener('resize', aggiornaFrecce);
   
-  // Calcolo iniziale (con piccolo ritardo per aspettare che la grafica si disegni)
-  setTimeout(aggiornaFrecce, 100);
+  // Calcolo iniziale (con piccolo ritardo per attendere il rendering del browser)
+  setTimeout(aggiornaFrecce, 150);
 
-  // Funzione chiamata quando l'utente preme i bottoni freccia
+  // Funzione del click sulla freccia
   window.scorriCarousel = function(direzione) {
-    // Calcola di quanto scorrere (larga quasi quanto lo schermo visibile)
-    const quantitaScroll = (grid.clientWidth * 0.85) * direzione;
-    grid.scrollBy({ left: quantitaScroll, behavior: 'smooth' });
+    // Trova la prima card per misurarne l'esatta larghezza dinamica
+    const primaCard = grid.querySelector('.card-casa');
+    if (!primaCard) return;
+    
+    // Calcola lo spostamento: larghezza esatta della card + spazio vuoto (gap CSS di circa 24px)
+    const spostamento = (primaCard.offsetWidth + 24) * direzione;
+    
+    // Dice al browser di scorrere. Il CSS "scroll-snap" farà da calamita per l'allineamento finale
+    grid.scrollBy({ left: spostamento, behavior: 'smooth' });
   };
 });
